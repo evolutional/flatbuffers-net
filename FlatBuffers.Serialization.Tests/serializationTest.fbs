@@ -1,0 +1,54 @@
+namespace SerializationTests;
+
+enum TestEnum : ubyte {
+	Apple,
+	Orange,
+	Pear,
+	Banana
+}
+
+struct TestStruct1 {
+	IntProp: int;
+	ByteProp: ubyte;
+	ShortProp: short;
+}
+
+struct TestStruct2 {
+	IntProp: int;
+	TestStruct1Prop: TestStruct1;
+}
+
+table TestTableWithArray {
+	IntArray: [int];
+	IntList: [int];
+}
+
+table TestTable1 {
+	IntProp: int;
+	ByteProp: ubyte;
+	ShortProp: short;
+}
+
+table TestTable2 {
+	StringProp: string;
+}
+
+table TestTable3 {
+    BoolProp: bool;
+	LongProp: long;
+	SByteProp: byte;
+	UShortProp: ushort;
+	ULongProp: ulong;        
+    EnumProp: TestEnum;
+    FloatProp: float;
+    DoubleProp: double;
+}
+
+table TestTableWithStruct {
+	StructProp: TestStruct1;
+	IntProp: int;
+}
+
+table TestTableWithArrayOfStructs {
+	StructArray: [TestStruct1];
+}
