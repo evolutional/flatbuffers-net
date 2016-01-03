@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace FlatBuffers.Serialization.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class DeserializationTests
     {
-        [TestMethod]
+        [Test]
         public void Deserialize_WithTestStruct1_FromOracleData()
         {
             const int intProp = 42;
@@ -25,7 +25,7 @@ namespace FlatBuffers.Serialization.Tests
             Assert.AreEqual(shortProp, o.ShortProp);
         }
 
-        [TestMethod]
+        [Test]
         public void Deserialize_WithTestStruct2_FromOracleData()
         {
             const int intProp = 42;
@@ -49,7 +49,7 @@ namespace FlatBuffers.Serialization.Tests
             Assert.AreEqual(testStruct1.ShortProp, o.TestStructProp.ShortProp);
         }
 
-        [TestMethod]
+        [Test]
         public void Deserialize_WithTestTable1_FromOracleData()
         {
             const int intProp = 42;
@@ -67,7 +67,7 @@ namespace FlatBuffers.Serialization.Tests
             Assert.AreEqual(shortProp, o.ShortProp);
         }
 
-        [TestMethod]
+        [Test]
         public void Deserialize_WithTestTable2_FromOracleData()
         {
             const string stringProp = "Hello, FlatBuffers!";
@@ -81,7 +81,7 @@ namespace FlatBuffers.Serialization.Tests
             Assert.AreEqual(stringProp, o.StringProp);
         }
 
-        [TestMethod]
+        [Test]
         public void Deserialize_WithTestTableWithArray_FromOracleData()
         {
             var intArray = new int[] {1, 2, 3, 4, 5};
@@ -97,7 +97,7 @@ namespace FlatBuffers.Serialization.Tests
             Assert.IsTrue(o.IntList.SequenceEqual(intList));
         }
 
-        [TestMethod]
+        [Test]
         public void Deserialize_WithTestTableWithStruct_FromOracleData()
         {
             var testStruct1 = new TestStruct1()

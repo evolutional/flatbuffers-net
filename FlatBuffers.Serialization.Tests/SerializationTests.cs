@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace FlatBuffers.Serialization.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class SerializationTests
     {
-        [TestMethod]
+        [Test]
         public void Serialize_WithTestStruct1_CanBeReadByOracle()
         {
             const int intProp = 42;
@@ -29,7 +29,7 @@ namespace FlatBuffers.Serialization.Tests
             Assert.AreEqual(obj.ShortProp, oracleResult.ShortProp);
         }
 
-        [TestMethod]
+        [Test]
         public void Serialize_WithTestStruct2_CanBeReadByOracle()
         {
             const int outerIntProp = 102;
@@ -55,7 +55,7 @@ namespace FlatBuffers.Serialization.Tests
             Assert.AreEqual(root.TestStructProp.ShortProp, oracleResult.TestStructProp.ShortProp);
         }
 
-        [TestMethod]
+        [Test]
         public void Serialize_WithTestTable1_CanBeReadByOracle()
         {
             const int intProp = 42;
@@ -77,7 +77,7 @@ namespace FlatBuffers.Serialization.Tests
             Assert.AreEqual(obj.ShortProp, oracleResult.ShortProp);
         }
 
-        [TestMethod]
+        [Test]
         public void Serialize_WithTestTable2_CanBeReadByOracle()
         {
             const string stringProp = "Hello, FlatBuffers!";
@@ -94,7 +94,7 @@ namespace FlatBuffers.Serialization.Tests
             Assert.AreEqual(obj.StringProp, oracleResult.StringProp);
         }
 
-        [TestMethod]
+        [Test]
         public void Serialize_WithTestTable3_CanBeReadByOracle()
         {
             var serializer = new FlatBuffersSerializer();
@@ -128,7 +128,7 @@ namespace FlatBuffers.Serialization.Tests
             Assert.AreEqual(obj.UShortProp, oracleResult.UShortProp);
         }
 
-        [TestMethod]
+        [Test]
         public void Serialize_WithTestTableWithArray_CanBeReadByOracle()
         {
             var serializer = new FlatBuffersSerializer();
@@ -149,7 +149,7 @@ namespace FlatBuffers.Serialization.Tests
             Assert.IsTrue(obj.IntList.SequenceEqual(oracleResult.IntList));
         }
 
-        [TestMethod]
+        [Test]
         public void Serialize_WithTestTableWithStruct_CanBeReadByOracle()
         {
             const int intProp = 42;
@@ -174,7 +174,7 @@ namespace FlatBuffers.Serialization.Tests
             Assert.AreEqual(obj.StructProp.ShortProp, oracleResult.StructProp.ShortProp);
         }
 
-        [TestMethod]
+        [Test]
         public void Serialize_WithTestTableWithArrayOfStructs_CanBeReadByOracle()
         {
             var serializer = new FlatBuffersSerializer();

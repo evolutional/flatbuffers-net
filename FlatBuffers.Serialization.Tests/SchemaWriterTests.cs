@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace FlatBuffers.Serialization.Tests
 {
@@ -38,11 +38,11 @@ namespace FlatBuffers.Serialization.Tests
         }
     }
 
-    [TestClass]
+    [TestFixture]
     public class SchemaWriterTests
     {
 
-        [TestMethod]
+        [Test]
         public void Write_WithTestStruct1_EmitsCorrectSchemaFragment()
         {
             var sb = new StringBuilder();
@@ -60,7 +60,7 @@ namespace FlatBuffers.Serialization.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Write_WithTestTable1_EmitsCorrectSchemaFragment()
         {
             var sb = new StringBuilder();
@@ -78,7 +78,7 @@ namespace FlatBuffers.Serialization.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Write_WithTestTable2_EmitsCorrectSchemaFragment()
         {
             var sb = new StringBuilder();
