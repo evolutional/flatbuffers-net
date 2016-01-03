@@ -1,10 +1,28 @@
-﻿namespace FlatBuffers.Serialization.Tests
+﻿using System;
+
+namespace FlatBuffers.Serialization.Tests
 {
     public enum TestEnum : byte
     {
-        Apple = 0,
-        Orange = 1,
-        Pear = 2,
-        Banana = 3,
+        Apple,
+        Orange,
+        Pear,
+        Banana,
+    };
+
+    public enum TestEnumWithNoDeclaredBaseType
+    {
+        Apple,
+        Orange,
+        Pear,
+        Banana,
+    };
+
+    public enum TestIntBasedEnum : int
+    {
+        Apple,
+        Orange,
+        Pear,
+        Banana = Int32.MaxValue,
     };
 }

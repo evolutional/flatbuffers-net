@@ -40,18 +40,81 @@ namespace FlatBuffers.Serialization
 
         public void Write(TypeModel typeModel)
         {
-            switch (typeModel.BaseType)
+            if (typeModel.IsEnum)
             {
-                case BaseType.Struct:
+                WriteEnum(typeModel);
+                return;
+            }
+
+            if (typeModel.BaseType == BaseType.Struct)
+            {
+                WriteStruct(typeModel);
+                return;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private bool IsNumberEqual(object o, int v)
+        {
+            var type = o.GetType();
+            if (type == typeof (byte))
+            {
+                return (byte) o == v;
+            }
+            if (type == typeof(sbyte))
+            {
+                return (sbyte)o == v;
+            }
+            if (type == typeof(short))
+            {
+                return (short)o == v;
+            }
+            if (type == typeof(ushort))
+            {
+                return (ushort)o == v;
+            }
+            if (type == typeof(int))
+            {
+                return (int)o == v;
+            }
+            if (type == typeof(uint))
+            {
+                return (uint)o == v;
+            }
+            throw new ArgumentException("Unsupported type");
+        }
+
+        public void WriteEnum(TypeModel typeModel)
+        {
+            // Note: .NET will reflect the enum based on the binary order of the VALUE.
+            // We cannot reflect it in declared order
+            // See: https://msdn.microsoft.com/en-us/library/system.enum.getvalues.aspx
+
+            var values = Enum.GetValues(typeModel.Type);
+            var names = Enum.GetNames(typeModel.Type);
+
+            var emitValue = false;
+
+            BeginEnum(typeModel);
+            for (var i = 0; i < names.Length; ++i)
+            {
+                var enumValue = Convert.ChangeType(values.GetValue(i), Enum.GetUnderlyingType(typeModel.Type));
+                if (!emitValue && !IsNumberEqual(enumValue, i))
                 {
-                    WriteStruct(typeModel);
-                    break;
+                    emitValue = true;
                 }
-                default:
+
+                if (emitValue)
                 {
-                    throw new NotImplementedException();
+                    _writer.WriteLine("    {0} = {1}{2}", names[i], enumValue, i == names.Length - 1 ? "" : ","); 
+                }
+                else
+                {
+                    _writer.WriteLine("    {0}{1}", names[i], i == names.Length - 1 ? "" : ","); 
                 }
             }
+            EndEnum();
         }
 
         public void WriteStruct(TypeModel typeModel)
@@ -106,6 +169,21 @@ namespace FlatBuffers.Serialization
         }
 
         protected void EndObject()
+        {
+            // todo: assert nesting
+            _writer.WriteLine("}");
+        }
+
+        protected void BeginEnum(TypeModel typeModel)
+        {
+            if (!typeModel.IsEnum)
+            {
+                throw new ArgumentException();
+            }
+            _writer.WriteLine("enum {0} : {1} {{", typeModel.Name, typeModel.BaseType.FlatBufferTypeName());
+        }
+
+        protected void EndEnum()
         {
             // todo: assert nesting
             _writer.WriteLine("}");

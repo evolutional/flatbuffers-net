@@ -53,6 +53,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="AssertExtensions.cs" />
     <Compile Include="DeserializationTests.cs" />
     <Compile Include="SchemaWriterTests.cs" />
     <Compile Include="SerializationTests\TestEnum.cs" />
@@ -65,6 +66,8 @@
     <Compile Include="SerializationTests\TestTableWithArrayOfStructs.cs" />
     <Compile Include="SerializationTests\TestTableWithStruct.cs" />
     <Compile Include="TestEnum.cs" />
+    <Compile Include="TestEnumWithExplicitNonContigValues.cs" />
+    <Compile Include="TestEnumWithExplicitValues.cs" />
     <Compile Include="TestOracle.cs" />
     <Compile Include="TestStruct1.cs" />
     <Compile Include="TestStruct2.cs" />

@@ -21,6 +21,8 @@ namespace FlatBuffers.Serialization
         public bool IsTable { get { return _baseType == BaseType.Struct && !_structDef.IsFixed; } }
         public bool IsStruct { get { return _baseType == BaseType.Struct && _structDef.IsFixed; } }
 
+        public bool IsEnum { get { return typeof (Enum).IsAssignableFrom(_clrType); } }
+
         public int InlineSize { get { return IsStruct ? _structDef.ByteSize : _baseType.SizeOf(); }}
         public int InlineAlignment { get { return IsStruct ? _structDef.MinAlign : _baseType.SizeOf(); }}
 
