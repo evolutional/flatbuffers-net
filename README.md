@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/evolutional/flatbuffers-net.svg?branch=master)](https://travis-ci.org/evolutional/flatbuffers-net)
+
 # Description
 
 This library provides utilities to interact with [Google FlatBuffers] using the idioms and APIs familiar to .NET developers.
