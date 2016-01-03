@@ -1,0 +1,8 @@
+This file documents third party content that is not covered by the
+project license.
+
+This project relies upon the binary version of the FlatBuffers .NET 
+project. However, as Google do not currently provide a compiled binary
+of this dll this project contains the Google `flatbuffers` project 
+as a submodule. The `flatbuffers` project is covered by the Apache 2.0 
+license and is copyright of Google Inc.

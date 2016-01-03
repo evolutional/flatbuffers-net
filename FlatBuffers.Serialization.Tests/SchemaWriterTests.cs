@@ -45,53 +45,53 @@ namespace FlatBuffers.Serialization.Tests
         [TestMethod]
         public void Write_WithTestStruct1_EmitsCorrectSchemaFragment()
         {
-            var typeModel = TypeModelRegistry.Default.GetTypeModel(typeof (TestStruct1));
-
             var sb = new StringBuilder();
-            var sw = new StringWriter(sb);
-            var schemaWriter = new FlatBuffersSchemaWriter(sw);
-            schemaWriter.Write(typeModel);
-            var expected = "struct TestStruct1 {\n" +
-                           "    IntProp:int;\n" +
-                           "    ByteProp:ubyte;\n" +
-                           "    ShortProp:short;\n" +
-                           "}";
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                schemaWriter.Write<TestStruct1>();
+                var expected = "struct TestStruct1 {\n" +
+                               "    IntProp:int;\n" +
+                               "    ByteProp:ubyte;\n" +
+                               "    ShortProp:short;\n" +
+                               "}";
 
-            AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
         }
 
         [TestMethod]
         public void Write_WithTestTable1_EmitsCorrectSchemaFragment()
         {
-            var typeModel = TypeModelRegistry.Default.GetTypeModel(typeof(TestTable1));
-
             var sb = new StringBuilder();
-            var sw = new StringWriter(sb);
-            var schemaWriter = new FlatBuffersSchemaWriter(sw);
-            schemaWriter.Write(typeModel);
-            var expected = "table TestTable1 {\n" +
-                           "    IntProp:int;\n" +
-                           "    ByteProp:ubyte;\n" +
-                           "    ShortProp:short;\n" +
-                           "}";
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                schemaWriter.Write<TestTable1>();
+                var expected = "table TestTable1 {\n" +
+                               "    IntProp:int;\n" +
+                               "    ByteProp:ubyte;\n" +
+                               "    ShortProp:short;\n" +
+                               "}";
 
-            AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
         }
 
         [TestMethod]
         public void Write_WithTestTable2_EmitsCorrectSchemaFragment()
         {
-            var typeModel = TypeModelRegistry.Default.GetTypeModel(typeof(TestTable2));
-
             var sb = new StringBuilder();
-            var sw = new StringWriter(sb);
-            var schemaWriter = new FlatBuffersSchemaWriter(sw);
-            schemaWriter.Write(typeModel);
-            var expected = "table TestTable2 {\n" +
-                           "    StringProp:string;\n" +
-                           "}";
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                schemaWriter.Write<TestTable2>();
+                var expected = "table TestTable2 {\n" +
+                               "    StringProp:string;\n" +
+                               "}";
 
-            AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
         }
     }
 }

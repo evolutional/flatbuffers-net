@@ -22,6 +22,22 @@ namespace FlatBuffers.Serialization
             _writer = writer;
         }
 
+        public void Write<T>()
+        {
+            var type = typeof(T);
+            Write(type);
+        }
+
+        public void Write(Type type)
+        {
+            var typeModel = _typeModelRegistry.GetTypeModel(type);
+            if (typeModel == null)
+            {
+                throw new ArgumentException("Could not determine TypeModel for Type");
+            }
+            Write(typeModel);
+        }
+
         public void Write(TypeModel typeModel)
         {
             switch (typeModel.BaseType)
