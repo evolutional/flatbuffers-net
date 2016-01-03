@@ -195,10 +195,9 @@ For a more detailed roadmap, please see the [issues](https://github.com/evolutio
 
 # Acknowledgements
 
-This project uses parts of [Google FlatBuffers]'s .NET port to create and interact with FlatBuffers.
+This project uses parts of [Google FlatBuffers] .NET port to create and interact with FlatBuffers. See the NOTICE for [FlatBuffers] licensing.
 
 Marc Gravell's [Protobuf-net] is a key inspiration for the motivation behind this project.
-
 
 
 [test oracle]: https://en.wikipedia.org/wiki/Oracle_(software_testing)
