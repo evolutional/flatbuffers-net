@@ -1,0 +1,8 @@
+language: csharp
+solution: FlatBuffers.Serialization.sln
+install:
+  - nuget restore FlatBuffers.Serialization.sln
+script:
+  - xbuild /p:Configuration=Release FlatBuffers.Serialization.sln
+
+
