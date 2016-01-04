@@ -142,6 +142,11 @@ namespace FlatBuffers.Serialization
 
         private string GetFlatBufferTypeName(TypeModel typeModel)
         {
+            if (typeModel.IsEnum || typeModel.IsStruct || typeModel.IsTable)
+            {
+                return typeModel.Name;
+            }
+
             var baseType = typeModel.BaseType;
             var typeName = baseType.FlatBufferTypeName();
 
@@ -164,6 +169,7 @@ namespace FlatBuffers.Serialization
         protected void WriteField(FieldTypeDefinition field)
         {
             var fieldTypeName = GetFlatBufferTypeName(field.TypeModel);
+           
             // TODO: Attributes
             _writer.WriteLine("    {0}:{1};", field.Name, fieldTypeName);
         }

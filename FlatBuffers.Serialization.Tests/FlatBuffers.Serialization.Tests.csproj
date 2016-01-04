@@ -71,6 +71,7 @@
     <Compile Include="TestOracle.cs" />
     <Compile Include="TestStruct1.cs" />
     <Compile Include="TestStruct2.cs" />
+    <Compile Include="TestStructWithEnum.cs" />
     <Compile Include="TestTable1.cs" />
     <Compile Include="TestTable2.cs" />
     <Compile Include="TestTable3.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestTableWithArrayOfStructs.cs" />
     <Compile Include="TestTableWithStruct.cs" />
+    <Compile Include="TestTableWithTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FlatBuffers.Serialization\FlatBuffers.Serialization.csproj">

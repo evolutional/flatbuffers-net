@@ -154,5 +154,72 @@ namespace FlatBuffers.Serialization.Tests
                 AssertExtensions.AreEqual(expected, sb.ToString());
             }
         }
+
+        [Test]
+        public void Write_WithTestStructWithEnum_EmitsCorrectSchemaFragment_ContainingEnumName()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                schemaWriter.Write<TestStructWithEnum>();
+                var expected = "struct TestStructWithEnum {\n" +
+                               "    EnumProp:TestEnum;\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithTestStruct2_EmitsCorrectSchemaFragment_ContainingStructPropName()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                schemaWriter.Write<TestStruct2>();
+                var expected = "struct TestStruct2 {\n" +
+                               "    IntProp:int;\n" +
+                               "    TestStructProp:TestStruct1;\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithTestTableWithTable_EmitsCorrectSchemaFragment_ContainingTablePropName()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                schemaWriter.Write<TestTableWithTable>();
+                var expected = "table TestTableWithTable {\n" +
+                               "    TableProp:TestTable1;\n" +
+                               "    IntProp:int;\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithTestTableWithArray_EmitsCorrectSchemaFragment_ContainingArrayFields()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                schemaWriter.Write<TestTableWithArray>();
+                var expected = "table TestTableWithArray {\n" +
+                               "    IntArray:[int];\n" +
+                               "    IntList:[int];\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
     }
 }
