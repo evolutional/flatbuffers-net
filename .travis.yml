@@ -1,9 +1,9 @@
 language: csharp
-solution: FlatBuffers.Serialization.sln
+solution: FlatBuffers-net.sln
 install:
-  - nuget restore FlatBuffers.Serialization.sln
+  - nuget restore FlatBuffers-net.sln
   - nuget install NUnit.Runners -Version 2.6.3 -OutputDirectory testrunner
 script:
-  - xbuild /p:Configuration=Release FlatBuffers.Serialization.sln
-  - mono ./testrunner/NUnit.Runners.2.6.3/tools/nunit-console.exe ./FlatBuffers.Serialization.Tests/bin/Release/FlatBuffers.Serialization.Tests.dll
+  - xbuild /p:Configuration=Release FlatBuffers-net.sln
+  - mono ./testrunner/NUnit.Runners.2.6.3/tools/nunit-console.exe ./FlatBuffers-net.Tests/bin/Release/FlatBuffers-net.Tests.dll
 
