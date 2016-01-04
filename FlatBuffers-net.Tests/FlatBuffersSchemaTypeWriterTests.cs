@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace FlatBuffers.Tests
 {
     [TestFixture]
-    public class SchemaWriterTests
+    public class FlatBuffersSchemaTypeWriterTests
     {
 
         [Test]
@@ -14,7 +14,7 @@ namespace FlatBuffers.Tests
             var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
             {
-                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestStruct1>();
                 var expected = "struct TestStruct1 {\n" +
                                "    IntProp:int;\n" +
@@ -32,7 +32,7 @@ namespace FlatBuffers.Tests
             var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
             {
-                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestTable1>();
                 var expected = "table TestTable1 {\n" +
                                "    IntProp:int;\n" +
@@ -50,7 +50,7 @@ namespace FlatBuffers.Tests
             var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
             {
-                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestTable2>();
                 var expected = "table TestTable2 {\n" +
                                "    StringProp:string;\n" +
@@ -66,7 +66,7 @@ namespace FlatBuffers.Tests
             var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
             {
-                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestEnum>();
                 var expected = "enum TestEnum : ubyte {\n" +
                                "   Apple,\n" +
@@ -85,7 +85,7 @@ namespace FlatBuffers.Tests
             var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
             {
-                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestEnumWithNoDeclaredBaseType>();
                 var expected = "enum TestEnumWithNoDeclaredBaseType : int {\n" +
                                "   Apple,\n" +
@@ -104,7 +104,7 @@ namespace FlatBuffers.Tests
             var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
             {
-                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestIntBasedEnum>();
                 var expected = "enum TestIntBasedEnum : int {\n" +
                                "   Apple,\n" +
@@ -123,7 +123,7 @@ namespace FlatBuffers.Tests
             var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
             {
-                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestEnumWithExplicitValues>();
                 var expected = "enum TestEnumWithExplicitValues : ubyte {\n" +
                                "   Banana,\n" +
@@ -142,7 +142,7 @@ namespace FlatBuffers.Tests
             var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
             {
-                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestEnumWithExplicitNonContigValues>();
                 var expected = "enum TestEnumWithExplicitNonContigValues : ubyte {\n" +
                                "   Orange = 1,\n" +
@@ -161,7 +161,7 @@ namespace FlatBuffers.Tests
             var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
             {
-                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestStructWithEnum>();
                 var expected = "struct TestStructWithEnum {\n" +
                                "    EnumProp:TestEnum;\n" +
@@ -177,7 +177,7 @@ namespace FlatBuffers.Tests
             var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
             {
-                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestStruct2>();
                 var expected = "struct TestStruct2 {\n" +
                                "    IntProp:int;\n" +
@@ -194,7 +194,7 @@ namespace FlatBuffers.Tests
             var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
             {
-                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestTableWithTable>();
                 var expected = "table TestTableWithTable {\n" +
                                "    TableProp:TestTable1;\n" +
@@ -211,7 +211,7 @@ namespace FlatBuffers.Tests
             var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
             {
-                var schemaWriter = new FlatBuffersSchemaWriter(sw);
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestTableWithArray>();
                 var expected = "table TestTableWithArray {\n" +
                                "    IntArray:[int];\n" +

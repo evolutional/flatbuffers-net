@@ -45,7 +45,10 @@
     <Compile Include="DeserializationContext.cs" />
     <Compile Include="FieldTypeDefinition.cs" />
     <Compile Include="FieldValueProvider.cs" />
-    <Compile Include="FlatBuffersSchemaWriter.cs" />
+    <Compile Include="FlatBuffersSchema.cs" />
+    <Compile Include="FlatBuffersSchemaGenerator.cs" />
+    <Compile Include="FlatBuffersSchemaTypeDependencyNode.cs" />
+    <Compile Include="FlatBuffersSchemaTypeWriter.cs" />
     <Compile Include="IValueProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyValueProvider.cs" />

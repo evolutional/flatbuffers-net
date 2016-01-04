@@ -55,7 +55,8 @@
   <ItemGroup>
     <Compile Include="AssertExtensions.cs" />
     <Compile Include="FlatBuffersDeserializationTests.cs" />
-    <Compile Include="SchemaWriterTests.cs" />
+    <Compile Include="FlatBuffersSchemaTests.cs" />
+    <Compile Include="FlatBuffersSchemaTypeWriterTests.cs" />
     <Compile Include="SerializationTests\TestEnum.cs" />
     <Compile Include="SerializationTests\TestStruct1.cs" />
     <Compile Include="SerializationTests\TestStruct2.cs" />

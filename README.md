@@ -92,15 +92,19 @@ These are (de)serialized in the same way as the previous examples.
 
 ## Simple Struct Schema Generation Example
 
-Given the `struct` we declared earlier, it is possible to use `FlatBuffersSchemaWriter` to emit a fbs schema for the type. In this example, we'll emit to a `StringBuilder` using a `StringWriter`.
+Given the `struct TestStruct1` we declared earlier, it is possible to use `FlatBuffersSchemaGenerator` to create a `FlatBuffersSchema` and emit a [fbs] schema for a series of types. 
+
+In this example, we'll emit to a `StringBuilder` using a `StringWriter`, but writing to any `TextWriter` is supported.
 
 ```cs
-	var sb = new StringBuilder();
-	using (var sw = new StringWriter(sb))
-	{
-		var schemaWriter = new FlatBuffersSchemaWriter(sw);
-		schemaWriter.Write<TestStruct1>();
-	}
+	var generator = new FlatBuffersSchemaGenerator();
+    var schema = generator.Generate<TestStruct1>();
+
+    var sb = new StringBuilder();
+    using (var sw = new StringWriter(sb))
+    {
+        schema.WriteTo(sw);
+    }
 ```
 
 The `StringBuffer` will now contain the following text:
@@ -112,6 +116,75 @@ The `StringBuffer` will now contain the following text:
 		ShortProp:short;
 	}
 ```
+
+## Complex Types Schema Generation Example
+
+In the real world, we will have more complex types, which includes a `struct` refering to an `enum` as well as other `struct`s. The `FlatBuffersSchema` has a dependency resolution phase and will emit a full schema which includes these referenced types.
+
+```cs
+    public enum VecType
+    {
+        Index,
+        Vertex
+    }
+
+    public struct Vec2
+    {
+        public VecType Type { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+    }
+    
+    public struct Point
+    {
+        public Vec2 A { get; set; }
+        public Vec2 B { get; set; }
+    }
+```
+
+When you call `Generate<Point>()`, it will resolve the types `Vec2` and `VecType` and emit a [fbs] schema as follows:
+
+```
+    enum VecType : int {
+        Index,
+        Vertex
+    }
+
+    struct Vec2 {
+        Type:VecType;
+        X:float;
+        Y:float;
+    }
+    
+    struct Point {
+        A:Vec2;
+        B:Vec2;
+    }
+```
+
+When writing the types, it will emit them from *root* to *leaf*, ordering them by `enum`, `struct` and then `table`. This way, you wil wind up with enums declared first, then structs and finally tables.
+
+## Multiple Types Schema Generation Example
+
+Sometimes, you want to add multiple, unrelated types to your schema. You can do this by calling the `AddType<T>()` method on the `FlatBuffersSchema`.
+
+```cs
+    var generator = new FlatBuffersSchemaGenerator();
+    var schema = generator.Create();
+
+    schema.AddType<UnrelatedType1>();
+    schema.AddType<UnrelatedType2>();
+
+    var sb = new StringBuilder();
+    using (var sw = new StringWriter(sb))
+    {
+        schema.WriteTo(sw);
+    }
+
+```
+
+This will ensure that the written schema contains both `UnrelatedType1` and `UnrelatedType2`, even though there are no dependencies between them.
+ 
 
 # Type mapping
 
@@ -130,7 +203,7 @@ This project uses the following type mappings between .NET base types and FlatBu
 | `ulong`		| `ulong`			| 64			|
 | `float`		| `float`			| 32			|
 | `double`		| `double`			| 64			|
-| `enum`		| `enum`			| User-specified|
+| `enum`		| `enum`			| default: 32   |
 | `string`		| `string`			| Varies		|
 | `struct`		| `struct`			| Varies		|
 | `class`		| `table`			| Varies		|

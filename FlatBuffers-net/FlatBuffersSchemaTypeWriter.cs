@@ -3,17 +3,21 @@ using System.IO;
 
 namespace FlatBuffers
 {
-    public class FlatBuffersSchemaWriter
+    /// <summary>
+    /// Writes TypeModel information in fbs schema format. 
+    /// Designed to write individual types, with no regard for dependency information.
+    /// </summary>
+    public class FlatBuffersSchemaTypeWriter
     {
         private readonly TypeModelRegistry _typeModelRegistry;
         private readonly TextWriter _writer;
 
-        public FlatBuffersSchemaWriter(TextWriter writer)
+        public FlatBuffersSchemaTypeWriter(TextWriter writer)
             : this(TypeModelRegistry.Default, writer)
         {
         }
 
-        public FlatBuffersSchemaWriter(TypeModelRegistry typeModelRegistry, TextWriter writer)
+        public FlatBuffersSchemaTypeWriter(TypeModelRegistry typeModelRegistry, TextWriter writer)
         {
             _typeModelRegistry = typeModelRegistry;
             _writer = writer;
@@ -30,7 +34,7 @@ namespace FlatBuffers
             var typeModel = _typeModelRegistry.GetTypeModel(type);
             if (typeModel == null)
             {
-                throw new ArgumentException("Could not determine TypeModel for Type");
+                throw new ArgumentException("Could not determine TypeModel for TypeModel");
             }
             Write(typeModel);
         }
@@ -43,13 +47,13 @@ namespace FlatBuffers
                 return;
             }
 
-            if (typeModel.BaseType == BaseType.Struct)
+            if (typeModel.IsStruct || typeModel.IsTable)
             {
-                WriteStruct(typeModel);
+                WriteStructInternal(typeModel);
                 return;
             }
 
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         private bool IsNumberEqual(object o, int v)
@@ -79,7 +83,7 @@ namespace FlatBuffers
             {
                 return (uint)o == v;
             }
-            throw new ArgumentException("Unsupported type");
+            throw new ArgumentException("Unsupported type", "o");
         }
 
         public void WriteEnum(TypeModel typeModel)
@@ -114,7 +118,25 @@ namespace FlatBuffers
             EndEnum();
         }
 
+        public void WriteTable(TypeModel typeModel)
+        {
+            if (!typeModel.IsTable)
+            {
+                throw new ArgumentException();
+            }
+            WriteStructInternal(typeModel);
+        }
+
         public void WriteStruct(TypeModel typeModel)
+        {
+            if (!typeModel.IsStruct)
+            {
+                throw new ArgumentException();
+            }
+            WriteStructInternal(typeModel);
+        }
+
+        private void WriteStructInternal(TypeModel typeModel)
         {
             var structDef = typeModel.StructDef;
 

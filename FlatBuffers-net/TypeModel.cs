@@ -16,10 +16,27 @@ namespace FlatBuffers
 
         public string Name { get { return _typeName; } }
 
+        /// <summary>
+        /// Is this object a table or struct type?
+        /// </summary>
+        public bool IsObject { get { return IsTable || IsStruct; } }
+
+        /// <summary>
+        /// Is this object a table type?
+        /// </summary>
         public bool IsTable { get { return _baseType == BaseType.Struct && !_structDef.IsFixed; } }
+
+        /// <summary>
+        /// Is this object a struct type?
+        /// </summary>
         public bool IsStruct { get { return _baseType == BaseType.Struct && _structDef.IsFixed; } }
 
+        /// <summary>
+        /// Is this type an enum?
+        /// </summary>
         public bool IsEnum { get { return typeof (Enum).IsAssignableFrom(_clrType); } }
+
+        public bool IsVector { get { return _baseType == BaseType.Vector; } }
 
         public int InlineSize { get { return IsStruct ? _structDef.ByteSize : _baseType.SizeOf(); }}
         public int InlineAlignment { get { return IsStruct ? _structDef.MinAlign : _baseType.SizeOf(); }}
@@ -30,6 +47,11 @@ namespace FlatBuffers
         public Type Type
         {
             get { return _clrType; }
+        }
+
+        public TypeModelRegistry Registry
+        {
+            get { return _registry; }
         }
 
         internal TypeModel(TypeModelRegistry registry, string typeName, Type clrType, BaseType baseType, BaseType elementType = BaseType.None)
