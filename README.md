@@ -222,7 +222,7 @@ Strings in .NET are stored natively in `UTF-16`; however the FlatBuffers spec re
 
 A serializer that is capable of serializing .NET objects to/from FlatBuffers format.
 
-## FlatBuffersSchemaWriter
+## FlatBuffersSchemaGenerator
 
 Generates a schema definition from your .NET objects (in [fbs] format) for use with the [flatc] code generator.
 
@@ -232,13 +232,13 @@ This is a set of utilities which use Reflection to map .NET types to a FlatBuffe
 
 # Building
 
-Build the core solution `FlatBuffers.Serialization.sln` in Visual Studio 2013/2015. 
+Build the core solution `FlatBuffers-net.sln` in Visual Studio 2013/2015. 
 
 The solution contains 3 projects:
 
 * `FlatBuffers.csproj` - the .NET port of [FlatBuffers] referenced in the flatbuffers submodule. It currently uses the 'safe' configuration.
-* `FlatBuffers.Serialization.csproj` - the main FlatBuffers-net code
-* `FlatBuffers.Serialization.Tests.csproj` - an MS Test project containing the unit & integration tests
+* `FlatBuffers-net.csproj` - the main FlatBuffers-net code
+* `FlatBuffers-net.Tests.csproj` - an MS Test project containing the unit & integration tests
 
 This project has only been built in Visual Studio 2013/2015 on Windows x64. No other platforms (eg: Mono/Unity/Xamarin) have been verified.
 
@@ -264,7 +264,7 @@ There is currently very little documentation other than the unit tests and this 
 * Attributes to control reflection (eg: ordering, default values, required fields, etc)
 * Serialization/Deserialization of non-`struct`/`table` as root
 * User-created typemodels (eg: non-reflection)
-* Richer fbs schema writer features (namespaces, includes, dependency ordering, etc)
+* Richer fbs schema writer features (namespaces, includes, etc)
 
 For a more detailed roadmap, please see the [issues](https://github.com/evolutional/flatbuffers-net/issues) page.
 
