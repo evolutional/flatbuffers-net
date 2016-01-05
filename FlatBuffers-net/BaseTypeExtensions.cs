@@ -8,25 +8,30 @@ namespace FlatBuffers
         private static readonly Type[] _clrTypes;
         private static readonly string[] _flatBufferTypeNames;
 
+        private const int OffsetSize = sizeof (short);
+
         static BaseTypeExtensions()
         {
             _baseTypeSizes = new[]
             {
                 1, 1, sizeof (bool), sizeof (sbyte), sizeof (byte), sizeof (short), sizeof (ushort), sizeof (int),
-                sizeof (uint), sizeof (float), sizeof (double), 0, 0, 0, 0
+                sizeof (uint), sizeof (long), sizeof (ulong),
+                sizeof (float), sizeof (double), 0, 0, OffsetSize, 0
             };
 
-            _clrTypes = new Type[]
+            _clrTypes = new[]
             {
                 null, null,
                 typeof(bool), typeof (sbyte), typeof (byte), typeof (short), typeof (ushort), typeof (int),
-                typeof (uint), typeof (float), typeof (double), typeof(string), null, null, null
+                typeof (uint), typeof (long), typeof (ulong),
+                typeof (float), typeof (double), typeof(string), null, null, null
             };
 
             _flatBufferTypeNames = new[]
             {
                 null,
-                null, "bool", "byte", "ubyte", "short", "ushort", "int", "uint", "long", "ulong", "float", "double",
+                null, "bool", "byte", "ubyte", "short", "ushort", "int", "uint", "long", "ulong", 
+                "float", "double",
                 "string", null, null, null,
             };
         }

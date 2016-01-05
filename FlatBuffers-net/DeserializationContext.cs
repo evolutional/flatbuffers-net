@@ -48,14 +48,20 @@ namespace FlatBuffers
             var obj = Activator.CreateInstance(typeModel.Type);
             var structDef = typeModel.StructDef;
 
+            var fieldOffset = structBase;
+
             if (!structDef.IsFixed)
             {
-                structBase += _buffer.GetInt(offset);
+                fieldOffset += _buffer.GetInt(offset + structBase) + offset; // indirect
+            }
+            else
+            {
+                fieldOffset += offset;
             }
 
             foreach (var field in structDef.Fields)
             {
-                DeserializeStructField(obj, structDef, field, structBase);
+                DeserializeStructField(obj, structDef, field, fieldOffset);
             }
             return obj;
         }

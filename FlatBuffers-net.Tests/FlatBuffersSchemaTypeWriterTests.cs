@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using FlatBuffers.Attributes;
 using FlatBuffers.Tests.TestTypes;
 using NUnit.Framework;
 
@@ -253,6 +255,49 @@ namespace FlatBuffers.Tests
                 var expected = "table TestTableWithArray {\n" +
                                "    IntArray:[int];\n" +
                                "    IntList:[int];\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_TableWithRequiredFields_EmitsCorrectSchemaFragment_ContainingRequiredFields()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TableWithRequiredFields>();
+                var expected = "table TableWithRequiredFields {\n" +
+                               "    StringProp:string (required);\n" +
+                               "    TableProp:TestTable1 (required);\n" +
+                               "    VectorProp:[int] (required);\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        private abstract class TableWithRequiredAndIndexedFields
+        {
+            [FlatBuffersField(Order = 1, Required = true)]
+            public string StringProp { get; set; }
+            [FlatBuffersField(Order = 0, Required = true)]
+            public List<int> VectorProp { get; set; }
+        }
+
+        [Test]
+        public void Write_TableWithRequiredAndIndexedFields_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TableWithRequiredAndIndexedFields>();
+                var expected = "table TableWithRequiredAndIndexedFields {\n" +
+                               "    StringProp:string (id: 1, required);\n" +
+                               "    VectorProp:[int] (id: 0, required);\n" +
                                "}";
 
                 AssertExtensions.AreEqual(expected, sb.ToString());

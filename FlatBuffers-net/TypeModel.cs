@@ -27,16 +27,32 @@ namespace FlatBuffers
         public bool IsTable { get { return _baseType == BaseType.Struct && !_structDef.IsFixed; } }
 
         /// <summary>
-        /// Is this object a struct type?
+        /// Gets if this object a (fixed) struct type
         /// </summary>
         public bool IsStruct { get { return _baseType == BaseType.Struct && _structDef.IsFixed; } }
 
         /// <summary>
-        /// Is this type an enum?
+        /// Gets if this type is an enum
         /// </summary>
         public bool IsEnum { get { return typeof (Enum).IsAssignableFrom(_clrType); } }
 
+        /// <summary>
+        /// Gets if this type is a vector
+        /// </summary>
         public bool IsVector { get { return _baseType == BaseType.Vector; } }
+
+        /// <summary>
+        /// Gets if this type is a string
+        /// </summary>
+        public bool IsString { get { return _baseType == BaseType.String; } }
+
+        /// <summary>
+        /// Gets if this type is a reference type
+        /// </summary>
+        public bool IsReferenceType 
+        { 
+            get { return IsTable || IsVector || IsString; } 
+        }
 
         public int InlineSize { get { return IsStruct ? _structDef.ByteSize : _baseType.SizeOf(); }}
         public int InlineAlignment { get { return IsStruct ? _structDef.MinAlign : _baseType.SizeOf(); }}

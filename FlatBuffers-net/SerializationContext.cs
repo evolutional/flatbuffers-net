@@ -99,6 +99,14 @@ namespace FlatBuffers
         {
             var typeModel = field.TypeModel;
 
+            if (typeModel.IsReferenceType && obj == null)
+            {
+                if (field.Required)
+                {
+                    throw new FlatBuffersSerializationException("Required field '{0}' is not set", field.Name);
+                }
+            }
+
             if (field.DefaultValueProvider.IsDefaultValue(obj))
             {
                 return _builder.Offset;
@@ -163,21 +171,24 @@ namespace FlatBuffers
                 }
                 case BaseType.Struct:
                 {
-                    var structOffset = SerializeStruct(obj, typeModel);
-                    _builder.AddStruct(field.Index, structOffset, 0);
+                    if (typeModel.IsStruct)
+                    {
+                        // Structs are serialized inline
+                        var structOffset = SerializeStruct(obj, typeModel);
+                        _builder.AddStruct(field.Index, structOffset, 0);
+                    }
+                    else
+                    {
+                        // Is a table, so grab the offset
+                        AddReferenceFieldOffset(obj, field);
+                    }
+                    
                     break;
                 }
                 case BaseType.String:
                 case BaseType.Vector:
                 {
-                    // TODO: Handle obj == null 
-                    var fieldBufferOffset = 0;
-                    if (!_objectOffsets.TryGetValue(obj, out fieldBufferOffset))
-                    {
-                        throw new ArgumentException("Not found in map", "obj");
-                    }
-
-                    _builder.AddOffset(field.Index, fieldBufferOffset, 0);
+                    AddReferenceFieldOffset(obj, field);
                     break;
                 }
                 case BaseType.Union:
@@ -190,6 +201,17 @@ namespace FlatBuffers
                 }
             }
             return _builder.Offset;
+        }
+
+        private void AddReferenceFieldOffset(object obj, FieldTypeDefinition field)
+        {
+            var fieldBufferOffset = 0;
+            if (!_objectOffsets.TryGetValue(obj, out fieldBufferOffset))
+            {
+                throw new ArgumentException("Not found in map", "obj");
+            }
+
+            _builder.AddOffset(field.Index, fieldBufferOffset, 0);
         }
 
         private void SerializeFieldValue(object obj, StructTypeDefinition structDef, FieldTypeDefinition field)
@@ -234,8 +256,7 @@ namespace FlatBuffers
                 {
                     SerializeStructField(obj, structDef, field);
                 }
-                var rootTable = _builder.EndObject();
-                _builder.Finish(rootTable);
+                return _builder.EndObject();
             }
             return _builder.Offset;
         }
@@ -266,14 +287,21 @@ namespace FlatBuffers
 
         private int SerializeReferenceType(object obj, TypeModel typeModel)
         {
-            if (typeModel.BaseType == BaseType.String)
+            if (typeModel.IsString)
             {
                 return _builder.CreateString((string)obj).Value;
             }
-            if (typeModel.BaseType == BaseType.Vector)
+
+            if (typeModel.IsVector)
             {
                 return SerializeVector(obj, typeModel);
             }
+
+            if (typeModel.IsTable)
+            {
+                return SerializeStruct(obj, typeModel);
+            }
+
             throw new NotSupportedException();
         }
 
@@ -281,30 +309,26 @@ namespace FlatBuffers
         {
             var structDef = typeModel.StructDef;
 
-            foreach (var field in structDef.Fields)
+            foreach (var field in structDef.Fields.Where(i => i.TypeModel.IsReferenceType))
             {
-                if (!field.TypeModel.BaseType.IsScalar())
+                // get object field
+                var val = field.ValueProvider.GetValue(obj);
+
+                if (val == null)
                 {
-                    // get object field
-                    var val = field.ValueProvider.GetValue(obj);
+                    continue;
+                }
 
-                    if (val == null)
-                    {
-                        continue;
-                    }
+                if (field.TypeModel.IsTable)
+                {
+                    SerializeReferenceTypeFields(val, field.TypeModel);
+                }
 
-                    if (field.TypeModel.IsTable)
-                    {
-                        SerializeReferenceTypeFields(val, field.TypeModel);
-                    }
-
-                    var fieldBufferOffset = 0;
-                    if (!_objectOffsets.TryGetValue(val, out fieldBufferOffset))
-                    {
-                        fieldBufferOffset = SerializeReferenceType(val, field.TypeModel);
-                        _objectOffsets.Add(val, fieldBufferOffset);
-                    }
-
+                var fieldBufferOffset = 0;
+                if (!_objectOffsets.TryGetValue(val, out fieldBufferOffset))
+                {
+                    fieldBufferOffset = SerializeReferenceType(val, field.TypeModel);
+                    _objectOffsets.Add(val, fieldBufferOffset);
                 }
             }
         }
@@ -312,13 +336,13 @@ namespace FlatBuffers
         public int Serialize()
         {
             // Todo: support more root types?
-            if (_rootTypeModel.BaseType != BaseType.Struct)
+            if (!_rootTypeModel.IsObject)
             {
                 throw new NotSupportedException();
             }
 
             var hasRefTypes = !_rootTypeModel.StructDef.IsFixed 
-                && _rootTypeModel.StructDef.Fields.Any(i => !i.TypeModel.BaseType.IsFixed());
+                && _rootTypeModel.StructDef.Fields.Any(i => i.TypeModel.IsReferenceType);
 
             if (hasRefTypes)
             {
@@ -326,7 +350,12 @@ namespace FlatBuffers
                 SerializeReferenceTypeFields(_rootObject, _rootTypeModel);
             }
 
-            SerializeStruct(_rootObject, _rootTypeModel);
+            var rootTable = SerializeStruct(_rootObject, _rootTypeModel);
+
+            if (_rootTypeModel.IsTable)
+            {
+                _builder.Finish(rootTable);
+            }
             return _builder.Offset;
         }
     }

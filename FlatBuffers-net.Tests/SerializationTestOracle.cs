@@ -78,6 +78,27 @@ namespace FlatBuffers.Tests
             };
             return result;
         }
+
+        public TestTableWithTable ReadTestTableWithTable(byte[] buffer)
+        {
+            var test = SerializationTests.TestTableWithTable.GetRootAsTestTableWithTable(new ByteBuffer(buffer));
+            var result = new TestTableWithTable()
+            {
+                IntProp = test.IntProp,
+            };
+
+            if (test.TableProp != null)
+            {
+                result.TableProp = new TestTable1()
+                {
+                    IntProp = test.TableProp.IntProp,
+                    ByteProp = test.TableProp.ByteProp,
+                    ShortProp = test.TableProp.ShortProp,
+                };
+            }
+
+            return result;
+        }
         
 
         public TestTable2 ReadTestTable2(byte[] buffer)
@@ -238,6 +259,22 @@ namespace FlatBuffers.Tests
                 testStructProp.ByteProp, testStructProp.ShortProp);
             SerializationTests.TestTableWithStruct.AddStructProp(fbb, structOffset);
             var offset = SerializationTests.TestTableWithStruct.EndTestTableWithStruct(fbb);
+            fbb.Finish(offset.Value);
+            return GetBytes(fbb);
+        }
+
+        public byte[] GenerateTestTableWithTable(TestTable1 testTableProp, int intProp)
+        {
+            var fbb = new FlatBufferBuilder(8);
+
+            var tableOffset = SerializationTests.TestTable1.CreateTestTable1(fbb, testTableProp.IntProp,
+                testTableProp.ByteProp, testTableProp.ShortProp);
+
+            SerializationTests.TestTableWithTable.StartTestTableWithTable(fbb);
+            SerializationTests.TestTableWithTable.AddIntProp(fbb, intProp);
+            
+            SerializationTests.TestTableWithTable.AddTableProp(fbb, tableOffset);
+            var offset = SerializationTests.TestTableWithTable.EndTestTableWithTable(fbb);
             fbb.Finish(offset.Value);
             return GetBytes(fbb);
         }

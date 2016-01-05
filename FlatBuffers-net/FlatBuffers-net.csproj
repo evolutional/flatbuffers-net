@@ -45,11 +45,17 @@
     <Compile Include="BaseTypeExtensions.cs" />
     <Compile Include="DeserializationContext.cs" />
     <Compile Include="FieldTypeDefinition.cs" />
+    <Compile Include="FieldTypeMetadata.cs" />
     <Compile Include="FieldValueProvider.cs" />
+    <Compile Include="FlatBuffersBaseException.cs" />
+    <Compile Include="FlatBuffersKnownMetaData.cs" />
     <Compile Include="FlatBuffersSchema.cs" />
     <Compile Include="FlatBuffersSchemaGenerator.cs" />
     <Compile Include="FlatBuffersSchemaTypeDependencyNode.cs" />
     <Compile Include="FlatBuffersSchemaTypeWriter.cs" />
+    <Compile Include="FlatBuffersSerializationException.cs" />
+    <Compile Include="FlatBuffersStructFieldReflectionException.cs" />
+    <Compile Include="FlatBuffersTypeReflectionException.cs" />
     <Compile Include="IDefaultValueProvider.cs" />
     <Compile Include="IValueProvider.cs" />
     <Compile Include="TypeDefaultValueProvider.cs" />

@@ -49,6 +49,11 @@ table TestTableWithStruct {
 	IntProp: int;
 }
 
+table TestTableWithTable {
+	TableProp: TestTable1;
+	IntProp: int;
+}
+
 table TestTableWithArrayOfStructs {
 	StructArray: [TestStruct1];
 }

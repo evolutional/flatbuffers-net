@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -204,17 +205,24 @@ namespace FlatBuffers
                 sb.AppendFormat(" = {0}", field.DefaultValueProvider.GetDefaultValue(field.TypeModel.Type));
             }
 
-            if (field.HasMetaData)
+            if (!field.HasMetaData)
             {
-                sb.Append(" (");
-
-                if (field.IsIndexSetExplicitly)
-                {
-                    sb.AppendFormat("id: {0}", field.Index);
-                }
-                
-                sb.Append(")");
+                return sb.ToString();
             }
+
+            // Start meta
+            sb.Append(" (");
+
+            var requiresComma = false;
+            foreach (var meta in field.MetaData)
+            {
+                sb.Append(meta.HasValue
+                    ? string.Format("{0}{1}: {2}", requiresComma ? ", " : "", meta.Key, meta.Value)
+                    : string.Format("{0}{1}", requiresComma ? ", " : "", meta.Key));
+
+                requiresComma = true;
+            }
+            sb.Append(")");
             return sb.ToString();
         }
 

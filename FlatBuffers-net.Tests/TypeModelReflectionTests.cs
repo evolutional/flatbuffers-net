@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -133,6 +132,21 @@ namespace FlatBuffers.Tests
             Assert.AreEqual(42, fields[0].DefaultValueProvider.GetDefaultValue(typeof(int)));
             Assert.IsTrue(fields[0].DefaultValueProvider.IsDefaultValueSetExplicity);
             Assert.IsTrue(fields[0].DefaultValueProvider.IsDefaultValue(42));
+        }
+
+        [Test]
+        public void GetTypeModel_WithRequiredProperties_ReflectsRequiredFlagCorrectly()
+        {
+            var registry = TypeModelRegistry.Default;
+            var typeModel = registry.GetTypeModel<TableWithRequiredFields>();
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            var orderedFields = structDef.Fields.OrderBy(i => i.Index).ToArray();
+            Assert.AreEqual(3, orderedFields.Length);
+
+            Assert.IsTrue(orderedFields.All(i => i.Required));
         }
     }
 }

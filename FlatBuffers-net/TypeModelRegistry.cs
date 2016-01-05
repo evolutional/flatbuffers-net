@@ -7,48 +7,6 @@ using FlatBuffers.Attributes;
 
 namespace FlatBuffers
 {
-    public abstract class FlatBuffersBaseException : Exception
-    {
-        protected FlatBuffersBaseException()
-        { }
-
-        protected FlatBuffersBaseException(string format, params object[] args)
-            : base(string.Format(format, args))
-        { }
-
-        protected FlatBuffersBaseException(Exception innerException, string format, params object[] args)
-            : base(string.Format(format, args), innerException)
-        { }
-    }
-
-    public class FlatBuffersTypeReflectionException : FlatBuffersBaseException
-    {
-        public FlatBuffersTypeReflectionException()
-        {
-        }
-
-        public FlatBuffersTypeReflectionException(string format, params object[] args)
-            : base(string.Format(format, args))
-        {
-        }
-
-        public Type ClrType { get; set; }
-    }
-
-    public class FlatBuffersStructFieldReflectionException : FlatBuffersTypeReflectionException
-    {
-        public MemberInfo Member { get; set; }
-
-        public FlatBuffersStructFieldReflectionException()
-        {
-        }
-
-        public FlatBuffersStructFieldReflectionException(string format, params object[] args) : 
-            base(format, args)
-        {
-        }
-    }
-
     public class TypeModelRegistry
     {
         private static readonly TypeModelRegistry s_default = new TypeModelRegistry();
@@ -117,7 +75,14 @@ namespace FlatBuffers
 
             var structTypeDef = new StructTypeDefinition(!type.IsClass);
 
-            if (members.Any(i => i.IsDefined(typeof(FlatBuffersFieldAttribute), true)))
+            if (members.Any(i =>
+            { 
+                var attr = i.Attribute<FlatBuffersFieldAttribute>();
+                if (attr == null)
+                    return false;
+
+                return attr.IsOrderSetExplicitly;
+            }))
             {
                 structTypeDef.HasCustomOrdering = true;
             }
@@ -215,6 +180,8 @@ namespace FlatBuffers
                 {
                     field.Index = attr.Order;
                 }
+
+                field.Required = attr.Required;
             }
 
             return field;
@@ -234,9 +201,7 @@ namespace FlatBuffers
                 return typeModel;
             }
 
-            // todo: get the attribute from the type
             var typeName = type.Name;   // TODO: attribute
-            //var attr = type.GetCustomAttributes(typeof (FlatBuffersAttribute), true).FirstOrDefault();
             var baseType = DeduceBaseType(type);
 
             if (baseType == BaseType.Vector)

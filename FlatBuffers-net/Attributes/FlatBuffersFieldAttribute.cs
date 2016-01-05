@@ -5,6 +5,9 @@ namespace FlatBuffers.Attributes
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class FlatBuffersFieldAttribute : Attribute
     {
+        private bool _hasOrderSet;
+        private int _order = -1;
+
         /// <summary>
         /// Gets and sets the order of serialization and deserialization of the member
         /// </summary>
@@ -20,8 +23,10 @@ namespace FlatBuffers.Attributes
         /// Gets if the Order value has been set explicitly
         /// </summary>
         public bool IsOrderSetExplicitly { get { return _hasOrderSet; } }
-        
-        private bool _hasOrderSet;
-        private int _order = -1;
+
+        /// <summary>
+        /// Gets and sets if the field is required to be set during serialization
+        /// </summary>
+        public bool Required { get; set; }
     }
 }

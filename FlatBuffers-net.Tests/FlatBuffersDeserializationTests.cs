@@ -174,7 +174,32 @@ namespace FlatBuffers.Tests
             var serializer = new FlatBuffersSerializer();
             var o = serializer.Deserialize<TestTableWithStruct>(oracleResult, 0, oracleResult.Length);
 
+            Assert.AreEqual(1024, o.IntProp);
+            Assert.AreEqual(testStruct1.IntProp, o.StructProp.IntProp);
+            Assert.AreEqual(testStruct1.ShortProp, o.StructProp.ShortProp);
+            Assert.AreEqual(testStruct1.ByteProp, o.StructProp.ByteProp);
+        }
 
+        [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithTable()
+        {
+            var testTable = new TestTable1()
+            {
+                IntProp = 42,
+                ByteProp = 22,
+                ShortProp = 62,
+            };
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithTable(testTable, 1024);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithTable>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(1024, o.IntProp);
+            Assert.AreEqual(testTable.IntProp, o.TableProp.IntProp);
+            Assert.AreEqual(testTable.ShortProp, o.TableProp.ShortProp);
+            Assert.AreEqual(testTable.ByteProp, o.TableProp.ByteProp);
         }
     }
 }

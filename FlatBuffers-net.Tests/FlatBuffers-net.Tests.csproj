@@ -57,6 +57,7 @@
     <Compile Include="FlatBuffersDeserializationTests.cs" />
     <Compile Include="FlatBuffersSchemaTests.cs" />
     <Compile Include="FlatBuffersSchemaTypeWriterTests.cs" />
+    <Compile Include="SerializationTestOracleTests.cs" />
     <Compile Include="SerializationTests\TestEnum.cs" />
     <Compile Include="SerializationTests\TestStruct1.cs" />
     <Compile Include="SerializationTests\TestStruct2.cs" />
@@ -67,7 +68,9 @@
     <Compile Include="SerializationTests\TestTableWithArrayOfStructs.cs" />
     <Compile Include="SerializationTests\TestTableWithDefaults.cs" />
     <Compile Include="SerializationTests\TestTableWithStruct.cs" />
+    <Compile Include="SerializationTests\TestTableWithTable.cs" />
     <Compile Include="SerializationTests\TestTableWithUserOrdering.cs" />
+    <Compile Include="TestTypes\TableWithRequiredFields.cs" />
     <Compile Include="TestTypes\TestEnum.cs" />
     <Compile Include="TestTypes\TestEnumWithExplicitNonContigValues.cs" />
     <Compile Include="TestTypes\TestEnumWithExplicitValues.cs" />

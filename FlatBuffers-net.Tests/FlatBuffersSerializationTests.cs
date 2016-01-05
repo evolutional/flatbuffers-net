@@ -208,6 +208,31 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Serialize_WithTestTableWithTable_CanBeReadByOracle()
+        {
+            const int intProp = 42;
+            const byte byteProp = 22;
+            const short shortProp = 62;
+
+            var serializer = new FlatBuffersSerializer();
+
+            var testTable = new TestTable1() { IntProp = intProp, ShortProp = shortProp, ByteProp = byteProp };
+
+            var obj = new TestTableWithTable() { TableProp = testTable, IntProp = 1024 };
+
+            var buffer = new byte[256];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTableWithTable(buffer);
+
+            Assert.AreEqual(obj.IntProp, oracleResult.IntProp);
+            Assert.AreEqual(obj.TableProp.IntProp, oracleResult.TableProp.IntProp);
+            Assert.AreEqual(obj.TableProp.ByteProp, oracleResult.TableProp.ByteProp);
+            Assert.AreEqual(obj.TableProp.ShortProp, oracleResult.TableProp.ShortProp);
+        }
+
+        [Test]
         public void Serialize_WithTestTableWithArrayOfStructs_CanBeReadByOracle()
         {
             var serializer = new FlatBuffersSerializer();
@@ -272,6 +297,57 @@ namespace FlatBuffers.Tests
             Assert.AreEqual(intProp, oracleResult.IntProp);
             Assert.AreEqual(byteProp, oracleResult.ByteProp);
             Assert.AreEqual(shortProp, oracleResult.ShortProp);
+        }
+
+        [ExpectedException(typeof(FlatBuffersSerializationException), ExpectedMessage = "Required field 'StringProp' is not set")]
+        [Test]
+        public void Serialize_TableWithRequiredFields_WhenStringPropNull_ThrowsException()
+        {
+            var serializer = new FlatBuffersSerializer();
+
+            var obj = new TableWithRequiredFields()
+            {
+                StringProp = null,
+                TableProp = new TestTable1(),
+                VectorProp = new List<int>() {1, 2, 3, 4}
+            };
+
+            var buffer = new byte[128];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+        }
+
+        [ExpectedException(typeof(FlatBuffersSerializationException), ExpectedMessage = "Required field 'TableProp' is not set")]
+        [Test]
+        public void Serialize_TableWithRequiredFields_WhenTablePropNull_ThrowsException()
+        {
+            var serializer = new FlatBuffersSerializer();
+
+            var obj = new TableWithRequiredFields()
+            {
+                StringProp = "Hello",
+                TableProp = null,
+                VectorProp = new List<int>() { 1, 2, 3, 4 }
+            };
+
+            var buffer = new byte[64];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+        }
+
+        [ExpectedException(typeof(FlatBuffersSerializationException), ExpectedMessage = "Required field 'VectorProp' is not set")]
+        [Test]
+        public void Serialize_TableWithRequiredFields_WhenVectorPropNull_ThrowsException()
+        {
+            var serializer = new FlatBuffersSerializer();
+
+            var obj = new TableWithRequiredFields()
+            {
+                StringProp = "Hello",
+                TableProp = new TestTable1(),
+                VectorProp = null
+            };
+
+            var buffer = new byte[64];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
         }
 
         // Tests to implement
