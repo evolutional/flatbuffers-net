@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FlatBuffers.Tests.TestTypes;
 using NUnit.Framework;
 
 namespace FlatBuffers.Tests
@@ -19,9 +20,9 @@ namespace FlatBuffers.Tests
             var obj = new TestStruct1() { IntProp = intProp, ByteProp = byteProp, ShortProp = shortProp };
 
             var buffer = new byte[32];
-            var bytesWritten = serializer.Serialize(obj, buffer, 0, buffer.Length);
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.ReadTestStruct1(buffer);
 
             Assert.AreEqual(obj.IntProp, oracleResult.IntProp);
@@ -43,9 +44,9 @@ namespace FlatBuffers.Tests
             var root = new TestStruct2() {IntProp = outerIntProp, TestStructProp = obj};
 
             var buffer = new byte[32];
-            var bytesWritten = serializer.Serialize(root, buffer, 0, buffer.Length);
+            serializer.Serialize(root, buffer, 0, buffer.Length);
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.ReadTestStruct2(buffer);
 
             Assert.AreEqual(root.IntProp, oracleResult.IntProp);
@@ -67,9 +68,9 @@ namespace FlatBuffers.Tests
             var obj = new TestTable1() { IntProp = intProp, ByteProp = byteProp, ShortProp = shortProp };
 
             var buffer = new byte[32];
-            var bytesWritten = serializer.Serialize(obj, buffer, 0, buffer.Length);
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.ReadTestTable1(buffer);
 
             Assert.AreEqual(obj.IntProp, oracleResult.IntProp);
@@ -86,9 +87,9 @@ namespace FlatBuffers.Tests
             var obj = new TestTable2() { StringProp = stringProp };
 
             var buffer = new byte[64];
-            var bytesWritten = serializer.Serialize(obj, buffer, 0, buffer.Length);
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.ReadTestTable2(buffer);
 
             Assert.AreEqual(obj.StringProp, oracleResult.StringProp);
@@ -112,10 +113,10 @@ namespace FlatBuffers.Tests
             };
 
             var buffer = new byte[128];
-            var bytesWritten = serializer.Serialize(obj, buffer, 0, buffer.Length);
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
 
             
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.ReadTestTable3(buffer);
 
             Assert.AreEqual(obj.BoolProp, oracleResult.BoolProp);
@@ -140,9 +141,9 @@ namespace FlatBuffers.Tests
             
             var buffer = new byte[128];
 
-            var bytesWritten = serializer.Serialize(obj, buffer, 0, buffer.Length);
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.ReadTestTableWithArray(buffer);
 
             Assert.IsTrue(obj.IntArray.SequenceEqual(oracleResult.IntArray));
@@ -163,9 +164,9 @@ namespace FlatBuffers.Tests
             var obj = new TestTableWithStruct() { StructProp = testStruct1, IntProp = 1024 };
 
             var buffer = new byte[64];
-            var bytesWritten = serializer.Serialize(obj, buffer, 0, buffer.Length);
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.ReadTestTableWithStruct(buffer);
 
             Assert.AreEqual(obj.IntProp, oracleResult.IntProp);
@@ -189,14 +190,35 @@ namespace FlatBuffers.Tests
 
             var buffer = new byte[128];
 
-            var bytesWritten = serializer.Serialize(obj, buffer, 0, buffer.Length);
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.ReadTestTableWithArrayOfStructs(buffer);
 
             Assert.IsTrue(oracleResult.StructArray[0].Equals(obj.StructArray[0]));
             Assert.IsTrue(oracleResult.StructArray[1].Equals(obj.StructArray[1]));
         }
+
+        [Test]
+        public void Serialize_WithTestTable1WithUserOrdering_CanBeReadByOracle()
+        {
+            const int intProp = 42;
+            const byte byteProp = 22;
+            const short shortProp = 62;
+
+            var serializer = new FlatBuffersSerializer();
+            var obj = new TestTableWithUserOrdering() { IntProp = intProp, ShortProp = shortProp, ByteProp = byteProp };
+            var buffer = new byte[32];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTable1WithUserOrdering(buffer);
+
+            Assert.AreEqual(byteProp, oracleResult.ByteProp);
+            Assert.AreEqual(shortProp, oracleResult.ShortProp);
+            Assert.AreEqual(intProp, oracleResult.IntProp);
+        }
+
 
         // Tests to implement
         // structs cannot contain vectors, string, table (only scalars or structs)

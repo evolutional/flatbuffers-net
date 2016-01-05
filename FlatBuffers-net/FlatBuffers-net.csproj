@@ -35,8 +35,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\FlatBuffersDefaultValueAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersFieldAttribute.cs" />
-    <Compile Include="Attributes\FlatBuffersFieldIndexAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersIgnoreAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersStructAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersTableAttribute.cs" />
@@ -56,6 +56,7 @@
     <Compile Include="FlatBuffersSerializer.cs" />
     <Compile Include="StructTypeDefinition.cs" />
     <Compile Include="TypeDefinition.cs" />
+    <Compile Include="TypeHelpers.cs" />
     <Compile Include="TypeModel.cs" />
     <Compile Include="TypeModelRegistry.cs" />
   </ItemGroup>

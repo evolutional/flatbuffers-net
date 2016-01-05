@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace FlatBuffers.Tests
+namespace FlatBuffers.Tests.TestTypes
 {
     public class TestTableWithArray
     {

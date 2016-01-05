@@ -6,73 +6,22 @@ namespace FlatBuffers.Attributes
     public class FlatBuffersFieldAttribute : Attribute
     {
         /// <summary>
-        /// Override the name
+        /// Gets and sets the order of serialization and deserialization of the member
         /// </summary>
-        public string Name { get; set; }
+        public int Order
+        {
+            get { return _order; }
+            set { _hasOrderSet = true;
+                _order = value;
+            }
+        }
 
         /// <summary>
-        /// This field is required in Tables
+        /// Gets if the Order value has been set explicitly
         /// </summary>
-        public bool Required { get; set; }
-    }
-
-    public class FlatBuffersDefaultValueAttribute : Attribute
-    {
-        public FlatBuffersDefaultValueAttribute(byte value)
-        {
-            Value = value;
-        }
-
-        public FlatBuffersDefaultValueAttribute(sbyte value)
-        {
-            Value = value;
-        }
-
-        public FlatBuffersDefaultValueAttribute(short value)
-        {
-            Value = value;
-        }
-
-        public FlatBuffersDefaultValueAttribute(ushort value)
-        {
-            Value = value;
-        }
-
-        public FlatBuffersDefaultValueAttribute(int value)
-        {
-            Value = value;
-        }
-
-        public FlatBuffersDefaultValueAttribute(uint value)
-        {
-            Value = value;
-        }
-
-        public FlatBuffersDefaultValueAttribute(long value)
-        {
-            Value = value;
-        }
-
-        public FlatBuffersDefaultValueAttribute(ulong value)
-        {
-            Value = value;
-        }
-
-        public FlatBuffersDefaultValueAttribute(float value)
-        {
-            Value = value;
-        }
-
-        public FlatBuffersDefaultValueAttribute(double value)
-        {
-            Value = value;
-        }
-
-        public FlatBuffersDefaultValueAttribute(string value)
-        {
-            Value = value;
-        }
-
-        public object Value { get; private set; }
+        public bool IsOrderSetExplicitly { get { return _hasOrderSet; } }
+        
+        private bool _hasOrderSet;
+        private int _order = -1;
     }
 }

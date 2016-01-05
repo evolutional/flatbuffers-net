@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FlatBuffers.Tests.TestTypes;
 using NUnit.Framework;
 
 namespace FlatBuffers.Tests
@@ -14,7 +15,7 @@ namespace FlatBuffers.Tests
             const byte byteProp = 22;
             const short shortProp = 62;
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.GenerateTestStruct1(intProp, byteProp, shortProp);
 
             var serializer = new FlatBuffersSerializer();
@@ -37,7 +38,7 @@ namespace FlatBuffers.Tests
                 ShortProp = 200
             };
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.GenerateTestStruct2(intProp, testStruct1);
 
             var serializer = new FlatBuffersSerializer();
@@ -56,7 +57,7 @@ namespace FlatBuffers.Tests
             const byte byteProp = 22;
             const short shortProp = 62;
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.GenerateTestTable1(intProp, byteProp, shortProp);
 
             var serializer = new FlatBuffersSerializer();
@@ -68,11 +69,29 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Deserialize_WithTestTableWithUserOrdering_FromOracleData()
+        {
+            const int intProp = 42;
+            const byte byteProp = 22;
+            const short shortProp = 62;
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithUserOrdering(intProp, byteProp, shortProp);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithUserOrdering>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(intProp, o.IntProp);
+            Assert.AreEqual(byteProp, o.ByteProp);
+            Assert.AreEqual(shortProp, o.ShortProp);
+        }
+
+        [Test]
         public void Deserialize_WithTestTable2_FromOracleData()
         {
             const string stringProp = "Hello, FlatBuffers!";
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.GenerateTestTable2(stringProp);
 
             var serializer = new FlatBuffersSerializer();
@@ -87,7 +106,7 @@ namespace FlatBuffers.Tests
             var intArray = new int[] {1, 2, 3, 4, 5};
             var intList = new List<int> {6, 7, 8, 9, 0};
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.GenerateTestTableWithArray(intArray, intList);
 
             var serializer = new FlatBuffersSerializer();
@@ -107,7 +126,7 @@ namespace FlatBuffers.Tests
                 ShortProp = 62,
             };
 
-            var oracle = new TestOracle();
+            var oracle = new SerializationTestOracle();
             var oracleResult = oracle.GenerateTestTableWithStruct(testStruct1, 1024);
 
             var serializer = new FlatBuffersSerializer();

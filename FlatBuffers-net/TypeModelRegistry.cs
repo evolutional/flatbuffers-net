@@ -3,39 +3,58 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FlatBuffers.Attributes;
 
 namespace FlatBuffers
 {
-    public static class TypeHelpers
+    public abstract class FlatBuffersBaseException : Exception
     {
-        public static Type GetEnumerableElementType(Type enumerable)
+        protected FlatBuffersBaseException()
+        { }
+
+        protected FlatBuffersBaseException(string format, params object[] args)
+            : base(string.Format(format, args))
+        { }
+
+        protected FlatBuffersBaseException(Exception innerException, string format, params object[] args)
+            : base(string.Format(format, args), innerException)
+        { }
+    }
+
+    public class FlatBuffersTypeReflectionException : FlatBuffersBaseException
+    {
+        public FlatBuffersTypeReflectionException()
         {
-            if (enumerable == null)
-            {
-                throw new ArgumentException();
-            }
+        }
 
-            var genericEnumerableInterface = enumerable
-                .GetInterfaces()
-                .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+        public FlatBuffersTypeReflectionException(string format, params object[] args)
+            : base(string.Format(format, args))
+        {
+        }
 
-            if (genericEnumerableInterface == null)
-            {
-                throw new NotSupportedException();
-            }
-            var elementType = genericEnumerableInterface.GetGenericArguments()[0];
-            return elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(Nullable<>)
-                ? elementType.GetGenericArguments()[0]
-                : elementType;
+        public Type ClrType { get; set; }
+    }
+
+    public class FlatBuffersStructFieldReflectionException : FlatBuffersTypeReflectionException
+    {
+        public MemberInfo Member { get; set; }
+
+        public FlatBuffersStructFieldReflectionException()
+        {
+        }
+
+        public FlatBuffersStructFieldReflectionException(string format, params object[] args) : 
+            base(format, args)
+        {
         }
     }
 
     public class TypeModelRegistry
     {
-        private static TypeModelRegistry s_default = new TypeModelRegistry();
+        private static readonly TypeModelRegistry s_default = new TypeModelRegistry();
         public static TypeModelRegistry Default { get { return s_default; }}
 
-        private Dictionary<Type, TypeModel> _typeModels = new Dictionary<Type, TypeModel>();
+        private readonly Dictionary<Type, TypeModel> _typeModels = new Dictionary<Type, TypeModel>();
 
         private static readonly Dictionary<Type, BaseType> _clrTypeToBaseType;
 
@@ -98,11 +117,51 @@ namespace FlatBuffers
 
             var structTypeDef = new StructTypeDefinition(!type.IsClass);
 
+            if (members.Any(i => i.IsDefined(typeof(FlatBuffersFieldAttribute), true)))
+            {
+                structTypeDef.HasCustomOrdering = true;
+            }
+
             for (var i = 0; i < members.Length; ++i)
             {
-                var field = ReflectStructFieldDef(members[i], i);
-                structTypeDef.AddField(field);
+                try
+                {
+                    var field = ReflectStructFieldDef(members[i], i);
+                    
+                    if (structTypeDef.HasCustomOrdering)
+                    {
+                        if (!field.IsIndexSetExplicitly)
+                            throw new FlatBuffersStructFieldReflectionException("Order must be set on all fields");
+
+                        if (structTypeDef.Fields.Any(n=>n.Index == field.Index))
+                            throw new FlatBuffersStructFieldReflectionException("Order value must be unique");
+
+                    }
+
+                    structTypeDef.AddField(field);
+                }
+                catch (FlatBuffersStructFieldReflectionException fieldEx)
+                {
+                    fieldEx.ClrType = type;
+                    fieldEx.Member = members[i];
+                    throw;
+                }
             }
+
+            if (structTypeDef.HasCustomOrdering)
+            {
+                // Validate the sequence
+                var i = 0;
+                foreach (var field in structTypeDef.Fields.OrderBy(n => n.Index))
+                {
+                    if (field.Index != i)
+                    {
+                        throw new FlatBuffersStructFieldReflectionException("Order range must be contiguous sequence from 0..N");
+                    }
+                    ++i;
+                }
+            }
+
             return structTypeDef;
         }
 
@@ -116,7 +175,7 @@ namespace FlatBuffers
             {
                 return new FieldValueProvider(member as FieldInfo);
             }
-            throw new ArgumentException("Member type not supported");
+            throw new FlatBuffersStructFieldReflectionException("Member type not supported") { Member = member};
         }
 
         private FieldTypeDefinition ReflectStructFieldDef(MemberInfo member, int index)
@@ -124,14 +183,29 @@ namespace FlatBuffers
             var valueProvider = CreateValueProvider(member);
 
             var memberTypeModel = GetTypeModel(valueProvider.ValueType);
-
+            
             var field = new FieldTypeDefinition(valueProvider)
             {
                 Name = member.Name, // TODO: allow attribute override
                 TypeModel = memberTypeModel,
-                Index = index   // TODO: attribute
+                OriginalIndex = index
             };
+
+            var attr = member.GetCustomAttributes(typeof(FlatBuffersFieldAttribute), true).FirstOrDefault() as FlatBuffersFieldAttribute;
+            if (attr != null)
+            {
+                if (attr.IsOrderSetExplicitly)
+                {
+                    field.Index = attr.Order;
+                }
+            }
+
             return field;
+        }
+
+        public TypeModel GetTypeModel<T>()
+        {
+            return GetTypeModel(typeof (T));
         }
 
         public TypeModel GetTypeModel(Type type)

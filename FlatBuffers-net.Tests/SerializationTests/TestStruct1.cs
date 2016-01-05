@@ -1,8 +1,12 @@
 // automatically generated, do not modify
 
-namespace FlatBuffers.Tests.SerializationTests
+namespace SerializationTests
 {
-    public sealed class TestStruct1 : Struct {
+
+using System;
+using FlatBuffers;
+
+public sealed class TestStruct1 : Struct {
   public TestStruct1 __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
   public int IntProp { get { return bb.GetInt(bb_pos + 0); } }

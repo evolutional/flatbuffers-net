@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FlatBuffers.Tests
+namespace FlatBuffers.Tests.TestTypes
 {
     public enum TestEnum : byte
     {

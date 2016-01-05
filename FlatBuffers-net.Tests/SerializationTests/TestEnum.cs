@@ -1,6 +1,6 @@
 // automatically generated, do not modify
 
-namespace FlatBuffers.Tests.SerializationTests
+namespace SerializationTests
 {
 
 public enum TestEnum : byte

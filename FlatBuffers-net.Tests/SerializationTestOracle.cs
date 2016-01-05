@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FlatBuffers.Tests.TestTypes;
 
 namespace FlatBuffers.Tests
 {
@@ -8,7 +9,7 @@ namespace FlatBuffers.Tests
     /// It's used to verify that flatbuffers written by the serializer can be read by existing code
     /// and that existing buffers can be deserialized
     /// </summary>
-    public class TestOracle
+    public class SerializationTestOracle
     {
         public TestStruct1 ReadTestStruct1(byte[] buffer)
         {
@@ -53,6 +54,19 @@ namespace FlatBuffers.Tests
             };
             return result;
         }
+
+        public TestTableWithUserOrdering ReadTestTable1WithUserOrdering(byte[] buffer)
+        {
+            var test = SerializationTests.TestTableWithUserOrdering.GetRootAsTestTableWithUserOrdering(new ByteBuffer(buffer));
+            var result = new TestTableWithUserOrdering()
+            {
+                IntProp = test.IntProp,
+                ByteProp = test.ByteProp,
+                ShortProp = test.ShortProp
+            };
+            return result;
+        }
+        
 
         public TestTable2 ReadTestTable2(byte[] buffer)
         {
@@ -158,6 +172,14 @@ namespace FlatBuffers.Tests
         {
             var fbb = new FlatBufferBuilder(8);
             var offset = SerializationTests.TestTable1.CreateTestTable1(fbb, intProp, byteProp, shortProp);
+            fbb.Finish(offset.Value);
+            return GetBytes(fbb);
+        }
+
+        public byte[] GenerateTestTableWithUserOrdering(int intProp, byte byteProp, short shortProp)
+        {
+            var fbb = new FlatBufferBuilder(8);
+            var offset = SerializationTests.TestTableWithUserOrdering.CreateTestTableWithUserOrdering(fbb, byteProp, shortProp, intProp);
             fbb.Finish(offset.Value);
             return GetBytes(fbb);
         }

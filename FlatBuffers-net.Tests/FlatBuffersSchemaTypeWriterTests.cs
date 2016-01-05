@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using FlatBuffers.Tests.TestTypes;
 using NUnit.Framework;
 
 namespace FlatBuffers.Tests
@@ -38,6 +39,24 @@ namespace FlatBuffers.Tests
                                "    IntProp:int;\n" +
                                "    ByteProp:ubyte;\n" +
                                "    ShortProp:short;\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithTestTableWithUserOrdering_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithUserOrdering>();
+                var expected = "table TestTableWithUserOrdering {\n" +
+                               "    IntProp:int (id: 2);\n" +
+                               "    ByteProp:ubyte (id: 0);\n" +
+                               "    ShortProp:short (id: 1);\n" +
                                "}";
 
                 AssertExtensions.AreEqual(expected, sb.ToString());

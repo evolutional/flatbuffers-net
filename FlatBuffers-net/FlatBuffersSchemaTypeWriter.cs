@@ -188,9 +188,16 @@ namespace FlatBuffers
         protected void WriteField(FieldTypeDefinition field)
         {
             var fieldTypeName = GetFlatBufferTypeName(field.TypeModel);
-           
+
+            var meta = string.Empty;
+
+            if (field.IsIndexSetExplicitly)
+            {
+                meta = string.Format(" (id: {0})", field.Index);
+            }
+
             // TODO: Attributes
-            _writer.WriteLine("    {0}:{1};", field.Name, fieldTypeName);
+            _writer.WriteLine("    {0}:{1}{2};", field.Name, fieldTypeName, meta);
         }
 
         protected void EndObject()

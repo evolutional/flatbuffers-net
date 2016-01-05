@@ -1,4 +1,4 @@
-﻿namespace FlatBuffers.Tests
+﻿namespace FlatBuffers.Tests.TestTypes
 {
     public struct TestStruct2
     {

@@ -1,8 +1,12 @@
 // automatically generated, do not modify
 
-namespace FlatBuffers.Tests.SerializationTests
+namespace SerializationTests
 {
-    public sealed class TestTable3 : Table {
+
+using System;
+using FlatBuffers;
+
+public sealed class TestTable3 : Table {
   public static TestTable3 GetRootAsTestTable3(ByteBuffer _bb) { return GetRootAsTestTable3(_bb, new TestTable3()); }
   public static TestTable3 GetRootAsTestTable3(ByteBuffer _bb, TestTable3 obj) { return (obj.__init(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
   public TestTable3 __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }

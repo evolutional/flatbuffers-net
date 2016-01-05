@@ -17,6 +17,8 @@ namespace FlatBuffers
             ByteSize = 0;
         }
 
+        public bool HasCustomOrdering { get; internal set; }
+
         // True if it's a struct; false for Table
         public bool IsFixed { get; private set; }
         public int ByteSize { get; private set; }

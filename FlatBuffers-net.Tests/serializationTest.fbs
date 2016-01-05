@@ -52,3 +52,10 @@ table TestTableWithStruct {
 table TestTableWithArrayOfStructs {
 	StructArray: [TestStruct1];
 }
+
+
+table TestTableWithUserOrdering {
+	IntProp: int (id: 2);
+	ByteProp: ubyte (id: 0);
+	ShortProp: short (id: 1);
+}
