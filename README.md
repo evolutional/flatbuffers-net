@@ -4,15 +4,22 @@
 
 This library provides utilities to interact with [Google FlatBuffers] using the idioms and APIs familiar to .NET developers.
 
+There are three main components that make up this project:
+* Serialization: Allows serialization of .NET types to/from the [FlatBuffers] format
+* Schema Generation: Allows generation of an [fbs] schema from .NET types
+* Reflection: A set of utilities which reflect .NET types for use with [FlatBuffers]
+
+
 # Motivation
 
-The [FlatBuffers] project contains [flatc], a schema compiler and code generator that emits a C# API to interact with your data in FlatBuffer format. This 'canonical' API has been designed for maximum performance and minimal allocations - a core goal of the FlatBuffers project.
+This project is inspired by Marc Gravell's [Protobuf-net]. The goals of this project are to bring [Protobuf-net]-like capabilities to the users of [FlatBuffers]
 
-However there are times that, as a .NET developer, you wish to use FlatBuffers as a data format and are willing to sacrifice the performance and low-allocation characteristics of the generated API in favour of an API that follows a more familiar, .NET-centric pattern.
+The [Google FlatBuffers] project relies on the creation of [fbs] schema files and code generating language-specific API bindings from them via [flatc]. The 'canonical' C# API format is been designed for maximum performance and minimal allocations - a core goal of the FlatBuffers project.
 
-This project is inspired by Marc Gravell's [Protobuf-net], which achieves this goal admirably.
+However there are times that, as a .NET developer, you wish to use FlatBuffers as a data format and are willing to sacrifice the performance and low-allocation characteristics of the generated API in favour of an API that is more .NET-centric.
 
-Using the features provided by this project, it should be possible to achieve a *code-first* workflow, whereby your data contracts are created in .NET and a [fbs] schema can be created from them. You can then generate the APIs for other languages from this schema using `flatc`.
+Using the features provided by this project, it is possible to declare your [FlatBuffers] schemas purely as .NET contracts and serialize data to/from FlatBuffers formatted buffers. You can generated [fbs] schema files directly from these .NET objects and then generate the APIs for other languages using [flatc].
+
 
 # Quickstart - Serialization
 
@@ -214,21 +221,6 @@ Vectors (fbs schema: `[type]`) are represented via .NET arrays (eg: `T[]`) or `I
 
 ## Strings
 Strings in .NET are stored natively in `UTF-16`; however the FlatBuffers spec requires that strings are written in `UTF-8` format. The serialization process will handle the string encoding process. 
-
-
-# Library Components
-
-## FlatBuffersSerializer
-
-A serializer that is capable of serializing .NET objects to/from FlatBuffers format.
-
-## FlatBuffersSchemaGenerator
-
-Generates a schema definition from your .NET objects (in [fbs] format) for use with the [flatc] code generator.
-
-## TypeModel / TypeModelRegistry
-
-This is a set of utilities which use Reflection to map .NET types to a FlatBuffers type definition. These will not be used directly by the majority of users.
 
 # Building
 
