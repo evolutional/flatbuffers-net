@@ -35,6 +35,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttributeDefaultValueProvider.cs" />
     <Compile Include="Attributes\FlatBuffersDefaultValueAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersFieldAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersIgnoreAttribute.cs" />
@@ -49,7 +50,9 @@
     <Compile Include="FlatBuffersSchemaGenerator.cs" />
     <Compile Include="FlatBuffersSchemaTypeDependencyNode.cs" />
     <Compile Include="FlatBuffersSchemaTypeWriter.cs" />
+    <Compile Include="IDefaultValueProvider.cs" />
     <Compile Include="IValueProvider.cs" />
+    <Compile Include="TypeDefaultValueProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyValueProvider.cs" />
     <Compile Include="SerializationContext.cs" />

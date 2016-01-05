@@ -65,6 +65,7 @@
     <Compile Include="SerializationTests\TestTable3.cs" />
     <Compile Include="SerializationTests\TestTableWithArray.cs" />
     <Compile Include="SerializationTests\TestTableWithArrayOfStructs.cs" />
+    <Compile Include="SerializationTests\TestTableWithDefaults.cs" />
     <Compile Include="SerializationTests\TestTableWithStruct.cs" />
     <Compile Include="SerializationTests\TestTableWithUserOrdering.cs" />
     <Compile Include="TestTypes\TestEnum.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="TestTypes\TestStruct2.cs" />
     <Compile Include="TestTypes\TestStructWithEnum.cs" />
     <Compile Include="TestTypes\TestTable1.cs" />
+    <Compile Include="TestTypes\TestTableWithDefaults.cs" />
     <Compile Include="TestTypes\TestTableWithUserOrdering.cs" />
     <Compile Include="TestTypes\TestTable2.cs" />
     <Compile Include="TestTypes\TestTable3.cs" />

@@ -46,6 +46,24 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Write_WithTestTableWithDefaults_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithDefaults>();
+                var expected = "table TestTableWithDefaults {\n" +
+                               "    IntProp:int = 123456;\n" +
+                               "    ByteProp:ubyte = 42;\n" +
+                               "    ShortProp:short = 1024;\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
         public void Write_WithTestTableWithUserOrdering_EmitsCorrectSchemaFragment()
         {
             var sb = new StringBuilder();

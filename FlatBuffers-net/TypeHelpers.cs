@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace FlatBuffers
 {
@@ -25,6 +26,11 @@ namespace FlatBuffers
             return elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(Nullable<>)
                 ? elementType.GetGenericArguments()[0]
                 : elementType;
+        }
+
+        public static T Attribute<T>(this MemberInfo member)
+        {
+            return (T)member.GetCustomAttributes(typeof(T), true).FirstOrDefault();
         }
     }
 }

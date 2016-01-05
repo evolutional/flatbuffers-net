@@ -59,3 +59,9 @@ table TestTableWithUserOrdering {
 	ByteProp: ubyte (id: 0);
 	ShortProp: short (id: 1);
 }
+
+table TestTableWithDefaults {
+	IntProp: int = 123456;
+	ByteProp: ubyte = 42;
+	ShortProp: short = 1024;
+}

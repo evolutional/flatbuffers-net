@@ -158,8 +158,8 @@ namespace FlatBuffers
 
             if (offset == 0)
             {
-                // TODO: Default value?
-                throw new NotImplementedException("Default value not implemented");
+                // Nothing in buffer, use default value
+                return field.DefaultValueProvider.GetDefaultValue(field.TypeModel.Type);
             }
 
             switch (typeModel.BaseType)

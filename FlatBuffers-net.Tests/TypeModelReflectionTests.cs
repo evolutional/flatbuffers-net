@@ -16,7 +16,7 @@ namespace FlatBuffers.Tests
         /// <summary>
         /// This class will fail to reflect because the user has specified the same field Order multiple times
         /// </summary>
-        private class BrokenUserOrderingMultipleSameFieldOrder
+        private abstract class BrokenUserOrderingMultipleSameFieldOrder
         {
             [FlatBuffersField(Order = 0)]
             public int FieldA { get; set; }
@@ -32,7 +32,7 @@ namespace FlatBuffers.Tests
         /// <summary>
         /// This class will fail to reflect because the user has a gap in the field order
         /// </summary>
-        private class BrokenUserOrderingGapInFieldOrder
+        private abstract class BrokenUserOrderingGapInFieldOrder
         {
             [FlatBuffersField(Order = 0)]
             public int FieldA { get; set; }
@@ -49,7 +49,7 @@ namespace FlatBuffers.Tests
         /// <summary>
         /// This class will fail to reflect because the user has a gap in the field order
         /// </summary>
-        private class BrokenUserOrderingNotAllFieldsHaveOrder
+        private abstract class BrokenUserOrderingNotAllFieldsHaveOrder
         {
             [FlatBuffersField(Order = 0)]
             public int FieldA { get; set; }
@@ -60,6 +60,12 @@ namespace FlatBuffers.Tests
 
             [FlatBuffersField(Order = 2)]
             public int FieldC { get; set; }
+        }
+
+        private abstract class TableWithDefaultValue
+        {
+            [FlatBuffersDefaultValue(42)]
+            public int Prop { get; set; }
         }
 
         [Test]
@@ -112,6 +118,21 @@ namespace FlatBuffers.Tests
         {
             var registry = TypeModelRegistry.Default;
             registry.GetTypeModel<BrokenUserOrderingMultipleSameFieldOrder>();
+        }
+
+        [Test]
+        public void GetTypeModel_WhenDefaultValueAttribute_DefaultValueProviderReturnsCorrectValues()
+        {
+            var registry = TypeModelRegistry.Default;
+            var typeModel = registry.GetTypeModel<TableWithDefaultValue>();
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            var fields = structDef.Fields.OrderBy(i => i.Index).ToArray();
+            Assert.AreEqual(42, fields[0].DefaultValueProvider.GetDefaultValue(typeof(int)));
+            Assert.IsTrue(fields[0].DefaultValueProvider.IsDefaultValueSetExplicity);
+            Assert.IsTrue(fields[0].DefaultValueProvider.IsDefaultValue(42));
         }
     }
 }

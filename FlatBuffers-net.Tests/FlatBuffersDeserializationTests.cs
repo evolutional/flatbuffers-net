@@ -9,7 +9,7 @@ namespace FlatBuffers.Tests
     public class FlatBuffersDeserializationTests
     {
         [Test]
-        public void Deserialize_WithTestStruct1_FromOracleData()
+        public void Deserialize_FromOracleData_WithTestStruct1()
         {
             const int intProp = 42;
             const byte byteProp = 22;
@@ -27,7 +27,7 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
-        public void Deserialize_WithTestStruct2_FromOracleData()
+        public void Deserialize_FromOracleData_WithTestStruct2()
         {
             const int intProp = 42;
 
@@ -51,7 +51,7 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
-        public void Deserialize_WithTestTable1_FromOracleData()
+        public void Deserialize_FromOracleData_WithTestTable1()
         {
             const int intProp = 42;
             const byte byteProp = 22;
@@ -69,7 +69,25 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
-        public void Deserialize_WithTestTableWithUserOrdering_FromOracleData()
+        public void Deserialize_FromOracleData_WithTestTableWithDefaults()
+        {
+            const int intProp = 123456;
+            const byte byteProp = 42;
+            const short shortProp = 1024;
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithDefaults();
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithDefaults>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(intProp, o.IntProp);
+            Assert.AreEqual(byteProp, o.ByteProp);
+            Assert.AreEqual(shortProp, o.ShortProp);
+        }
+
+        [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithUserOrdering()
         {
             const int intProp = 42;
             const byte byteProp = 22;
@@ -87,7 +105,7 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
-        public void Deserialize_WithTestTable2_FromOracleData()
+        public void Deserialize_FromOracleData_WithTestTable2()
         {
             const string stringProp = "Hello, FlatBuffers!";
 
@@ -101,7 +119,31 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
-        public void Deserialize_WithTestTableWithArray_FromOracleData()
+        public void Deserialize_FromOracleData_WithTestTable2_AndEmptyString()
+        {
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTable2(string.Empty);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTable2>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(string.Empty, o.StringProp);
+        }
+
+        [Test]
+        public void Deserialize_FromOracleData_WithTestTable2_AndNullString()
+        {
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTable2(null);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTable2>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(null, o.StringProp);
+        }
+
+        [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithArray()
         {
             var intArray = new int[] {1, 2, 3, 4, 5};
             var intList = new List<int> {6, 7, 8, 9, 0};
@@ -117,7 +159,7 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
-        public void Deserialize_WithTestTableWithStruct_FromOracleData()
+        public void Deserialize_FromOracleData_WithTestTableWithStruct()
         {
             var testStruct1 = new TestStruct1()
             {

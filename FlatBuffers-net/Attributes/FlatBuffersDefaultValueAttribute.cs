@@ -2,8 +2,13 @@
 
 namespace FlatBuffers.Attributes
 {
-    public class FlatBuffersDefaultValueAttribute : Attribute
+    public sealed class FlatBuffersDefaultValueAttribute : Attribute
     {
+        public FlatBuffersDefaultValueAttribute(bool value)
+        {
+            Value = value;
+        }
+
         public FlatBuffersDefaultValueAttribute(byte value)
         {
             Value = value;
@@ -50,11 +55,6 @@ namespace FlatBuffers.Attributes
         }
 
         public FlatBuffersDefaultValueAttribute(double value)
-        {
-            Value = value;
-        }
-
-        public FlatBuffersDefaultValueAttribute(string value)
         {
             Value = value;
         }

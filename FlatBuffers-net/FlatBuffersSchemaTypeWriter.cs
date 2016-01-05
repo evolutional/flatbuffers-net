@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace FlatBuffers
 {
@@ -189,15 +190,32 @@ namespace FlatBuffers
         {
             var fieldTypeName = GetFlatBufferTypeName(field.TypeModel);
 
-            var meta = string.Empty;
+            var meta = BuildMetaData(field);
 
-            if (field.IsIndexSetExplicitly)
+            _writer.WriteLine("    {0}:{1}{2};", field.Name, fieldTypeName, meta);
+        }
+
+        private string BuildMetaData(FieldTypeDefinition field)
+        {
+            var sb = new StringBuilder();
+
+            if (field.DefaultValueProvider.IsDefaultValueSetExplicity)
             {
-                meta = string.Format(" (id: {0})", field.Index);
+                sb.AppendFormat(" = {0}", field.DefaultValueProvider.GetDefaultValue(field.TypeModel.Type));
             }
 
-            // TODO: Attributes
-            _writer.WriteLine("    {0}:{1}{2};", field.Name, fieldTypeName, meta);
+            if (field.HasMetaData)
+            {
+                sb.Append(" (");
+
+                if (field.IsIndexSetExplicitly)
+                {
+                    sb.AppendFormat("id: {0}", field.Index);
+                }
+                
+                sb.Append(")");
+            }
+            return sb.ToString();
         }
 
         protected void EndObject()

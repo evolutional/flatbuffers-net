@@ -96,6 +96,38 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Serialize_WithTestTable2_AndEmptyString_CanBeReadByOracle()
+        {
+            var serializer = new FlatBuffersSerializer();
+
+            var obj = new TestTable2() { StringProp = string.Empty };
+
+            var buffer = new byte[64];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTable2(buffer);
+
+            Assert.IsEmpty(oracleResult.StringProp);
+        }
+
+        [Test]
+        public void Serialize_WithTestTable2_AndNullString_CanBeReadByOracle()
+        {
+            var serializer = new FlatBuffersSerializer();
+
+            var obj = new TestTable2();
+
+            var buffer = new byte[64];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTable2(buffer);
+
+            Assert.IsNull(oracleResult.StringProp);
+        }
+
+        [Test]
         public void Serialize_WithTestTable3_CanBeReadByOracle()
         {
             var serializer = new FlatBuffersSerializer();
@@ -219,6 +251,28 @@ namespace FlatBuffers.Tests
             Assert.AreEqual(intProp, oracleResult.IntProp);
         }
 
+
+        [Test]
+        public void Serialize_WithTestTableWithDefaultValues_CanBeReadByOracle()
+        {
+            const int intProp = 123456;
+            const byte byteProp = 42;
+            const short shortProp = 1024;
+
+            var serializer = new FlatBuffersSerializer();
+
+            var obj = new TestTableWithDefaults();  // relying on the flatbuffers defaults
+
+            var buffer = new byte[32];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTableWithDefaults(buffer);
+
+            Assert.AreEqual(intProp, oracleResult.IntProp);
+            Assert.AreEqual(byteProp, oracleResult.ByteProp);
+            Assert.AreEqual(shortProp, oracleResult.ShortProp);
+        }
 
         // Tests to implement
         // structs cannot contain vectors, string, table (only scalars or structs)

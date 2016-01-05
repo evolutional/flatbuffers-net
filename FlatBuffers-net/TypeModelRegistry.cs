@@ -175,23 +175,40 @@ namespace FlatBuffers
             {
                 return new FieldValueProvider(member as FieldInfo);
             }
-            throw new FlatBuffersStructFieldReflectionException("Member type not supported") { Member = member};
+            throw new FlatBuffersStructFieldReflectionException("Member type not supported");
+        }
+
+        private IDefaultValueProvider CreateDefaultValueProvider(MemberInfo member)
+        {
+            var attr = member.Attribute<FlatBuffersDefaultValueAttribute>();
+            if (attr == null)
+            {
+                return TypeDefaultValueProvider.Instance;
+            }
+            if (attr.Value == null)
+            {
+                throw new FlatBuffersStructFieldReflectionException("Default value attribute used with null Value");
+            }
+            return new AttributeDefaultValueProvider(attr);
         }
 
         private FieldTypeDefinition ReflectStructFieldDef(MemberInfo member, int index)
         {
             var valueProvider = CreateValueProvider(member);
+            var defaultValueProvider = CreateDefaultValueProvider(member);
 
             var memberTypeModel = GetTypeModel(valueProvider.ValueType);
-            
-            var field = new FieldTypeDefinition(valueProvider)
+
+            var attr = member.Attribute<FlatBuffersFieldAttribute>();
+
+            var field = new FieldTypeDefinition(valueProvider, defaultValueProvider)
             {
                 Name = member.Name, // TODO: allow attribute override
                 TypeModel = memberTypeModel,
                 OriginalIndex = index
             };
 
-            var attr = member.GetCustomAttributes(typeof(FlatBuffersFieldAttribute), true).FirstOrDefault() as FlatBuffersFieldAttribute;
+            
             if (attr != null)
             {
                 if (attr.IsOrderSetExplicitly)

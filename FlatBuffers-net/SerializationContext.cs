@@ -97,8 +97,13 @@ namespace FlatBuffers
 
         private int SerializePropertyValue(object obj, FieldTypeDefinition field)
         {
-            // TODO: Default values - how do we want to handle this?
             var typeModel = field.TypeModel;
+
+            if (field.DefaultValueProvider.IsDefaultValue(obj))
+            {
+                return _builder.Offset;
+            }
+
             switch (typeModel.BaseType)
             {
                 case BaseType.Bool:
@@ -282,6 +287,11 @@ namespace FlatBuffers
                 {
                     // get object field
                     var val = field.ValueProvider.GetValue(obj);
+
+                    if (val == null)
+                    {
+                        continue;
+                    }
 
                     if (field.TypeModel.IsTable)
                     {
