@@ -4,6 +4,7 @@
     {
         private int _index;
         private bool _required;
+        private bool _deprecated;
 
         public FieldTypeDefinition(IValueProvider valueProvider, IDefaultValueProvider defaultValueProvider)
         {
@@ -73,6 +74,27 @@
                 }
             }
             
+        }
+
+        /// <summary>
+        /// Gets and sets whether this field is deprecated and will be skipped by the serialization process
+        /// </summary>
+        public bool Deprecated
+        {
+            get { return _deprecated; }
+            set
+            {
+                _deprecated = value;
+                if (_deprecated)
+                {
+                    MetaData.Add(FieldTypeMetaData.Deprecated);
+                }
+                else
+                {
+                    MetaData.Remove(FieldTypeMetaData.Deprecated);
+                }
+            }
+
         }
     }
 }

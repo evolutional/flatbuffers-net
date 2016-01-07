@@ -10,4 +10,20 @@ namespace FlatBuffers.Tests.TestTypes
         public byte ByteProp { get; set; }
         public short ShortProp { get; set; }
     }
+
+    public class TestTableWithDeprecatedField
+    {
+        public const byte DefaultBytePropValue = 127;
+
+        public TestTableWithDeprecatedField()
+        {
+            ByteProp = DefaultBytePropValue;
+        }
+
+        public int IntProp { get; set; }
+
+        [FlatBuffersField(Deprecated = true)]
+        public byte ByteProp { get; set; }
+        public short ShortProp { get; set; }
+    }
 }

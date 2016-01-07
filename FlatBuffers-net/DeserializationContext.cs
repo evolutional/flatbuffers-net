@@ -292,6 +292,11 @@ namespace FlatBuffers
 
         private void DeserializeStructField(object obj, StructTypeDefinition structDef, FieldTypeDefinition field, int structBase)
         {
+            if (field.Deprecated)
+            {
+                return;
+            }
+
             object value = null;
 
             if (structDef.IsFixed)

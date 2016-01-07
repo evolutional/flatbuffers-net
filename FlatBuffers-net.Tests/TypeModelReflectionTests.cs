@@ -234,5 +234,19 @@ namespace FlatBuffers.Tests
         {
             var typeModel = GetTypeModel<TestIgnoredTable>();
         }
+
+        [Test]
+        public void GetTypeModel_WithDeprecatedField_ReflectsDeprecatedFlagCorrectly()
+        {
+            var typeModel = GetTypeModel<TestTableWithDeprecatedField>();
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            Assert.AreEqual(3, structDef.Fields.Count());
+
+            var deprecatedField = structDef.GetFieldByName("ByteProp");
+            Assert.IsTrue(deprecatedField.Deprecated);
+        }
     }
 }

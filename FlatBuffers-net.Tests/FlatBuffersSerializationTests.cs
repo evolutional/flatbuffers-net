@@ -79,6 +79,48 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Serialize_WithTestTableWithDeprecatedField_CanBeReadByOracle()
+        {
+            const int intProp = 42;
+            const short shortProp = 62;
+
+            var serializer = new FlatBuffersSerializer();
+
+            var obj = new TestTableWithDeprecatedField {IntProp = intProp, ShortProp = shortProp, ByteProp = 255};
+
+            var buffer = new byte[32];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTableWithDeprecatedField(buffer);
+
+            Assert.AreEqual(obj.IntProp, oracleResult.IntProp);
+            Assert.AreEqual(TestTableWithDeprecatedField.DefaultBytePropValue, oracleResult.ByteProp);   // default value
+            Assert.AreEqual(obj.ShortProp, oracleResult.ShortProp);
+        }
+
+        [Test]
+        public void Serialize_WithTestTableWithDeprecatedField_CanBeReadByOracle_And_CompatibleWithTestTable1()
+        {
+            const int intProp = 42;
+            const short shortProp = 62;
+
+            var serializer = new FlatBuffersSerializer();
+
+            var obj = new TestTableWithDeprecatedField() { IntProp = intProp, ShortProp = shortProp };
+
+            var buffer = new byte[32];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTable1(buffer);
+
+            Assert.AreEqual(obj.IntProp, oracleResult.IntProp);
+            Assert.AreNotEqual(TestTableWithDeprecatedField.DefaultBytePropValue, oracleResult.ByteProp);   // default value
+            Assert.AreEqual(obj.ShortProp, oracleResult.ShortProp);
+        }
+        
+        [Test]
         public void Serialize_WithTestTable2_CanBeReadByOracle()
         {
             const string stringProp = "Hello, FlatBuffers!";

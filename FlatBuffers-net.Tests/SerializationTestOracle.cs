@@ -91,6 +91,17 @@ namespace FlatBuffers.Tests
             return result;
         }
 
+        public TestTableWithDeprecatedField ReadTestTableWithDeprecatedField(byte[] buffer)
+        {
+            var test = SerializationTests.TestTableWithDeprecatedField.GetRootAsTestTableWithDeprecatedField(new ByteBuffer(buffer));
+            var result = new TestTableWithDeprecatedField()
+            {
+                IntProp = test.IntProp,
+                ShortProp = test.ShortProp
+            };
+            return result;
+        }
+
         public TestTableWithTable ReadTestTableWithTable(byte[] buffer)
         {
             var test = SerializationTests.TestTableWithTable.GetRootAsTestTableWithTable(new ByteBuffer(buffer));
@@ -217,6 +228,14 @@ namespace FlatBuffers.Tests
         {
             var fbb = new FlatBufferBuilder(8);
             var offset = SerializationTests.TestTable1.CreateTestTable1(fbb, intProp, byteProp, shortProp);
+            fbb.Finish(offset.Value);
+            return GetBytes(fbb);
+        }
+
+        public byte[] GenerateTestTableWithDeprecatedField(int intProp, short shortProp)
+        {
+            var fbb = new FlatBufferBuilder(8);
+            var offset = SerializationTests.TestTableWithDeprecatedField.CreateTestTableWithDeprecatedField(fbb, intProp, shortProp);
             fbb.Finish(offset.Value);
             return GetBytes(fbb);
         }

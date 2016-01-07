@@ -52,6 +52,7 @@
     <Compile Include="SerializationTests\TestTableWithArray.cs" />
     <Compile Include="SerializationTests\TestTableWithArrayOfStructs.cs" />
     <Compile Include="SerializationTests\TestTableWithDefaults.cs" />
+    <Compile Include="SerializationTests\TestTableWithDeprecatedField.cs" />
     <Compile Include="SerializationTests\TestTableWithOriginalOrdering.cs" />
     <Compile Include="SerializationTests\TestTableWithStruct.cs" />
     <Compile Include="SerializationTests\TestTableWithTable.cs" />

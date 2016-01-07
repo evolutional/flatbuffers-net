@@ -228,6 +228,11 @@ namespace FlatBuffers
 
         private void SerializeStructField(object obj, StructTypeDefinition structDef, FieldTypeDefinition field)
         {
+            if (field.Deprecated)
+            {
+                return;
+            }
+
             if (field.Padding > 0)
             {
                 _builder.Pad(field.Padding);

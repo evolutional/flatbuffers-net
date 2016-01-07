@@ -28,5 +28,11 @@ namespace FlatBuffers.Attributes
         /// Gets and sets if the field is required to be set during serialization
         /// </summary>
         public bool Required { get; set; }
+
+        /// <summary>
+        /// Gets and sets if this field is deprecated. It will still exist in the schema but will
+        /// be skipped by serialization
+        /// </summary>
+        public bool Deprecated { get; set; }
     }
 }

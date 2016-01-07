@@ -75,3 +75,9 @@ table TestTableWithOriginalOrdering (original_order) {
 	ByteProp: ubyte;
 	ShortProp: short;
 }
+
+table TestTableWithDeprecatedField {
+	IntProp: int;
+	ByteProp: ubyte (deprecated);
+	ShortProp: short;
+}

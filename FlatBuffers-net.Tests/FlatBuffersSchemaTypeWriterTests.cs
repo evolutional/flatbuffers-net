@@ -102,6 +102,24 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Write_WithTestTableWithDeprecatedField_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithDeprecatedField>();
+                var expected = "table TestTableWithDeprecatedField {\n" +
+                               "    IntProp:int;\n" +
+                               "    ByteProp:ubyte (deprecated);\n" +
+                               "    ShortProp:short;\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
         public void Write_WithTestTable2_EmitsCorrectSchemaFragment()
         {
             var sb = new StringBuilder();

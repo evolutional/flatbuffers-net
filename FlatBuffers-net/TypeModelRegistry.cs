@@ -228,6 +228,8 @@ namespace FlatBuffers
                 }
 
                 field.Required = attr.Required;
+
+                field.Deprecated = attr.Deprecated;
             }
 
             return field;

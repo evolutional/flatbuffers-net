@@ -141,6 +141,58 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithDeprecatedField_CompatibleWithTestTable1()
+        {
+            const int intProp = 42;
+            const short shortProp = 62;
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithDeprecatedField(intProp, shortProp);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTable1>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(intProp, o.IntProp);
+            Assert.AreNotEqual(TestTableWithDeprecatedField.DefaultBytePropValue, o.ByteProp);  // Should not equal the default field
+            Assert.AreEqual(shortProp, o.ShortProp);
+        }
+
+        [Test]
+        public void Deserialize_FromOracleData_WithTestTable1_CompatibleWithTestTableWithDeprecatedField()
+        {
+            const int intProp = 42;
+            const byte byteProp = 22;
+            const short shortProp = 62;
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTable1(intProp, byteProp, shortProp);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithDeprecatedField>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(intProp, o.IntProp);
+            Assert.AreEqual(TestTableWithDeprecatedField.DefaultBytePropValue, o.ByteProp); // set by deserializer
+            Assert.AreEqual(shortProp, o.ShortProp);
+        }
+
+        [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithDeprecatedField()
+        {
+            const int intProp = 42;
+            const short shortProp = 62;
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithDeprecatedField(intProp, shortProp);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithDeprecatedField>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(intProp, o.IntProp);
+            Assert.AreEqual(TestTableWithDeprecatedField.DefaultBytePropValue, o.ByteProp); // no value
+            Assert.AreEqual(shortProp, o.ShortProp);
+        }
+
+        [Test]
         public void Deserialize_FromOracleData_WithTestTable2()
         {
             const string stringProp = "Hello, FlatBuffers!";
