@@ -6,4 +6,4 @@ install:
 script:
   - xbuild /p:Configuration=Release FlatBuffers-net.sln
   - mono ./testrunner/NUnit.Runners.2.6.3/tools/nunit-console.exe ./FlatBuffers-net.Tests/bin/Release/FlatBuffers-net.Tests.dll
-
+  - mono ./testrunner/NUnit.Runners.2.6.3/tools/nunit-console.exe ./MyGame.Example.Tests/bin/Release/MyGame.Example.Tests.dll

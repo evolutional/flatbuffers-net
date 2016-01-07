@@ -34,7 +34,7 @@ namespace FlatBuffers
             {
                 _index = value;
                 IsIndexSetExplicitly = true;
-                MetaData.Add(FieldTypeMetaData.Index, _index.ToString(CultureInfo.InvariantCulture));
+                MetaData.Add(FieldTypeMetaData.Index, _index);
             }
         }
 
