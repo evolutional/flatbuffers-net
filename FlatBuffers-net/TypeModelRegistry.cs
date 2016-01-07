@@ -94,7 +94,9 @@ namespace FlatBuffers
         {
             var members =
                type.GetMembers(BindingFlags.Public | BindingFlags.Instance)
-                   .Where(i => i.MemberType == MemberTypes.Field || i.MemberType == MemberTypes.Property).ToArray();
+                   .Where(i => i.MemberType == MemberTypes.Field || i.MemberType == MemberTypes.Property)
+                   .Where(i=>!i.Defined<FlatBuffersIgnoreAttribute>())
+                   .ToArray();
 
             var structTypeDef = new StructTypeDefinition(!type.IsClass);
 
@@ -243,6 +245,11 @@ namespace FlatBuffers
             if (_typeModels.TryGetValue(type, out typeModel))
             {
                 return typeModel;
+            }
+
+            if (type.Defined<FlatBuffersIgnoreAttribute>())
+            {
+                throw new FlatBuffersTypeReflectionException("Cannot reflect type with 'FlatBuffersIgnoreAttribute'") {ClrType = type};
             }
 
             var typeName = type.Name;   // TODO: attribute

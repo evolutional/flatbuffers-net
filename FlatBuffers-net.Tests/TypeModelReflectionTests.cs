@@ -207,5 +207,32 @@ namespace FlatBuffers.Tests
 
             Assert.IsTrue(structDef.UseOriginalOrdering);
         }
+
+        [Test]
+        public void GetTypeModel_WithIgnoredField_ReflectsOnlyFieldsWithoutAttribute()
+        {
+            var typeModel = GetTypeModel<TestTableWithIgnoredField>();
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            Assert.AreEqual(2, structDef.Fields.Count());
+
+            var ignoredField = structDef.GetFieldByName("ByteProp");
+            Assert.IsNull(ignoredField);
+
+            var field1 = structDef.GetFieldByName("IntProp");
+            Assert.AreEqual(0, field1.Index);
+
+            var field2 = structDef.GetFieldByName("ShortProp");
+            Assert.AreEqual(1, field2.Index);
+        }
+
+        [ExpectedException(typeof(FlatBuffersTypeReflectionException), ExpectedMessage = "Cannot reflect type with 'FlatBuffersIgnoreAttribute'")]
+        [Test]
+        public void GetTypeModel_WithIgnoredTable_ThrowsException()
+        {
+            var typeModel = GetTypeModel<TestIgnoredTable>();
+        }
     }
 }
