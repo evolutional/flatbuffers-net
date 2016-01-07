@@ -224,7 +224,19 @@ Strings in .NET are stored natively in `UTF-16`; however the FlatBuffers spec re
 
 # Building
 
-Build the core solution `FlatBuffers-net.sln` in Visual Studio 2013/2015. 
+## Build from Source
+
+1) Clone the `Flatbuffers-net` repository.
+
+2) Sync the git submodule to get the [flatbuffers](https://github.com/google/flatbuffers) source.
+```
+     git submodule init
+     git submodule update
+```
+
+3) Build the core solution `FlatBuffers-net.sln` in Visual Studio 2013/2015. 
+
+## Project Structure
 
 The solution contains 3 projects:
 
@@ -232,7 +244,8 @@ The solution contains 3 projects:
 * `FlatBuffers-net.csproj` - the main FlatBuffers-net code
 * `FlatBuffers-net.Tests.csproj` - an MS Test project containing the unit & integration tests
 
-This project has only been built in Visual Studio 2013/2015 on Windows x64. No other platforms (eg: Mono/Unity/Xamarin) have been verified.
+
+This project has only been built in Visual Studio 2013/2015 on Windows x64. No other platforms (eg: Mono/Unity/Xamarin) have been verified, although the travis CI build will build under Mono on Linux.
 
 # Testing
 
