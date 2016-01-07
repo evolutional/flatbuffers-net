@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FlatBuffers.Attributes;
 using FlatBuffers.Tests.TestTypes;
 using NUnit.Framework;
