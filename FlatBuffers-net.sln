@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatBuffers-net", "FlatBuffers-net\FlatBuffers-net.csproj", "{AEF06D2C-20D0-4842-8B02-739F18B63D2D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serialization", "Serialization", "{9DCC1EF5-08EC-44F9-A0E0-F0C9076D1890}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatBuffers-net.Tests", "FlatBuffers-net.Tests\FlatBuffers-net.Tests.csproj", "{113E48CC-4D7A-4F58-89A1-0B5664B62141}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatBuffers", "flatbuffers\net\FlatBuffers\FlatBuffers.csproj", "{28C00774-1E73-4A75-AD8F-844CD21A064D}"
@@ -27,6 +25,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{067149
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGame.Example", "MyGame.Example\MyGame.Example.csproj", "{583FF81B-B630-439D-8EAD-866219DD6C94}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{50A95404-E093-454C-88B7-0FBA0679BE88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGame.Example.Tests", "MyGame.Example.Tests\MyGame.Example.Tests.csproj", "{327BC278-C2B8-43EA-83F5-632515E32859}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,13 +49,22 @@ Global
 		{28C00774-1E73-4A75-AD8F-844CD21A064D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28C00774-1E73-4A75-AD8F-844CD21A064D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28C00774-1E73-4A75-AD8F-844CD21A064D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{583FF81B-B630-439D-8EAD-866219DD6C94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{583FF81B-B630-439D-8EAD-866219DD6C94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{583FF81B-B630-439D-8EAD-866219DD6C94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{583FF81B-B630-439D-8EAD-866219DD6C94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{327BC278-C2B8-43EA-83F5-632515E32859}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{327BC278-C2B8-43EA-83F5-632515E32859}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{327BC278-C2B8-43EA-83F5-632515E32859}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{327BC278-C2B8-43EA-83F5-632515E32859}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{AEF06D2C-20D0-4842-8B02-739F18B63D2D} = {9DCC1EF5-08EC-44F9-A0E0-F0C9076D1890}
-		{113E48CC-4D7A-4F58-89A1-0B5664B62141} = {9DCC1EF5-08EC-44F9-A0E0-F0C9076D1890}
+		{113E48CC-4D7A-4F58-89A1-0B5664B62141} = {50A95404-E093-454C-88B7-0FBA0679BE88}
 		{28C00774-1E73-4A75-AD8F-844CD21A064D} = {7E807B3C-9C20-4830-8E9D-5205760A7DA9}
+		{583FF81B-B630-439D-8EAD-866219DD6C94} = {50A95404-E093-454C-88B7-0FBA0679BE88}
+		{327BC278-C2B8-43EA-83F5-632515E32859} = {50A95404-E093-454C-88B7-0FBA0679BE88}
 	EndGlobalSection
 EndGlobal

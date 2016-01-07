@@ -33,9 +33,19 @@ namespace FlatBuffers
             return (T)member.GetCustomAttributes(typeof(T), true).FirstOrDefault();
         }
 
+        public static T Attribute<T>(this Type type)
+        {
+            return (T)type.GetCustomAttributes(typeof(T), true).FirstOrDefault();
+        }
+
         public static bool Defined<T>(this MemberInfo member)
         {
             return member.IsDefined(typeof (T), true);
+        }
+
+        public static bool Defined<T>(this Type type)
+        {
+            return type.GetCustomAttributes(typeof(T), true).Any();
         }
     }
 }

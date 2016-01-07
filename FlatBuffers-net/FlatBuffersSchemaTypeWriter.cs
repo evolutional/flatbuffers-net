@@ -158,7 +158,14 @@ namespace FlatBuffers
         protected void BeginStruct(TypeModel typeModel)
         {
             var structOrTable = typeModel.StructDef.IsFixed ? "struct" : "table";
-            _writer.WriteLine("{0} {1} {{", structOrTable, typeModel.Name);
+            var sb = new StringBuilder();
+            BuildMetaData(sb, typeModel.StructDef);
+            if (sb.Length > 0)
+            {
+                sb.Append(' ');
+            }
+            var meta = sb.ToString();
+            _writer.WriteLine("{0} {1} {2}{{", structOrTable, typeModel.Name, meta);
         }
 
         private string GetFlatBufferTypeName(TypeModel typeModel)
@@ -205,16 +212,29 @@ namespace FlatBuffers
                 sb.AppendFormat(" = {0}", field.DefaultValueProvider.GetDefaultValue(field.TypeModel.Type));
             }
 
-            if (!field.HasMetaData)
+            BuildMetaData(sb, field);
+            return sb.ToString();
+        }
+
+        private string BuildMetaData(StructTypeDefinition structDef)
+        {
+            var sb = new StringBuilder();
+            BuildMetaData(sb, structDef);
+            return sb.ToString();
+        }
+
+        private void BuildMetaData(StringBuilder sb, TypeDefinition def)
+        {
+            if (!def.HasMetaData)
             {
-                return sb.ToString();
+                return;
             }
 
             // Start meta
             sb.Append(" (");
 
             var requiresComma = false;
-            foreach (var meta in field.MetaData)
+            foreach (var meta in def.MetaData.Items)
             {
                 sb.Append(meta.HasValue
                     ? string.Format("{0}{1}: {2}", requiresComma ? ", " : "", meta.Key, meta.Value)
@@ -223,7 +243,6 @@ namespace FlatBuffers
                 requiresComma = true;
             }
             sb.Append(")");
-            return sb.ToString();
         }
 
         protected void EndObject()

@@ -11,6 +11,12 @@ namespace FlatBuffers.Tests
     [TestFixture]
     public class TypeModelReflectionTests
     {
+        private TypeModel GetTypeModel<T>()
+        {
+            var registry = TypeModelRegistry.Default;
+            var typeModel = registry.GetTypeModel<T>();
+            return typeModel;
+        }
 
         /// <summary>
         /// This class will fail to reflect because the user has specified the same field Order multiple times
@@ -70,8 +76,7 @@ namespace FlatBuffers.Tests
         [Test]
         public void GetTypeModel_WithUserOrderedFields_ReflectsIndexCorrectly()
         {
-            var registry = TypeModelRegistry.Default;
-            var typeModel = registry.GetTypeModel<TestTableWithUserOrdering>();
+            var typeModel = GetTypeModel<TestTableWithUserOrdering>();
             Assert.IsTrue(typeModel.IsTable);
             Assert.IsNotNull(typeModel.StructDef);
             var structDef = typeModel.StructDef;
@@ -99,31 +104,27 @@ namespace FlatBuffers.Tests
         [Test]
         public void GetTypeModel_BrokenUserOrderingNotAllFieldsHaveOrder_ThrowsException()
         {
-            var registry = TypeModelRegistry.Default;
-            registry.GetTypeModel<BrokenUserOrderingNotAllFieldsHaveOrder>();
+            GetTypeModel<BrokenUserOrderingNotAllFieldsHaveOrder>();
         }
 
         [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Order range must be contiguous sequence from 0..N")]
         [Test]
         public void GetTypeModel_BrokenUserOrderingGapInFieldOrder_ThrowsException()
         {
-            var registry = TypeModelRegistry.Default;
-            registry.GetTypeModel<BrokenUserOrderingGapInFieldOrder>();
+            GetTypeModel<BrokenUserOrderingGapInFieldOrder>();
         }
 
         [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Order value must be unique")]
         [Test]
         public void GetTypeModel_BrokenUserOrderingMultipleSameFieldOrder_ThrowsException()
         {
-            var registry = TypeModelRegistry.Default;
-            registry.GetTypeModel<BrokenUserOrderingMultipleSameFieldOrder>();
+            GetTypeModel<BrokenUserOrderingMultipleSameFieldOrder>();
         }
 
         [Test]
         public void GetTypeModel_WhenDefaultValueAttribute_DefaultValueProviderReturnsCorrectValues()
         {
-            var registry = TypeModelRegistry.Default;
-            var typeModel = registry.GetTypeModel<TableWithDefaultValue>();
+            var typeModel = GetTypeModel<TableWithDefaultValue>();
             Assert.IsTrue(typeModel.IsTable);
             Assert.IsNotNull(typeModel.StructDef);
             var structDef = typeModel.StructDef;
@@ -137,8 +138,7 @@ namespace FlatBuffers.Tests
         [Test]
         public void GetTypeModel_WithRequiredProperties_ReflectsRequiredFlagCorrectly()
         {
-            var registry = TypeModelRegistry.Default;
-            var typeModel = registry.GetTypeModel<TableWithRequiredFields>();
+            var typeModel = GetTypeModel<TableWithRequiredFields>();
             Assert.IsTrue(typeModel.IsTable);
             Assert.IsNotNull(typeModel.StructDef);
             var structDef = typeModel.StructDef;
@@ -147,6 +147,45 @@ namespace FlatBuffers.Tests
             Assert.AreEqual(3, orderedFields.Length);
 
             Assert.IsTrue(orderedFields.All(i => i.Required));
+        }
+
+        [Test]
+        public void GetTypeModel_WithForceAlign_ReflectsForceAlignValueCorrectly()
+        {
+            var typeModel = GetTypeModel<TestStructWithForcedAlignment>();
+            Assert.IsTrue(typeModel.IsStruct);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            Assert.IsTrue(structDef.IsForceAlignSet);
+            Assert.AreEqual(16, structDef.ForceAlignSize);
+        }
+
+        [Test]
+        public void GetTypeModel_WithForceAlign_FieldsHaveCorrectPadding()
+        {
+            var typeModel = GetTypeModel<TestStructWithForcedAlignment>();
+            Assert.IsTrue(typeModel.IsStruct);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            Assert.AreEqual(3, structDef.Fields.Count());
+
+            // Check size and alignmnet
+            Assert.AreEqual(16, typeModel.InlineSize);
+            Assert.AreEqual(16, typeModel.InlineAlignment);
+
+            var xField = structDef.GetFieldByName("X");
+            Assert.AreEqual(4, xField.TypeModel.InlineSize);
+            Assert.AreEqual(0, xField.Padding);
+
+            var yField = structDef.GetFieldByName("Y");
+            Assert.AreEqual(4, yField.TypeModel.InlineSize);
+            Assert.AreEqual(0, yField.Padding);
+
+            var zField = structDef.GetFieldByName("Z");
+            Assert.AreEqual(4, zField.TypeModel.InlineSize);
+            Assert.AreEqual(4, zField.Padding);     // Field should be padded to align to 16 byte boundary            
         }
     }
 }

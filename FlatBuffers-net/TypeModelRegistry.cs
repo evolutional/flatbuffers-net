@@ -67,6 +67,24 @@ namespace FlatBuffers
             return BaseType.None;
         }
 
+        private void ApplyStructAttributeFlags(StructTypeDefinition structTypeDef, FlatBuffersStructAttribute attribute)
+        {
+            // check force align makes sense
+            if (attribute.IsForceAlignSet)
+            {
+                var align = attribute.ForceAlign;
+                if (align < structTypeDef.MinAlign ||
+                    align > 16 ||
+                    (align & (align - 1)) != 0)
+                {
+                    throw new Exception(
+                        "ForceAlign must be a power of two integer ranging from the struct's natural alignment to 16");
+                }
+                structTypeDef.MinAlign = align;
+                structTypeDef.ForceAlignSize = align;
+            }
+        }
+
         private StructTypeDefinition ReflectStructDef(Type type)
         {
             var members =
@@ -85,6 +103,15 @@ namespace FlatBuffers
             }))
             {
                 structTypeDef.HasCustomOrdering = true;
+            }
+
+            if (structTypeDef.IsFixed)
+            {
+                var structAttr = type.Attribute<FlatBuffersStructAttribute>();
+                if (structAttr != null)
+                {
+                    ApplyStructAttributeFlags(structTypeDef, structAttr);
+                }
             }
 
             for (var i = 0; i < members.Length; ++i)
@@ -112,6 +139,9 @@ namespace FlatBuffers
                     throw;
                 }
             }
+
+            // Pad the last field in the struct so it aligns correctly
+            structTypeDef.PadLastField(structTypeDef.MinAlign);
 
             if (structTypeDef.HasCustomOrdering)
             {

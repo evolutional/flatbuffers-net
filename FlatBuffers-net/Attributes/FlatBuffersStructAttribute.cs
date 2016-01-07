@@ -2,11 +2,22 @@ using System;
 
 namespace FlatBuffers.Attributes
 {
-    /// <summary>
-    /// Attribute to signify that this class is to be serialized as a struct (inline)
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class|AttributeTargets.Struct, AllowMultiple = false, Inherited = true)]
     public class FlatBuffersStructAttribute : Attribute
     {
+        private int _forceAlign;
+
+        public int ForceAlign
+        {
+            get
+            {
+                return _forceAlign;
+            }
+            set { IsForceAlignSet = true;
+                _forceAlign = value;
+            }
+        }
+
+        public bool IsForceAlignSet { get; private set; }
     }
 }

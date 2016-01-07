@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{583FF81B-B630-439D-8EAD-866219DD6C94}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MyGame.Example</RootNamespace>
+    <AssemblyName>MyGame.Example</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\flatbuffers\tests\MyGame\Example\Any.cs">
+      <Link>Any.cs</Link>
+    </Compile>
+    <Compile Include="..\flatbuffers\tests\MyGame\Example\Color.cs">
+      <Link>Color.cs</Link>
+    </Compile>
+    <Compile Include="..\flatbuffers\tests\MyGame\Example\Monster.cs">
+      <Link>Monster.cs</Link>
+    </Compile>
+    <Compile Include="..\flatbuffers\tests\MyGame\Example\Stat.cs">
+      <Link>Stat.cs</Link>
+    </Compile>
+    <Compile Include="..\flatbuffers\tests\MyGame\Example\Test.cs">
+      <Link>Test.cs</Link>
+    </Compile>
+    <Compile Include="..\flatbuffers\tests\MyGame\Example\TestSimpleTableWithEnum.cs">
+      <Link>TestSimpleTableWithEnum.cs</Link>
+    </Compile>
+    <Compile Include="..\flatbuffers\tests\MyGame\Example\Vec3.cs">
+      <Link>Vec3.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\flatbuffers\net\FlatBuffers\FlatBuffers.csproj">
+      <Project>{28c00774-1e73-4a75-ad8f-844cd21a064d}</Project>
+      <Name>FlatBuffers</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\flatbuffers\tests\include_test1.fbs">
+      <Link>fbs\include_test1.fbs</Link>
+    </None>
+    <None Include="..\flatbuffers\tests\include_test2.fbs">
+      <Link>fbs\include_test2.fbs</Link>
+    </None>
+    <None Include="..\flatbuffers\tests\monster_test.fbs">
+      <Link>fbs\monster_test.fbs</Link>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

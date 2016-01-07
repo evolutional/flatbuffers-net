@@ -303,5 +303,24 @@ namespace FlatBuffers.Tests
                 AssertExtensions.AreEqual(expected, sb.ToString());
             }
         }
+
+
+        [Test]
+        public void Write_StructWithForceAlign_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestStructWithForcedAlignment>();
+                var expected = "struct TestStructWithForcedAlignment (force_align: 16) {\n" +
+                               "    X:float;\n" +
+                               "    Y:float;\n" +
+                               "    Z:float;\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
     }
 }

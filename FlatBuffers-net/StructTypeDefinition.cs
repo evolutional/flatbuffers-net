@@ -6,6 +6,8 @@ namespace FlatBuffers
 {
     public class StructTypeDefinition : TypeDefinition
     {
+        private int _forceAlignSize;
+
         private readonly List<FieldTypeDefinition> _fields = new List<FieldTypeDefinition>();
 
         public IEnumerable<FieldTypeDefinition> Fields { get { return _fields; } }
@@ -22,7 +24,19 @@ namespace FlatBuffers
         // True if it's a struct; false for Table
         public bool IsFixed { get; private set; }
         public int ByteSize { get; private set; }
-        public int MinAlign { get; private set; }
+        public int MinAlign { get; set; }
+
+        public bool IsForceAlignSet { get; internal set; }
+
+        public int ForceAlignSize
+        {
+            get { return _forceAlignSize; }
+            set { 
+                _forceAlignSize = value;
+                IsForceAlignSet = true;
+                MetaData.Add(StructTypeMetaData.ForceAlign, value);
+            }
+        }
 
         private static int CalcPadding(int bufSize, int valueSize)
         {
@@ -47,6 +61,13 @@ namespace FlatBuffers
                 var size = typeModel.InlineSize;
                 var alignment = typeModel.InlineAlignment;
 
+                if (typeModel.IsStruct)
+                {
+                    // We're adding an inline struct
+                    var structDef = typeModel.StructDef;
+                    size = structDef.ByteSize;
+                }
+
                 // align
                 MinAlign = Math.Max(MinAlign, alignment);
                 PadLastField(alignment);
@@ -59,6 +80,11 @@ namespace FlatBuffers
             }
 
             _fields.Add(field);
+        }
+
+        public FieldTypeDefinition GetFieldByName(string name)
+        {
+            return Fields.FirstOrDefault(i => i.Name == name);
         }
 
         private int FieldIndexToOffset(int fieldIndex)

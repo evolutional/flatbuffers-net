@@ -35,5 +35,13 @@ namespace FlatBuffers
             Buffer.BlockCopy(builder.DataBuffer.Data, builder.DataBuffer.Length - builder.Offset, buffer, offset, builder.Offset);
             return builder.Offset;
         }
+
+        public byte[] Serialize(object obj)
+        {
+            var builder = new FlatBufferBuilder(64);
+            var context = new SerializationContext(_typeModelRegistry, obj, builder);
+            context.Serialize();
+            return builder.SizedByteArray();
+        }
     }
 }

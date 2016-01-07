@@ -243,7 +243,7 @@ namespace FlatBuffers
 
             if (structDef.IsFixed)
             {
-                _builder.Prep(structDef.ByteSize, 0);
+                _builder.Prep(structDef.MinAlign, structDef.ByteSize);
                 foreach (var field in structDef.Fields.Reverse())
                 {
                     SerializeStructField(obj, structDef, field);
