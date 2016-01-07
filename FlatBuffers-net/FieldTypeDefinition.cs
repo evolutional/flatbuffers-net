@@ -1,7 +1,4 @@
-﻿using System.Globalization;
-using System.Linq;
-
-namespace FlatBuffers
+﻿namespace FlatBuffers
 {
     public sealed class FieldTypeDefinition : TypeDefinition
     {
