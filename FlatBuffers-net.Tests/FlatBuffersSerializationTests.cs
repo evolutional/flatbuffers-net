@@ -299,6 +299,88 @@ namespace FlatBuffers.Tests
             Assert.AreEqual(shortProp, oracleResult.ShortProp);
         }
 
+        [Test]
+        public void Serialize_WithTestTableWithOriginalOrdering_CanBeReadByOracle()
+        {
+            const int intProp = 123456;
+            const byte byteProp = 42;
+            const short shortProp = 1024;
+
+            var serializer = new FlatBuffersSerializer();
+
+            var obj = new TestTableWithOriginalOrdering()
+            {
+                IntProp = intProp,
+                ByteProp = byteProp,
+                ShortProp = shortProp
+            };
+
+            var buffer = new byte[32];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTableWithOriginalOrdering(buffer);
+
+            Assert.AreEqual(intProp, oracleResult.IntProp);
+            Assert.AreEqual(byteProp, oracleResult.ByteProp);
+            Assert.AreEqual(shortProp, oracleResult.ShortProp);
+        }
+
+        [Test]
+        public void Serialize_WithTestTableWithOriginalOrdering_CanBeReadByOracle_And_CompatibleWithTestTable1()
+        {
+            const int intProp = 123456;
+            const byte byteProp = 42;
+            const short shortProp = 1024;
+
+            var serializer = new FlatBuffersSerializer();
+
+            var obj = new TestTableWithOriginalOrdering()
+            {
+                IntProp = intProp,
+                ByteProp = byteProp,
+                ShortProp = shortProp
+            };
+
+            var buffer = new byte[32];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTable1(buffer);
+
+            Assert.AreEqual(intProp, oracleResult.IntProp);
+            Assert.AreEqual(byteProp, oracleResult.ByteProp);
+            Assert.AreEqual(shortProp, oracleResult.ShortProp);
+        }
+
+        [Test]
+        public void Serialize_TestTable1_And_TestTableWithOriginalOrdering_EmitDifferentBuffers()
+        {
+            const int intProp = 123456;
+            const byte byteProp = 42;
+            const short shortProp = 1024;
+
+            var obj = new TestTableWithOriginalOrdering()
+            {
+                IntProp = intProp,
+                ByteProp = byteProp,
+                ShortProp = shortProp
+            };
+
+            var buffer = FlatBuffersConvert.SerializeObject(obj);
+
+            var obj2 = new TestTable1()
+            {
+                IntProp = intProp,
+                ByteProp = byteProp,
+                ShortProp = shortProp
+            };
+
+            var buffer2 = FlatBuffersConvert.SerializeObject(obj2);
+            // Buffers will be different as they've been written in different orders
+            Assert.IsFalse(buffer.SequenceEqual(buffer2));
+        }
+
         [ExpectedException(typeof(FlatBuffersSerializationException), ExpectedMessage = "Required field 'StringProp' is not set")]
         [Test]
         public void Serialize_TableWithRequiredFields_WhenStringPropNull_ThrowsException()

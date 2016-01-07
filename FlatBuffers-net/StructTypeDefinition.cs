@@ -7,6 +7,7 @@ namespace FlatBuffers
     public class StructTypeDefinition : TypeDefinition
     {
         private int _forceAlignSize;
+        private bool _originalOrdering;
 
         private readonly List<FieldTypeDefinition> _fields = new List<FieldTypeDefinition>();
 
@@ -27,6 +28,16 @@ namespace FlatBuffers
         public int MinAlign { get; set; }
 
         public bool IsForceAlignSet { get; internal set; }
+
+        public bool UseOriginalOrdering
+        {
+            get { return _originalOrdering; }
+            set
+            {
+                _originalOrdering = value;
+                MetaData.Add(StructTypeMetaData.OriginalOrder);
+            }
+        }
 
         public int ForceAlignSize
         {

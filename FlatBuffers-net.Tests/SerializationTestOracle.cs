@@ -79,6 +79,18 @@ namespace FlatBuffers.Tests
             return result;
         }
 
+        public TestTableWithOriginalOrdering ReadTestTableWithOriginalOrdering(byte[] buffer)
+        {
+            var test = SerializationTests.TestTableWithOriginalOrdering.GetRootAsTestTableWithOriginalOrdering(new ByteBuffer(buffer));
+            var result = new TestTableWithOriginalOrdering()
+            {
+                IntProp = test.IntProp,
+                ByteProp = test.ByteProp,
+                ShortProp = test.ShortProp
+            };
+            return result;
+        }
+
         public TestTableWithTable ReadTestTableWithTable(byte[] buffer)
         {
             var test = SerializationTests.TestTableWithTable.GetRootAsTestTableWithTable(new ByteBuffer(buffer));
@@ -221,6 +233,14 @@ namespace FlatBuffers.Tests
         {
             var fbb = new FlatBufferBuilder(8);
             var offset = SerializationTests.TestTableWithUserOrdering.CreateTestTableWithUserOrdering(fbb, byteProp, shortProp, intProp);
+            fbb.Finish(offset.Value);
+            return GetBytes(fbb);
+        }
+
+        public byte[] GenerateTestTableWithOriginalOrdering(int intProp, byte byteProp, short shortProp)
+        {
+            var fbb = new FlatBufferBuilder(8);
+            var offset = SerializationTests.TestTableWithOriginalOrdering.CreateTestTableWithOriginalOrdering(fbb, intProp, byteProp, shortProp);
             fbb.Finish(offset.Value);
             return GetBytes(fbb);
         }

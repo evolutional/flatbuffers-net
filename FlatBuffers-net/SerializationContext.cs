@@ -252,7 +252,12 @@ namespace FlatBuffers
             else
             {
                 _builder.StartObject(structDef.Fields.Count());
-                foreach (var field in structDef.Fields.OrderByDescending(i => i.TypeModel.InlineSize))
+
+                var enumerable = structDef.UseOriginalOrdering
+                    ? structDef.Fields
+                    : structDef.Fields.OrderByDescending(i => i.TypeModel.InlineSize);
+
+                foreach (var field in enumerable)
                 {
                     SerializeStructField(obj, structDef, field);
                 }

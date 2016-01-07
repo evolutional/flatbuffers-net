@@ -58,7 +58,6 @@ table TestTableWithArrayOfStructs {
 	StructArray: [TestStruct1];
 }
 
-
 table TestTableWithUserOrdering {
 	IntProp: int (id: 2);
 	ByteProp: ubyte (id: 0);
@@ -69,4 +68,10 @@ table TestTableWithDefaults {
 	IntProp: int = 123456;
 	ByteProp: ubyte = 42;
 	ShortProp: short = 1024;
+}
+
+table TestTableWithOriginalOrdering (original_order) {
+	IntProp: int;
+	ByteProp: ubyte;
+	ShortProp: short;
 }

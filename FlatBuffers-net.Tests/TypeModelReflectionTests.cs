@@ -185,5 +185,27 @@ namespace FlatBuffers.Tests
             Assert.AreEqual(4, zField.TypeModel.InlineSize);
             Assert.AreEqual(4, zField.Padding);     // Field should be padded to align to 16 byte boundary            
         }
+
+        [Test]
+        public void GetTypeModel_WithoutOriginalOrdering_DoesntHaveFlag()
+        {
+            var typeModel = GetTypeModel<TestTable1>();
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            Assert.IsFalse(structDef.UseOriginalOrdering);
+        }
+
+        [Test]
+        public void GetTypeModel_WithOriginalOrdering_ReflectsFlagCorrectly()
+        {
+            var typeModel = GetTypeModel<TestTableWithOriginalOrdering>();
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            Assert.IsTrue(structDef.UseOriginalOrdering);
+        }
     }
 }

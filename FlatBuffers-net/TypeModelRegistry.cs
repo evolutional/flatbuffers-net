@@ -85,6 +85,11 @@ namespace FlatBuffers
             }
         }
 
+        private void ApplyTableAttributeFlags(StructTypeDefinition structTypeDef, FlatBuffersTableAttribute attribute)
+        {
+            structTypeDef.UseOriginalOrdering = attribute.OriginalOrdering;
+        }
+
         private StructTypeDefinition ReflectStructDef(Type type)
         {
             var members =
@@ -111,6 +116,14 @@ namespace FlatBuffers
                 if (structAttr != null)
                 {
                     ApplyStructAttributeFlags(structTypeDef, structAttr);
+                }
+            }
+            else
+            {
+                var tableAttr = type.Attribute<FlatBuffersTableAttribute>();
+                if (tableAttr != null)
+                {
+                    ApplyTableAttributeFlags(structTypeDef, tableAttr);
                 }
             }
 
@@ -160,6 +173,7 @@ namespace FlatBuffers
             return structTypeDef;
         }
 
+        
         private IValueProvider CreateValueProvider(MemberInfo member)
         {
             if (member.MemberType == MemberTypes.Property)

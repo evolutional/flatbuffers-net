@@ -66,6 +66,24 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Write_WithTestTableWithOriginalOrdering_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithOriginalOrdering>();
+                var expected = "table TestTableWithOriginalOrdering (original_order) {\n" +
+                               "    IntProp:int;\n" +
+                               "    ByteProp:ubyte;\n" +
+                               "    ShortProp:short;\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
         public void Write_WithTestTableWithUserOrdering_EmitsCorrectSchemaFragment()
         {
             var sb = new StringBuilder();
