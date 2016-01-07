@@ -50,7 +50,6 @@
     <Compile Include="FieldValueProvider.cs" />
     <Compile Include="FlatBuffersBaseException.cs" />
     <Compile Include="FlatBuffersConvert.cs" />
-    <Compile Include="FieldTypeMetaData.cs" />
     <Compile Include="FlatBuffersSchema.cs" />
     <Compile Include="FlatBuffersSchemaGenerator.cs" />
     <Compile Include="FlatBuffersSchemaTypeDependencyNode.cs" />
