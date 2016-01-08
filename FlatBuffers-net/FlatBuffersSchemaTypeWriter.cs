@@ -15,6 +15,7 @@ namespace FlatBuffers
         private readonly FlatBuffersSchemaTypeWriterOptions _options;
         private readonly string _indent;
         private readonly string _bracing;
+        private readonly string _newline;
 
         public FlatBuffersSchemaTypeWriter(TextWriter writer)
             : this(TypeModelRegistry.Default, writer, FlatBuffersSchemaTypeWriterOptions.Default)
@@ -32,13 +33,11 @@ namespace FlatBuffers
             _writer = writer;
             _options = options;
 
-            if (options.LineTerminator == FlatBuffersSchemaWriterLineTerminatorType.Lf)
-            {
-                _writer.NewLine = "\n";
-            }
+            _newline = options.LineTerminator == FlatBuffersSchemaWriterLineTerminatorType.Lf ? "\n" : "\r\n";
+            _writer.NewLine = _newline;
 
             _indent = new string(_options.IndentType == FlatBuffersSchemaWriterIndentType.Spaces ? ' ' : '\t', _options.IndentCount);
-            _bracing = _options.BracingStyle == FlatBuffersSchemaWriterBracingStyle.Egyptian ? " {" : "\r\n{";
+            _bracing = _options.BracingStyle == FlatBuffersSchemaWriterBracingStyle.Egyptian ? " {" : string.Format("{0}{{", _newline);
         }
 
         public void Write<T>()
