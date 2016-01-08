@@ -9,6 +9,7 @@ namespace FlatBuffers
         private readonly Type _clrType;
         private readonly BaseType _baseType;
         private readonly BaseType _elementType;
+        private readonly bool _isEnum;
 
         private StructTypeDefinition _structDef;
         private EnumTypeDefinition _enumDef;
@@ -36,7 +37,7 @@ namespace FlatBuffers
         /// <summary>
         /// Gets if this type is an enum
         /// </summary>
-        public bool IsEnum { get { return typeof (Enum).IsAssignableFrom(_clrType); } }
+        public bool IsEnum { get { return _isEnum; } }
 
         /// <summary>
         /// Gets if this type is a vector
@@ -79,6 +80,7 @@ namespace FlatBuffers
             _clrType = clrType;
             _baseType = baseType;
             _elementType = elementType;
+            _isEnum = typeof(Enum).IsAssignableFrom(_clrType);
         }
     }
 }

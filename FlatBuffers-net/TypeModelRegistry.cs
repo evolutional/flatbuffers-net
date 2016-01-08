@@ -57,7 +57,7 @@ namespace FlatBuffers
             }
             if (type.IsEnum)
             {
-                return DeduceBaseType(Enum.GetUnderlyingType(type));
+                return DeduceBaseTypeForEnum(type);
             }
             if (type.IsClass || type.IsValueType)
             {
@@ -92,9 +92,59 @@ namespace FlatBuffers
 
         private EnumTypeDefinition ReflectEnumDef(Type type)
         {
-            var enumTypeDef = new EnumTypeDefinition();
+            var enumTypeDef = new EnumTypeDefinition {UnderlyingType = Enum.GetUnderlyingType(type)};
             ReflectUserMetadata(type, enumTypeDef);
             return enumTypeDef;
+        }
+
+        private BaseType DeduceBaseTypeForEnum(Type type)
+        {
+            var underlyingType = Enum.GetUnderlyingType(type);
+
+            if (underlyingType != typeof (int))
+            {
+                // Always use the base type if it's been set explicitly
+                return DeduceBaseType(underlyingType);
+            }
+
+            if (!type.Defined<FlatBuffersEnumAttribute>())
+            {
+                // no attribute, so use the underlying type
+                return DeduceBaseType(underlyingType);
+            }
+
+            var attr = type.Attribute<FlatBuffersEnumAttribute>();
+            if (!attr.AutoSizeEnum)
+            {
+                // attribute not set, use the underlying type
+                return DeduceBaseType(underlyingType);
+            }
+
+            var values = Enum.GetValues(type);
+
+            var minValue = (long)Convert.ChangeType(values.GetValue(0), typeof(long));
+            var maxValue = (long)Convert.ChangeType(values.GetValue(values.Length-1), typeof(long));
+
+            var autoFitType = typeof (int);
+
+            if (minValue >= sbyte.MinValue && maxValue <= sbyte.MaxValue)
+            {
+                autoFitType = typeof(sbyte);
+            }
+            else if (minValue >= byte.MinValue && maxValue <= byte.MaxValue)
+            {
+                autoFitType = typeof (byte);
+            }
+            else if(minValue >= short.MinValue && maxValue <= short.MaxValue)
+            {
+                autoFitType = typeof(short);
+            }
+            else if (minValue >= ushort.MinValue && maxValue <= ushort.MaxValue)
+            {
+                autoFitType = typeof(ushort);
+            }
+
+            return DeduceBaseType(autoFitType);
         }
 
         private StructTypeDefinition ReflectStructDef(Type type)
@@ -295,6 +345,7 @@ namespace FlatBuffers
             }
 
             var typeName = type.Name;   // TODO: attribute
+
             var baseType = DeduceBaseType(type);
 
             if (baseType == BaseType.Vector)
@@ -313,13 +364,17 @@ namespace FlatBuffers
             {
                 typeModel.StructDef = ReflectStructDef(type);
             }
-            else if (typeof (Enum).IsAssignableFrom(type))
+            else if (typeModel.IsEnum)
             {
                 typeModel.EnumDef = ReflectEnumDef(type);
+                if (typeModel.BaseType != BaseType.Int 
+                    && typeModel.EnumDef.UnderlyingType == typeof(int))
+                {
+                    typeModel.EnumDef.IsAutoSized = true;
+                }
             }
 
             _typeModels.Add(type, typeModel);
-
             return typeModel;
         }
 

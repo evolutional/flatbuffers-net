@@ -318,6 +318,25 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Write_WithAutoSizedEnum_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestEnumAutoSizedToByte>();
+                var expected = "enum TestEnumAutoSizedToByte : ubyte {\n" +
+                               "   Apple,\n" +
+                               "   Orange,\n" +
+                               "   Pear,\n" +
+                               "   Banana = " + byte.MaxValue + "\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
         public void Write_WithTestEnumWithExplicitValues_EmitsCorrectSchemaFragment()
         {
             var sb = new StringBuilder();

@@ -312,6 +312,62 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void GetTypeModel_EnumWithAutoSizeToByte_ReflectsSizeCorrectly()
+        {
+            var typeModel = GetTypeModel<TestEnumAutoSizedToByte>();
+            Assert.IsTrue(typeModel.IsEnum);
+            Assert.IsNotNull(typeModel.EnumDef);
+            var def = typeModel.EnumDef;
+            Assert.IsTrue(def.IsAutoSized);
+            Assert.AreEqual(BaseType.UChar, typeModel.BaseType);
+        }
+
+        [Test]
+        public void GetTypeModel_EnumWithAutoSizeToSByte_ReflectsSizeCorrectly()
+        {
+            var typeModel = GetTypeModel<TestEnumAutoSizedToSByte>();
+            Assert.IsTrue(typeModel.IsEnum);
+            Assert.IsNotNull(typeModel.EnumDef);
+            var def = typeModel.EnumDef;
+            Assert.IsTrue(def.IsAutoSized);
+            Assert.AreEqual(BaseType.Char, typeModel.BaseType);
+        }
+
+        [Test]
+        public void GetTypeModel_EnumWithAutoSizeToShort_ReflectsSizeCorrectly()
+        {
+            var typeModel = GetTypeModel<TestEnumAutoSizedToShort>();
+            Assert.IsTrue(typeModel.IsEnum);
+            Assert.IsNotNull(typeModel.EnumDef);
+            var def = typeModel.EnumDef;
+            Assert.IsTrue(def.IsAutoSized);
+            Assert.AreEqual(BaseType.Short, typeModel.BaseType);
+        }
+
+        [Test]
+        public void GetTypeModel_EnumWithAutoSizeToUShort_ReflectsSizeCorrectly()
+        {
+            var typeModel = GetTypeModel<TestEnumAutoSizedToUShort>();
+            Assert.IsTrue(typeModel.IsEnum);
+            Assert.IsNotNull(typeModel.EnumDef);
+            var def = typeModel.EnumDef;
+            Assert.IsTrue(def.IsAutoSized);
+            Assert.AreEqual(BaseType.UShort, typeModel.BaseType);
+        }
+
+        [Test]
+        public void GetTypeModel_EnumWithAutoSizeToShortAndHasExplicitBase_UsesExplicitSize()
+        {
+            var typeModel = GetTypeModel<TestEnumWithExplictSizeNotAutoSized>();
+            Assert.IsTrue(typeModel.IsEnum);
+            Assert.IsNotNull(typeModel.EnumDef);
+            var def = typeModel.EnumDef;
+            Assert.IsFalse(def.IsAutoSized);
+            Assert.AreEqual(BaseType.Short, typeModel.BaseType);
+        }
+
+
+        [Test]
         public void GetTypeModel_ClassReflectedAsAStruct_SetsIsStructFlag()
         {
             var typeModel = GetTypeModel<ClassReflectedAsAStruct>();

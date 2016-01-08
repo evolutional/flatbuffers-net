@@ -1,4 +1,5 @@
 ﻿using System;
+using FlatBuffers.Attributes;
 
 namespace FlatBuffers.Tests.TestTypes
 {
@@ -24,5 +25,50 @@ namespace FlatBuffers.Tests.TestTypes
         Orange,
         Pear,
         Banana = Int32.MaxValue,
+    };
+
+    [FlatBuffersEnum(AutoSizeEnum = true)]
+    public enum TestEnumAutoSizedToByte
+    {
+        Apple,
+        Orange,
+        Pear,
+        Banana = byte.MaxValue,
+    };
+
+    [FlatBuffersEnum(AutoSizeEnum = true)]
+    public enum TestEnumAutoSizedToSByte
+    {
+        Apple,
+        Orange,
+        Pear,
+        Banana = sbyte.MaxValue,
+    };
+
+    [FlatBuffersEnum(AutoSizeEnum = true)]
+    public enum TestEnumAutoSizedToShort
+    {
+        Apple,
+        Orange,
+        Pear,
+        Banana = short.MaxValue,
+    };
+
+    [FlatBuffersEnum(AutoSizeEnum = true)]
+    public enum TestEnumAutoSizedToUShort
+    {
+        Apple,
+        Orange,
+        Pear,
+        Banana = ushort.MaxValue,
+    };
+
+    [FlatBuffersEnum(AutoSizeEnum = true)]
+    public enum TestEnumWithExplictSizeNotAutoSized : short
+    {
+        Apple,
+        Orange,
+        Pear,
+        Banana = byte.MaxValue,
     };
 }
