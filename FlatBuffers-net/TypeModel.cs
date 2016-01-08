@@ -11,8 +11,10 @@ namespace FlatBuffers
         private readonly BaseType _elementType;
 
         private StructTypeDefinition _structDef;
+        private EnumTypeDefinition _enumDef;
 
         public StructTypeDefinition StructDef { get { return _structDef; } set { _structDef = value; } }
+        public EnumTypeDefinition EnumDef { get { return _enumDef; } set { _enumDef = value; } }
 
         public string Name { get { return _typeName; } }
 

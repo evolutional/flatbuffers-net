@@ -2,13 +2,13 @@
 
 namespace FlatBuffers
 {
-    public class TypeDefinitionMetaDataCollection
+    public class TypeDefinitionMetadataCollection
     {
         private readonly Dictionary<string, TypeDefinitionMetadata> _metadata = new Dictionary<string, TypeDefinitionMetadata>();
 
-        public void Add(string key)
+        public void Add(string key, bool isUser)
         {
-            Add(key, null);
+            Add(key, null, isUser);
         }
 
         public void Remove(string key)
@@ -16,14 +16,22 @@ namespace FlatBuffers
             _metadata.Remove(key);
         }
 
-        public void Add(string key, object value)
+        public void Add(string key, object value, bool isUser)
         {
             _metadata.Remove(key);
-            _metadata.Add(key, new TypeDefinitionMetadata() { Key = key, Value = value });
+            _metadata.Add(key, new TypeDefinitionMetadata() { Key = key, Value = value, IsUserMetaData = isUser});
         }
+
 
         public int Count { get { return _metadata.Count; } }
 
-        public IEnumerable<TypeDefinitionMetadata> Items { get { return _metadata.Values; } } 
+        public IEnumerable<TypeDefinitionMetadata> Items { get { return _metadata.Values; } }
+
+        public TypeDefinitionMetadata GetByName(string name)
+        {
+            TypeDefinitionMetadata obj = null;
+            _metadata.TryGetValue(name, out obj);
+            return obj;
+        }
     }
 }

@@ -39,11 +39,13 @@
     <Compile Include="Attributes\FlatBuffersDefaultValueAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersFieldAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersIgnoreAttribute.cs" />
+    <Compile Include="Attributes\FlatBuffersMetadataAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersStructAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersTableAttribute.cs" />
     <Compile Include="BaseType.cs" />
     <Compile Include="BaseTypeExtensions.cs" />
     <Compile Include="DeserializationContext.cs" />
+    <Compile Include="EnumTypeDefinition.cs" />
     <Compile Include="FieldTypeDefinition.cs" />
     <Compile Include="FieldTypeMetaData.cs" />
     <Compile Include="StructTypeMetaData.cs" />

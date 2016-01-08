@@ -358,5 +358,41 @@ namespace FlatBuffers.Tests
                 AssertExtensions.AreEqual(expected, sb.ToString());
             }
         }
+
+        [Test]
+        public void Write_TableWithUserMetadata_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TableWithUserMetadata>();
+                var expected = "table TableWithUserMetadata (types) {\n" +
+                               "    PropA:int (priority: 1);\n" +
+                               "    PropB:bool (toggle: true);\n" +
+                               "    PropC:int (category: \"tests\");\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_EnumWithUserMetadata_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<EnumWithUserMetadata>();
+                var expected = "enum EnumWithUserMetadata : int (magicEnum) {\n" +
+                               "    Cat,\n" +
+                               "    Dog,\n" +
+                               "    Fish\n" +
+                               "}";
+
+                AssertExtensions.AreEqual(expected, sb.ToString());
+            }
+        }
     }
 }

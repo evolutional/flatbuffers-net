@@ -248,5 +248,52 @@ namespace FlatBuffers.Tests
             var deprecatedField = structDef.GetFieldByName("ByteProp");
             Assert.IsTrue(deprecatedField.Deprecated);
         }
+
+        [Test]
+        public void GetTypeModel_TableWithCustomMetadata_ReflectsAttributesCorrectly()
+        {
+            var typeModel = GetTypeModel<TableWithUserMetadata>();
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            var structAttr = structDef.Metadata.GetByName("types");
+            Assert.IsNotNull(structAttr);
+            Assert.IsFalse(structAttr.HasValue);
+
+            var propA = structDef.GetFieldByName("PropA");
+            var propAAttr = propA.Metadata.GetByName("priority");
+            Assert.IsNotNull(propAAttr);
+            Assert.IsTrue(propAAttr.HasValue);
+            Assert.IsTrue(propAAttr.IsUserMetaData);
+            Assert.AreEqual(1, propAAttr.Value);
+
+            var propB = structDef.GetFieldByName("PropB");
+            var propBAttr = propB.Metadata.GetByName("toggle");
+            Assert.IsNotNull(propBAttr);
+            Assert.IsTrue(propBAttr.HasValue);
+            Assert.IsTrue(propBAttr.IsUserMetaData);
+            Assert.AreEqual(true, propBAttr.Value);
+
+            var propC = structDef.GetFieldByName("PropC");
+            var propCAttr = propC.Metadata.GetByName("category");
+            Assert.IsNotNull(propCAttr);
+            Assert.IsTrue(propCAttr.HasValue);
+            Assert.IsTrue(propCAttr.IsUserMetaData);
+            Assert.AreEqual("tests", propCAttr.Value);
+        }
+
+        [Test]
+        public void GetTypeModel_EnumWithCustomMetadata_ReflectsAttributesCorrectly()
+        {
+            var typeModel = GetTypeModel<EnumWithUserMetadata>();
+            Assert.IsTrue(typeModel.IsEnum);
+            Assert.IsNotNull(typeModel.EnumDef);
+            var def = typeModel.EnumDef;
+
+            var attr = def.Metadata.GetByName("magicEnum");
+            Assert.IsNotNull(attr);
+            Assert.IsFalse(attr.HasValue);
+        }
     }
 }

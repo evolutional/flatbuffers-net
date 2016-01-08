@@ -10,6 +10,10 @@ namespace FlatBuffers
         private readonly TypeModelRegistry _typeModelRegistry;
         private readonly List<FlatBuffersSchemaTypeDependencyNode> _nodes = new List<FlatBuffersSchemaTypeDependencyNode>();
 
+        private readonly HashSet<string> _metadataAttributes = new HashSet<string>();
+
+        public IEnumerable<string> UserMetadataAttributes { get { return _metadataAttributes; } } 
+
         internal FlatBuffersSchema(TypeModelRegistry typeModelRegistry)
         {
             _typeModelRegistry = typeModelRegistry;
@@ -68,6 +72,14 @@ namespace FlatBuffers
             return node;
         }
 
+        private void CollectMetadata(TypeDefinition def)
+        {
+            foreach (var meta in def.Metadata.Items.Where(i=>i.IsUserMetaData))
+            {
+                _metadataAttributes.Add(meta.Key);
+            }
+        }
+
         private FlatBuffersSchemaTypeDependencyNode GetDependencyNode(TypeModel typeModel, FlatBuffersSchemaTypeDependencyNode parent)
         {
             var dep = _nodes.FirstOrDefault(i => i.TypeModel.Name == typeModel.Name);
@@ -101,16 +113,33 @@ namespace FlatBuffers
         public void WriteTo(TextWriter writer)
         {
             var schemaWriter = new FlatBuffersSchemaTypeWriter(writer);
-            var written = new List<TypeModel>();
 
+            var resolved = TraverseTypeGraph();
+
+            WriteUserMetadata(schemaWriter);
+
+            foreach (var node in resolved)
+            {
+                schemaWriter.Write(node.TypeModel);
+            }
+        }
+
+        /// <summary>
+        /// Traverses the type graph, resolving dependencies.
+        /// </summary>
+        /// <returns>Resolved, ordered list of types</returns>
+        private IEnumerable<FlatBuffersSchemaTypeDependencyNode> TraverseTypeGraph()
+        {
+            var results = new List<FlatBuffersSchemaTypeDependencyNode>();
+            var visited = new List<TypeModel>();
             // These types are the 'leaf' types, eg: have no parents
             var leafNodes = _nodes.Where(i => i.Parent == null).ToList();
 
             // write those out with no deps first
-            WriteRankedTypes(schemaWriter, leafNodes.Where(i => !i.DependentTypes.Any()), written);
+            VisitRankedTypes(results, leafNodes.Where(i => !i.DependentTypes.Any()), visited);
 
-            // remove already written nodes
-            leafNodes.RemoveAll(i => written.Any(n => n.Name == i.TypeModel.Name));
+            // remove already visited nodes
+            leafNodes.RemoveAll(i => visited.Any(n => n.Name == i.TypeModel.Name));
 
             // resolve deps for those nodes with deps
             var seen = new List<FlatBuffersSchemaTypeDependencyNode>();
@@ -120,10 +149,23 @@ namespace FlatBuffers
                 ResolveDependency(node, resolved, seen);
             }
             // Write out the rest of the types in order
-            WriteRankedTypes(schemaWriter, resolved, written);
+            VisitRankedTypes(results, resolved, visited);
+            return results;
         }
 
-        private static void WriteRankedTypes(FlatBuffersSchemaTypeWriter schemaWriter, IEnumerable<FlatBuffersSchemaTypeDependencyNode> types, ICollection<TypeModel> written)
+        private void WriteUserMetadata(FlatBuffersSchemaTypeWriter schemaTypeWriter)
+        {
+            foreach (var meta in _metadataAttributes.OrderBy(i => i))
+            {
+                schemaTypeWriter.WriteAttribute(meta);
+            }
+            if (_metadataAttributes.Any())
+            {
+                schemaTypeWriter.WriteLine();
+            }
+        }
+
+        private void VisitRankedTypes(ICollection<FlatBuffersSchemaTypeDependencyNode> results, IEnumerable<FlatBuffersSchemaTypeDependencyNode> types, ICollection<TypeModel> visited)
         {
             Func<TypeModel, int> typeOrderFunc = (type) =>
             {
@@ -149,13 +191,33 @@ namespace FlatBuffers
             {
                 var typeModel = node.Item.TypeModel;
 
-                if (written.Any(i => i.Name == typeModel.Name)) 
+                if (visited.Any(i => i.Name == typeModel.Name)) 
                     continue;
 
-                schemaWriter.Write(typeModel);
-                written.Add(typeModel);
+                // apply user types
+                CollectMetadata(typeModel);
+
+                results.Add(node.Item);
+                visited.Add(typeModel);
             }
         }
+
+        private void CollectMetadata(TypeModel typeModel)
+        {
+            if (typeModel.IsObject)
+            {
+                CollectMetadata(typeModel.StructDef);
+                foreach (var field in typeModel.StructDef.Fields)
+                {
+                    CollectMetadata(field);
+                }
+            }
+            else if (typeModel.IsEnum)
+            {
+                CollectMetadata(typeModel.EnumDef);
+            }
+        }
+
 
         private void ResolveDependency(FlatBuffersSchemaTypeDependencyNode node, ICollection<FlatBuffersSchemaTypeDependencyNode> resolved, ICollection<FlatBuffersSchemaTypeDependencyNode> seen)
         {

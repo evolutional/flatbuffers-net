@@ -2,7 +2,7 @@ using System;
 
 namespace FlatBuffers
 {
-    public struct TypeDefinitionMetadata
+    public class TypeDefinitionMetadata
     {
         private object _value;
         public string Key { get; set; }
@@ -31,5 +31,10 @@ namespace FlatBuffers
         }
 
         public bool HasValue { get; private set; }
+
+        /// <summary>
+        /// Gets if this is a user-created attribute
+        /// </summary>
+        public bool IsUserMetaData { get; internal set; }
     }
 }

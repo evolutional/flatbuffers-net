@@ -90,6 +90,13 @@ namespace FlatBuffers
             structTypeDef.UseOriginalOrdering = attribute.OriginalOrdering;
         }
 
+        private EnumTypeDefinition ReflectEnumDef(Type type)
+        {
+            var enumTypeDef = new EnumTypeDefinition();
+            ReflectUserMetadata(type, enumTypeDef);
+            return enumTypeDef;
+        }
+
         private StructTypeDefinition ReflectStructDef(Type type)
         {
             var members =
@@ -99,6 +106,8 @@ namespace FlatBuffers
                    .ToArray();
 
             var structTypeDef = new StructTypeDefinition(!type.IsClass);
+
+            ReflectUserMetadata(type, structTypeDef);
 
             if (members.Any(i =>
             { 
@@ -219,6 +228,7 @@ namespace FlatBuffers
                 OriginalIndex = index
             };
 
+            ReflectUserMetadata(member, field);
             
             if (attr != null)
             {
@@ -226,13 +236,26 @@ namespace FlatBuffers
                 {
                     field.Index = attr.Order;
                 }
-
                 field.Required = attr.Required;
-
                 field.Deprecated = attr.Deprecated;
             }
 
             return field;
+        }
+
+        private void ReflectUserMetadata(ICustomAttributeProvider type, TypeDefinition typeDef)
+        {
+            foreach (var attr in type.Attributes<FlatBuffersMetadataAttribute>())
+            {
+                if (!attr.HasValue)
+                {
+                    typeDef.Metadata.Add(attr.Name, true);
+                }
+                else
+                {
+                    typeDef.Metadata.Add(attr.Name, attr.Value, true);
+                }
+            }
         }
 
         public TypeModel GetTypeModel<T>()
@@ -272,6 +295,10 @@ namespace FlatBuffers
             if (baseType == BaseType.Struct)
             {
                 typeModel.StructDef = ReflectStructDef(type);
+            }
+            else if (typeof (Enum).IsAssignableFrom(type))
+            {
+                typeModel.EnumDef = ReflectEnumDef(type);
             }
 
             _typeModels.Add(type, typeModel);

@@ -28,14 +28,14 @@ namespace FlatBuffers
                 : elementType;
         }
 
-        public static T Attribute<T>(this MemberInfo member)
+        public static T Attribute<T>(this ICustomAttributeProvider member)
         {
             return (T)member.GetCustomAttributes(typeof(T), true).FirstOrDefault();
         }
 
-        public static T Attribute<T>(this Type type)
+        public static IEnumerable<T> Attributes<T>(this ICustomAttributeProvider member)
         {
-            return (T)type.GetCustomAttributes(typeof(T), true).FirstOrDefault();
+            return member.GetCustomAttributes(typeof(T), true).Select(i=>(T)i);
         }
 
         public static bool Defined<T>(this MemberInfo member)

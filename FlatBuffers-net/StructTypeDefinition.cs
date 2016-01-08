@@ -35,7 +35,7 @@ namespace FlatBuffers
             set
             {
                 _originalOrdering = value;
-                MetaData.Add(StructTypeMetaData.OriginalOrder);
+                Metadata.Add(StructTypeMetadata.OriginalOrder, false);
             }
         }
 
@@ -45,7 +45,7 @@ namespace FlatBuffers
             set { 
                 _forceAlignSize = value;
                 IsForceAlignSet = true;
-                MetaData.Add(StructTypeMetaData.ForceAlign, value);
+                Metadata.Add(StructTypeMetadata.ForceAlign, value, false);
             }
         }
 

@@ -3,14 +3,14 @@
     public class TypeDefinition
     {
         // base stuff, like namespace, type name, etc
-        private readonly TypeDefinitionMetaDataCollection _metadata = new TypeDefinitionMetaDataCollection();
+        private readonly TypeDefinitionMetadataCollection _metadata = new TypeDefinitionMetadataCollection();
 
-        public bool HasMetaData
+        public bool HasMetadata
         {
             get { return _metadata.Count > 0; }
         }
 
-        public TypeDefinitionMetaDataCollection MetaData { get { return _metadata; } } 
+        public TypeDefinitionMetadataCollection Metadata { get { return _metadata; } } 
 
         public string Name { get; set; }
     }

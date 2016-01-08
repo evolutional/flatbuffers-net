@@ -32,7 +32,7 @@
             {
                 _index = value;
                 IsIndexSetExplicitly = true;
-                MetaData.Add(FieldTypeMetaData.Index, _index);
+                Metadata.Add(FieldTypeMetadata.Index, _index, false);
             }
         }
 
@@ -66,11 +66,11 @@
                 _required = value;
                 if (_required)
                 {
-                   MetaData.Add(FieldTypeMetaData.Required);
+                   Metadata.Add(FieldTypeMetadata.Required, false);
                 }
                 else
                 {
-                    MetaData.Remove(FieldTypeMetaData.Required);
+                    Metadata.Remove(FieldTypeMetadata.Required);
                 }
             }
             
@@ -87,11 +87,11 @@
                 _deprecated = value;
                 if (_deprecated)
                 {
-                    MetaData.Add(FieldTypeMetaData.Deprecated);
+                    Metadata.Add(FieldTypeMetadata.Deprecated, false);
                 }
                 else
                 {
-                    MetaData.Remove(FieldTypeMetaData.Deprecated);
+                    Metadata.Remove(FieldTypeMetadata.Deprecated);
                 }
             }
 

@@ -146,5 +146,54 @@ namespace FlatBuffers.Tests
 
             AssertExtensions.AreEqual(expected, sb.ToString());
         }
+
+        [Test]
+        public void WriteTo_WhenUserMetadataPresent_WritesAttributeDeclaration()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            var schema = generator.Generate<TableWithUserMetadata>();
+
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                schema.WriteTo(sw);
+            }
+
+            var expected =  "attribute \"category\";\n" +
+                            "attribute \"priority\";\n" +
+                            "attribute \"toggle\";\n" +
+                            "attribute \"types\";\n" +
+                            "\n" +
+                            "table TableWithUserMetadata (types) {\n" +
+                               "    PropA:int (priority: 1);\n" +
+                               "    PropB:bool (toggle: true);\n" +
+                               "    PropC:int (category: \"tests\");\n" +
+                               "}";
+
+            AssertExtensions.AreEqual(expected, sb.ToString());
+        }
+
+        [Test]
+        public void WriteTo_WhenEnumUserMetadataPresent_WritesAttributeDeclaration()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            var schema = generator.Generate<EnumWithUserMetadata>();
+
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                schema.WriteTo(sw);
+            }
+
+            var expected = "attribute \"magicEnum\";\n" +
+                            "\n" +
+                            "enum EnumWithUserMetadata : int (magicEnum) {\n" +
+                               "    Cat,\n" +
+                               "    Dog,\n" +
+                               "    Fish\n" +
+                               "}";
+
+            AssertExtensions.AreEqual(expected, sb.ToString());
+        }
     }
 }

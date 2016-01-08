@@ -159,7 +159,7 @@ namespace FlatBuffers
         {
             var structOrTable = typeModel.StructDef.IsFixed ? "struct" : "table";
             var sb = new StringBuilder();
-            BuildMetaData(sb, typeModel.StructDef);
+            BuildMetadata(sb, typeModel.StructDef);
             if (sb.Length > 0)
             {
                 sb.Append(' ');
@@ -198,12 +198,12 @@ namespace FlatBuffers
         {
             var fieldTypeName = GetFlatBufferTypeName(field.TypeModel);
 
-            var meta = BuildMetaData(field);
+            var meta = BuildMetadata(field);
 
             _writer.WriteLine("    {0}:{1}{2};", field.Name, fieldTypeName, meta);
         }
 
-        private string BuildMetaData(FieldTypeDefinition field)
+        private string BuildMetadata(FieldTypeDefinition field)
         {
             var sb = new StringBuilder();
 
@@ -212,20 +212,13 @@ namespace FlatBuffers
                 sb.AppendFormat(" = {0}", field.DefaultValueProvider.GetDefaultValue(field.TypeModel.Type));
             }
 
-            BuildMetaData(sb, field);
+            BuildMetadata(sb, field);
             return sb.ToString();
         }
 
-        private string BuildMetaData(StructTypeDefinition structDef)
+        private void BuildMetadata(StringBuilder sb, TypeDefinition def)
         {
-            var sb = new StringBuilder();
-            BuildMetaData(sb, structDef);
-            return sb.ToString();
-        }
-
-        private void BuildMetaData(StringBuilder sb, TypeDefinition def)
-        {
-            if (!def.HasMetaData)
+            if (!def.HasMetadata)
             {
                 return;
             }
@@ -234,10 +227,29 @@ namespace FlatBuffers
             sb.Append(" (");
 
             var requiresComma = false;
-            foreach (var meta in def.MetaData.Items)
+            foreach (var meta in def.Metadata.Items)
             {
+                var metaValue = string.Empty;
+
+                if (meta.HasValue)
+                {
+                    var valueType = meta.Value.GetType();
+                    if (valueType == typeof (string))
+                    {
+                        metaValue = string.Format("\"{0}\"", meta.Value);
+                    }
+                    else if (valueType == typeof (bool))
+                    {
+                        metaValue = ((bool) meta.Value) ? "true" : "false";
+                    }
+                    else
+                    {
+                        metaValue = meta.Value.ToString();
+                    }
+                }
+
                 sb.Append(meta.HasValue
-                    ? string.Format("{0}{1}: {2}", requiresComma ? ", " : "", meta.Key, meta.Value)
+                    ? string.Format("{0}{1}: {2}", requiresComma ? ", " : "", meta.Key, metaValue)
                     : string.Format("{0}{1}", requiresComma ? ", " : "", meta.Key));
 
                 requiresComma = true;
@@ -257,7 +269,16 @@ namespace FlatBuffers
             {
                 throw new ArgumentException();
             }
-            _writer.WriteLine("enum {0} : {1} {{", typeModel.Name, typeModel.BaseType.FlatBufferTypeName());
+
+            var sb = new StringBuilder();
+            BuildMetadata(sb, typeModel.EnumDef);
+            if (sb.Length > 0)
+            {
+                sb.Append(' ');
+            }
+            var meta = sb.ToString();
+
+            _writer.WriteLine("enum {0} : {1} {2}{{", typeModel.Name, typeModel.BaseType.FlatBufferTypeName(), meta);
         }
 
         protected void EndEnum()
@@ -266,5 +287,15 @@ namespace FlatBuffers
             _writer.WriteLine("}");
         }
 
+        public void WriteAttribute(string name)
+        {
+            // TODO: assert nesting
+            _writer.WriteLine("attribute \"{0}\";", name);
+        }
+
+        public void WriteLine()
+        {
+            _writer.WriteLine();
+        }
     }
 }

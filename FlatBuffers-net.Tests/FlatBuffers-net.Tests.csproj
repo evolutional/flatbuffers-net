@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertExtensions.cs" />
+    <Compile Include="EnumWithUserMetadata.cs" />
     <Compile Include="FlatBuffersDeserializationTests.cs" />
     <Compile Include="FlatBuffersSchemaTests.cs" />
     <Compile Include="FlatBuffersSchemaTypeWriterTests.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="SerializationTests\TestTableWithStruct.cs" />
     <Compile Include="SerializationTests\TestTableWithTable.cs" />
     <Compile Include="SerializationTests\TestTableWithUserOrdering.cs" />
+    <Compile Include="TableWithUserMetadata.cs" />
     <Compile Include="TestTypes\TableWithRequiredFields.cs" />
     <Compile Include="TestTypes\TestEnum.cs" />
     <Compile Include="TestTypes\TestEnumWithExplicitNonContigValues.cs" />
