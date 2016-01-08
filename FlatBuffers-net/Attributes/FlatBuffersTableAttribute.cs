@@ -5,7 +5,6 @@ namespace FlatBuffers.Attributes
     /// <summary>
     /// Attribute to signify that this type is to be serialized as a table
     /// </summary>
-    [AttributeUsage(AttributeTargets.Struct|AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class FlatBuffersTableAttribute : Attribute
     {
         /// <summary>

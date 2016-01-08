@@ -105,7 +105,24 @@ namespace FlatBuffers
                    .Where(i=>!i.Defined<FlatBuffersIgnoreAttribute>())
                    .ToArray();
 
-            var structTypeDef = new StructTypeDefinition(!type.IsClass);
+            var isFixed = !type.IsClass;
+
+            if (type.IsClass && type.Defined<FlatBuffersStructAttribute>())
+            {
+                isFixed = true;
+            }
+
+            if (!type.IsClass && type.Defined<FlatBuffersTableAttribute>())
+            {
+                isFixed = false;
+            }
+
+            if (type.Defined<FlatBuffersTableAttribute>() && type.Defined<FlatBuffersStructAttribute>())
+            {
+                throw new FlatBuffersTypeReflectionException("Cannot use FlatBuffersStructAttribute and FlatBuffersTableAttribute on same type");
+            }
+
+            var structTypeDef = new StructTypeDefinition(isFixed);
 
             ReflectUserMetadata(type, structTypeDef);
 

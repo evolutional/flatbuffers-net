@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using FlatBuffers.Attributes;
 using FlatBuffers.Tests.TestTypes;
 using NUnit.Framework;
@@ -71,6 +70,22 @@ namespace FlatBuffers.Tests
             public int Prop { get; set; }
         }
 
+        [FlatBuffersTable]
+        [FlatBuffersStruct]
+        private struct StructWithTwoAttributes
+        {
+            public int A { get; set; }
+            public byte B { get; set; }
+        }
+
+        [FlatBuffersTable]
+        [FlatBuffersStruct]
+        private abstract class ClassWithTwoAttributes
+        {
+            public int A { get; set; }
+            public byte B { get; set; }
+        }
+        
         [Test]
         public void GetTypeModel_WithUserOrderedFields_ReflectsIndexCorrectly()
         {
@@ -294,6 +309,34 @@ namespace FlatBuffers.Tests
             var attr = def.Metadata.GetByName("magicEnum");
             Assert.IsNotNull(attr);
             Assert.IsFalse(attr.HasValue);
+        }
+
+        [Test]
+        public void GetTypeModel_ClassReflectedAsAStruct_SetsIsStructFlag()
+        {
+            var typeModel = GetTypeModel<ClassReflectedAsAStruct>();
+            Assert.IsTrue(typeModel.IsStruct);
+        }
+
+        [Test]
+        public void GetTypeModel_StructReflectedAsATable_SetsIsTableFlag()
+        {
+            var typeModel = GetTypeModel<StructReflectedAsATable>();
+            Assert.IsTrue(typeModel.IsTable);
+        }
+
+        [ExpectedException(typeof(FlatBuffersTypeReflectionException), ExpectedMessage = "Cannot use FlatBuffersStructAttribute and FlatBuffersTableAttribute on same type")]
+        [Test]
+        public void GetTypeModel_WhenStructAnd_StructAndTableAttributesUsed_ThrowsException()
+        {
+            var typeModel = GetTypeModel<StructWithTwoAttributes>();
+        }
+
+        [ExpectedException(typeof(FlatBuffersTypeReflectionException), ExpectedMessage = "Cannot use FlatBuffersStructAttribute and FlatBuffersTableAttribute on same type")]
+        [Test]
+        public void GetTypeModel_WhenClassAnd_StructAndTableAttributesUsed_ThrowsException()
+        {
+            var typeModel = GetTypeModel<ClassWithTwoAttributes>();
         }
     }
 }
