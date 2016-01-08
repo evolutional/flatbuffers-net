@@ -48,6 +48,7 @@
     <Compile Include="EnumTypeDefinition.cs" />
     <Compile Include="FieldTypeDefinition.cs" />
     <Compile Include="FieldTypeMetaData.cs" />
+    <Compile Include="FlatBuffersSchemaTypeWriterOptions.cs" />
     <Compile Include="StructTypeMetaData.cs" />
     <Compile Include="TypeDefinitionMetadata.cs" />
     <Compile Include="FieldValueProvider.cs" />

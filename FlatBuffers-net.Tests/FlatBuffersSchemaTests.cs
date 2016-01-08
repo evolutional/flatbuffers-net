@@ -84,7 +84,7 @@ namespace FlatBuffers.Tests
                             "    EnumProp:RootEnum;\n" +
                             "}";
 
-            AssertExtensions.AreEqual(expected, sb.ToString());
+            AssertExtensions.AreEquivalent(expected, sb.ToString());
         }
 
         [Test]
@@ -109,7 +109,7 @@ namespace FlatBuffers.Tests
                             "    StructProp:Level1StructWithStructDep;\n" +
                             "}";
 
-            AssertExtensions.AreEqual(expected, sb.ToString());
+            AssertExtensions.AreEquivalent(expected, sb.ToString());
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace FlatBuffers.Tests
                             "    StructProp:Level1StructWithStructDep;\n" +
                             "}";
 
-            AssertExtensions.AreEqual(expected, sb.ToString());
+            AssertExtensions.AreEquivalent(expected, sb.ToString());
         }
 
         [Test]
@@ -170,7 +170,7 @@ namespace FlatBuffers.Tests
                                "    PropC:int (category: \"tests\");\n" +
                                "}";
 
-            AssertExtensions.AreEqual(expected, sb.ToString());
+            AssertExtensions.AreEquivalent(expected, sb.ToString());
         }
 
         [Test]
@@ -193,7 +193,7 @@ namespace FlatBuffers.Tests
                                "    Fish\n" +
                                "}";
 
-            AssertExtensions.AreEqual(expected, sb.ToString());
+            AssertExtensions.AreEquivalent(expected, sb.ToString());
         }
     }
 }

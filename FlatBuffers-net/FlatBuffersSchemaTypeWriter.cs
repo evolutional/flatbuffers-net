@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -13,16 +12,28 @@ namespace FlatBuffers
     {
         private readonly TypeModelRegistry _typeModelRegistry;
         private readonly TextWriter _writer;
+        private readonly FlatBuffersSchemaTypeWriterOptions _options;
+        private readonly string _indent;
+        private readonly string _bracing;
 
         public FlatBuffersSchemaTypeWriter(TextWriter writer)
-            : this(TypeModelRegistry.Default, writer)
+            : this(TypeModelRegistry.Default, writer, FlatBuffersSchemaTypeWriterOptions.Default)
         {
         }
 
-        public FlatBuffersSchemaTypeWriter(TypeModelRegistry typeModelRegistry, TextWriter writer)
+        public FlatBuffersSchemaTypeWriter(TextWriter writer, FlatBuffersSchemaTypeWriterOptions options)
+            : this(TypeModelRegistry.Default, writer, options)
+        {
+        }
+
+        public FlatBuffersSchemaTypeWriter(TypeModelRegistry typeModelRegistry, TextWriter writer, FlatBuffersSchemaTypeWriterOptions options)
         {
             _typeModelRegistry = typeModelRegistry;
             _writer = writer;
+            _options = options;
+
+            _indent = new string(_options.IndentType == FlatBuffersSchemaWriterIndentType.Spaces ? ' ' : '\t', _options.IndentCount);
+            _bracing = _options.BracingStyle == FlatBuffersSchemaWriterBracingStyle.Egyptian ? " {" : "\r\n{";
         }
 
         public void Write<T>()
@@ -110,11 +121,11 @@ namespace FlatBuffers
 
                 if (emitValue)
                 {
-                    _writer.WriteLine("    {0} = {1}{2}", names[i], enumValue, i == names.Length - 1 ? "" : ","); 
+                    _writer.WriteLine("{0}{1} = {2}{3}", _indent, names[i], enumValue, i == names.Length - 1 ? "" : ","); 
                 }
                 else
                 {
-                    _writer.WriteLine("    {0}{1}", names[i], i == names.Length - 1 ? "" : ","); 
+                    _writer.WriteLine("{0}{1}{2}", _indent, names[i], i == names.Length - 1 ? "" : ","); 
                 }
             }
             EndEnum();
@@ -160,12 +171,8 @@ namespace FlatBuffers
             var structOrTable = typeModel.StructDef.IsFixed ? "struct" : "table";
             var sb = new StringBuilder();
             BuildMetadata(sb, typeModel.StructDef);
-            if (sb.Length > 0)
-            {
-                sb.Append(' ');
-            }
             var meta = sb.ToString();
-            _writer.WriteLine("{0} {1} {2}{{", structOrTable, typeModel.Name, meta);
+            _writer.WriteLine("{0} {1}{2}{3}", structOrTable, typeModel.Name, meta, _bracing);
         }
 
         private string GetFlatBufferTypeName(TypeModel typeModel)
@@ -200,7 +207,7 @@ namespace FlatBuffers
 
             var meta = BuildMetadata(field);
 
-            _writer.WriteLine("    {0}:{1}{2};", field.Name, fieldTypeName, meta);
+            _writer.WriteLine("{0}{1}:{2}{3};", _indent, field.Name, fieldTypeName, meta);
         }
 
         private string BuildMetadata(FieldTypeDefinition field)
@@ -272,13 +279,8 @@ namespace FlatBuffers
 
             var sb = new StringBuilder();
             BuildMetadata(sb, typeModel.EnumDef);
-            if (sb.Length > 0)
-            {
-                sb.Append(' ');
-            }
             var meta = sb.ToString();
-
-            _writer.WriteLine("enum {0} : {1} {2}{{", typeModel.Name, typeModel.BaseType.FlatBufferTypeName(), meta);
+            _writer.WriteLine("enum {0} : {1}{2}{3}", typeModel.Name, typeModel.BaseType.FlatBufferTypeName(), meta, _bracing);
         }
 
         protected void EndEnum()

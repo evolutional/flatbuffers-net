@@ -29,7 +29,7 @@ namespace FlatBuffers.Tests
             return sb.ToString().Trim();
         }
 
-        public static void AreEqual(string expected, string actual)
+        public static void AreEquivalent(string expected, string actual)
         {
             expected = NormalizeWhitespace(expected);
             actual = NormalizeWhitespace(actual);

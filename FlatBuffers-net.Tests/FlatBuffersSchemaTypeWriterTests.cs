@@ -25,7 +25,65 @@ namespace FlatBuffers.Tests
                                "    ShortProp:short;\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithTestStruct1_And2SpacesForIndentation_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var options = new FlatBuffersSchemaTypeWriterOptions {IndentCount = 2};
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw, options);
+                schemaWriter.Write<TestStruct1>();
+                var expected = "struct TestStruct1 {\r\n" +
+                               "  IntProp:int;\r\n" +
+                               "  ByteProp:ubyte;\r\n" +
+                               "  ShortProp:short;\r\n" +
+                               "}\r\n";
+
+                Assert.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithTestStruct1_And1TabForIndentation_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var options = new FlatBuffersSchemaTypeWriterOptions { IndentCount = 1, IndentType = FlatBuffersSchemaWriterIndentType.Tabs };
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw, options);
+                schemaWriter.Write<TestStruct1>();
+                var expected = "struct TestStruct1 {\r\n" +
+                               "\tIntProp:int;\r\n" +
+                               "\tByteProp:ubyte;\r\n" +
+                               "\tShortProp:short;\r\n" +
+                               "}\r\n";
+
+                Assert.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithTestStruct1_AndNewLineBracing_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var options = new FlatBuffersSchemaTypeWriterOptions { BracingStyle = FlatBuffersSchemaWriterBracingStyle.NewLine };
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw, options);
+                schemaWriter.Write<TestStruct1>();
+                var expected = "struct TestStruct1\r\n" +
+                               "{\r\n" +
+                               "    IntProp:int;\r\n" +
+                               "    ByteProp:ubyte;\r\n" +
+                               "    ShortProp:short;\r\n" +
+                               "}\r\n";
+
+                Assert.AreEqual(expected, sb.ToString());
             }
         }
 
@@ -43,7 +101,7 @@ namespace FlatBuffers.Tests
                                "    ShortProp:short;\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -61,7 +119,7 @@ namespace FlatBuffers.Tests
                                "    ShortProp:short = 1024;\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -79,7 +137,7 @@ namespace FlatBuffers.Tests
                                "    ShortProp:short;\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -97,7 +155,7 @@ namespace FlatBuffers.Tests
                                "    ShortProp:short (id: 1);\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -115,7 +173,7 @@ namespace FlatBuffers.Tests
                                "    ShortProp:short;\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -131,7 +189,7 @@ namespace FlatBuffers.Tests
                                "    StringProp:string;\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -150,7 +208,7 @@ namespace FlatBuffers.Tests
                                "   Banana\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -163,13 +221,61 @@ namespace FlatBuffers.Tests
                 var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
                 schemaWriter.Write<TestEnumWithNoDeclaredBaseType>();
                 var expected = "enum TestEnumWithNoDeclaredBaseType : int {\n" +
-                               "   Apple,\n" +
-                               "   Orange,\n" +
-                               "   Pear,\n" +
-                               "   Banana\n" +
+                               "    Apple,\n" +
+                               "    Orange,\n" +
+                               "    Pear,\n" +
+                               "    Banana\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithTestEnumWithNoDeclaredBaseType_AndNewLineBracing_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var options = new FlatBuffersSchemaTypeWriterOptions
+                {
+                    BracingStyle = FlatBuffersSchemaWriterBracingStyle.NewLine
+                };
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw, options);
+                schemaWriter.Write<TestEnumWithNoDeclaredBaseType>();
+                var expected = "enum TestEnumWithNoDeclaredBaseType : int\r\n" +
+                               "{\r\n" +
+                               "    Apple,\r\n" +
+                               "    Orange,\r\n" +
+                               "    Pear,\r\n" +
+                               "    Banana\r\n" +
+                               "}\r\n";
+
+                Assert.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithTestEnumWithNoDeclaredBaseType_And1TabIndentation_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var options = new FlatBuffersSchemaTypeWriterOptions
+                {
+                    IndentType = FlatBuffersSchemaWriterIndentType.Tabs,
+                    IndentCount = 1
+                };
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw, options);
+                schemaWriter.Write<TestEnumWithNoDeclaredBaseType>();
+                var expected = "enum TestEnumWithNoDeclaredBaseType : int {\r\n" +
+                               "\tApple,\r\n" +
+                               "\tOrange,\r\n" +
+                               "\tPear,\r\n" +
+                               "\tBanana\r\n" +
+                               "}\r\n";
+
+                Assert.AreEqual(expected, sb.ToString());
             }
         }
 
@@ -188,7 +294,7 @@ namespace FlatBuffers.Tests
                                "   Banana = " + int.MaxValue + "\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -207,7 +313,7 @@ namespace FlatBuffers.Tests
                                "   Pear = 5\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -226,7 +332,7 @@ namespace FlatBuffers.Tests
                                "   Banana = 9\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -242,7 +348,7 @@ namespace FlatBuffers.Tests
                                "    EnumProp:TestEnum;\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -259,7 +365,7 @@ namespace FlatBuffers.Tests
                                "    TestStructProp:TestStruct1;\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -276,7 +382,7 @@ namespace FlatBuffers.Tests
                                "    IntProp:int;\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -293,7 +399,7 @@ namespace FlatBuffers.Tests
                                "    IntList:[int];\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -311,7 +417,7 @@ namespace FlatBuffers.Tests
                                "    VectorProp:[int] (required);\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -336,7 +442,7 @@ namespace FlatBuffers.Tests
                                "    VectorProp:[int] (id: 0, required);\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -355,7 +461,30 @@ namespace FlatBuffers.Tests
                                "    Z:float;\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_StructWithForceAlign_AndNewLineBracing_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var options = new FlatBuffersSchemaTypeWriterOptions
+                {
+                    BracingStyle = FlatBuffersSchemaWriterBracingStyle.NewLine
+                };
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw, options);
+                schemaWriter.Write<TestStructWithForcedAlignment>();
+                var expected = "struct TestStructWithForcedAlignment (force_align: 16)\r\n" +
+                               "{\r\n" +
+                               "    X:float;\r\n" +
+                               "    Y:float;\r\n" +
+                               "    Z:float;\r\n" +
+                               "}\r\n";
+
+                Assert.AreEqual(expected, sb.ToString());
             }
         }
 
@@ -373,7 +502,7 @@ namespace FlatBuffers.Tests
                                "    PropC:int (category: \"tests\");\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
 
@@ -391,7 +520,30 @@ namespace FlatBuffers.Tests
                                "    Fish\n" +
                                "}";
 
-                AssertExtensions.AreEqual(expected, sb.ToString());
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_EnumWithUserMetadata_AndNewLineBracing_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var options = new FlatBuffersSchemaTypeWriterOptions
+                {
+                    BracingStyle = FlatBuffersSchemaWriterBracingStyle.NewLine
+                };
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw, options);
+                schemaWriter.Write<EnumWithUserMetadata>();
+                var expected = "enum EnumWithUserMetadata : int (magicEnum)\r\n" +
+                               "{\r\n" +
+                               "    Cat,\r\n" +
+                               "    Dog,\r\n" +
+                               "    Fish\r\n" +
+                               "}\r\n";
+
+                Assert.AreEqual(expected, sb.ToString());
             }
         }
     }
