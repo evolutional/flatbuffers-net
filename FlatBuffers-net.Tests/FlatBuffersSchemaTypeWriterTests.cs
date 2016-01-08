@@ -49,6 +49,25 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Write_WithTestStruct1_AndLfLineTerminator_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var options = new FlatBuffersSchemaTypeWriterOptions { LineTerminator = FlatBuffersSchemaWriterLineTerminatorType.Lf};
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw, options);
+                schemaWriter.Write<TestStruct1>();
+                var expected = "struct TestStruct1 {\n" +
+                               "    IntProp:int;\n" +
+                               "    ByteProp:ubyte;\n" +
+                               "    ShortProp:short;\n" +
+                               "}\n";
+
+                Assert.AreEqual(expected, sb.ToString());
+            }
+        }
+
+        [Test]
         public void Write_WithTestStruct1_And1TabForIndentation_EmitsCorrectSchemaFragment()
         {
             var sb = new StringBuilder();

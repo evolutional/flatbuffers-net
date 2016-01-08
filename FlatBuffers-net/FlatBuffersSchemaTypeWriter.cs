@@ -32,6 +32,11 @@ namespace FlatBuffers
             _writer = writer;
             _options = options;
 
+            if (options.LineTerminator == FlatBuffersSchemaWriterLineTerminatorType.Lf)
+            {
+                _writer.NewLine = "\n";
+            }
+
             _indent = new string(_options.IndentType == FlatBuffersSchemaWriterIndentType.Spaces ? ' ' : '\t', _options.IndentCount);
             _bracing = _options.BracingStyle == FlatBuffersSchemaWriterBracingStyle.Egyptian ? " {" : "\r\n{";
         }

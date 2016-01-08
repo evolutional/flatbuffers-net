@@ -33,6 +33,21 @@ namespace FlatBuffers
     }
 
     /// <summary>
+    /// Enum to direct how FlatBuffersSchemaTypeWriter should terminate a line
+    /// </summary>
+    public enum FlatBuffersSchemaWriterLineTerminatorType
+    {
+        /// <summary>
+        /// Terminate with Windows style CrLf
+        /// </summary>
+        CrLf,
+        /// <summary>
+        /// Terminate with Linux style Lf
+        /// </summary>
+        Lf,
+    }
+
+    /// <summary>
     /// Options for the FlatBuffersSchemaTypeWriter
     /// </summary>
     public class FlatBuffersSchemaTypeWriterOptions
@@ -44,6 +59,7 @@ namespace FlatBuffers
             IndentType = FlatBuffersSchemaWriterIndentType.Spaces;
             IndentCount = 4;
             BracingStyle = FlatBuffersSchemaWriterBracingStyle.Egyptian;
+            LineTerminator = FlatBuffersSchemaWriterLineTerminatorType.CrLf;
         }
 
         /// <summary>
@@ -73,5 +89,10 @@ namespace FlatBuffers
         /// Gets and sets the type of bracing style to use when writing the schema
         /// </summary>
         public FlatBuffersSchemaWriterBracingStyle BracingStyle { get; set; }
+
+        /// <summary>
+        /// Gets and sets the type of line terminator to use when writing the schema
+        /// </summary>
+        public FlatBuffersSchemaWriterLineTerminatorType LineTerminator { get; set; }
     }
 }

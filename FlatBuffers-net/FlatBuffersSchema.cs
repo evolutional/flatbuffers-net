@@ -112,7 +112,12 @@ namespace FlatBuffers
 
         public void WriteTo(TextWriter writer)
         {
-            var schemaWriter = new FlatBuffersSchemaTypeWriter(writer);
+            WriteTo(writer, FlatBuffersSchemaTypeWriterOptions.Default);
+        }
+
+        public void WriteTo(TextWriter writer, FlatBuffersSchemaTypeWriterOptions options)
+        {
+            var schemaWriter = new FlatBuffersSchemaTypeWriter(writer, options);
 
             var resolved = TraverseTypeGraph();
 
