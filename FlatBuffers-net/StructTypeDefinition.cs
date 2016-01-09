@@ -13,6 +13,8 @@ namespace FlatBuffers
 
         public IEnumerable<FieldTypeDefinition> Fields { get { return _fields; } }
 
+        public int FieldCount { get { return _fields.Count; } }
+
         public StructTypeDefinition(bool isFixed)
         {
             IsFixed = isFixed;
@@ -66,6 +68,7 @@ namespace FlatBuffers
 
         public void AddField(FieldTypeDefinition field)
         {
+            field.OriginalIndex = _fields.Count;
             var typeModel = field.TypeModel;
             if (IsFixed)
             {
@@ -91,6 +94,33 @@ namespace FlatBuffers
             }
 
             _fields.Add(field);
+        }
+
+        internal void FinalizeFieldDefinition()
+        {
+            // Recalc offsets if using custom ordering
+            if (HasCustomOrdering)
+            {
+                _fields.Sort(new IndexBasedFieldTypeDefinitionComparaer());
+
+                for (var i = 0; i < _fields.Count; ++i)
+                {
+                    if (!_fields[i].IsIndexSetExplicitly)
+                    {
+                        throw new FlatBuffersStructFieldReflectionException("Order must be set on all fields");
+                    }
+
+                    if (i != _fields[i].Index)
+                    {
+                        if (_fields[i].Index != i)
+                        {
+                            throw new FlatBuffersStructFieldReflectionException("Order range must be contiguous sequence from 0..N");
+                        }
+                    }
+
+                    _fields[i].Offset = FieldIndexToOffset(i);
+                }
+            }
         }
 
         public FieldTypeDefinition GetFieldByName(string name)

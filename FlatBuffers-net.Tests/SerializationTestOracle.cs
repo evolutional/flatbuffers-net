@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FlatBuffers.Tests.TestTypes;
+using TestUnion = SerializationTests.TestUnion;
 
 namespace FlatBuffers.Tests
 {
@@ -209,6 +210,63 @@ namespace FlatBuffers.Tests
             return new TestTableWithArrayOfStructs() {StructArray = array};
         }
 
+
+        public TestTableWithUnion ReadTestTableWithUnion(byte[] buffer)
+        {
+            var test =
+                SerializationTests.TestTableWithUnion.GetRootAsTestTableWithUnion(
+                    new ByteBuffer(buffer));
+
+            var result = new TestTableWithUnion() { IntProp = test.IntProp };
+
+            var unionType = test.UnionPropType;
+
+            if (unionType == TestUnion.TestTable1)
+            {
+                var obj = new SerializationTests.TestTable1();
+                var res = test.GetUnionProp(obj);
+                result.UnionProp = new TestTable1() { IntProp = res.IntProp, ByteProp = res.ByteProp, ShortProp = res.ShortProp };
+            }
+            if (unionType == TestUnion.TestTable2)
+            {
+                var obj = new SerializationTests.TestTable2();
+                var res = test.GetUnionProp(obj);
+                result.UnionProp = new TestTable2 { StringProp = res.StringProp };
+            }
+            return result;
+        }
+
+        public TestTableWithUnionAndMoreFields ReadTestTableWithUnionAndMoreFields(byte[] buffer)
+        {
+            var test =
+                SerializationTests.TestTableWithUnionAndMoreFields.GetRootAsTestTableWithUnionAndMoreFields(
+                    new ByteBuffer(buffer));
+
+            var result = new TestTableWithUnionAndMoreFields()
+            {
+                IntProp = test.IntProp,
+                DoubleProp = test.DoubleProp,
+                StringProp = test.StringProp,
+                FloatProp = test.FloatProp
+            };
+
+            var unionType = test.UnionPropType;
+
+            if (unionType == TestUnion.TestTable1)
+            {
+                var obj = new SerializationTests.TestTable1();
+                var res = test.GetUnionProp(obj);
+                result.UnionProp = new TestTable1() { IntProp = res.IntProp, ByteProp = res.ByteProp, ShortProp = res.ShortProp };
+            }
+            if (unionType == TestUnion.TestTable2)
+            {
+                var obj = new SerializationTests.TestTable2();
+                var res = test.GetUnionProp(obj);
+                result.UnionProp = new TestTable2 { StringProp = res.StringProp };
+            }
+            return result;
+        }
+
         public byte[] GenerateTestStruct1(int intProp, byte byteProp, short shortProp)
         {
             var fbb = new FlatBufferBuilder(8);
@@ -315,6 +373,72 @@ namespace FlatBuffers.Tests
             SerializationTests.TestTableWithTable.AddTableProp(fbb, tableOffset);
             var offset = SerializationTests.TestTableWithTable.EndTestTableWithTable(fbb);
             fbb.Finish(offset.Value);
+            return GetBytes(fbb);
+        }
+
+        public byte[] GenerateTestTableWithUnion(int intProp, TestTable1 testTable1Prop = null, TestTable2 testTable2Prop = null)
+        {
+            if (testTable1Prop != null && testTable2Prop != null)
+            {
+                throw new ArgumentException();
+            }
+
+            var fbb = new FlatBufferBuilder(8);
+
+            var unionTableOffset = 0;
+            var unionType = TestUnion.NONE;
+
+            if (testTable1Prop != null)
+            {
+                unionTableOffset = SerializationTests.TestTable1.CreateTestTable1(fbb, testTable1Prop.IntProp,
+                    testTable1Prop.ByteProp, testTable1Prop.ShortProp).Value;
+                unionType = TestUnion.TestTable1;
+            }
+            else if (testTable2Prop != null)
+            {
+                var stringOffset = fbb.CreateString(testTable2Prop.StringProp);
+                unionTableOffset = SerializationTests.TestTable2.CreateTestTable2(fbb, stringOffset).Value;
+                unionType = TestUnion.TestTable2;
+            }
+
+            var tableOffset = SerializationTests.TestTableWithUnion.CreateTestTableWithUnion(fbb, intProp,
+                unionType, unionTableOffset);
+
+            fbb.Finish(tableOffset.Value);
+            return GetBytes(fbb);
+        }
+
+        public byte[] GenerateTestTableWithUnionAndMoreFields(int intProp, string stringProp, float floatProp, double doubleProp, TestTable1 testTable1Prop = null, TestTable2 testTable2Prop = null)
+        {
+            if (testTable1Prop != null && testTable2Prop != null)
+            {
+                throw new ArgumentException();
+            }
+
+            var fbb = new FlatBufferBuilder(8);
+
+            var stringOffset = fbb.CreateString(stringProp);
+
+            var unionTableOffset = 0;
+            var unionType = TestUnion.NONE;
+            
+            if (testTable1Prop != null)
+            {
+                unionTableOffset = SerializationTests.TestTable1.CreateTestTable1(fbb, testTable1Prop.IntProp,
+                    testTable1Prop.ByteProp, testTable1Prop.ShortProp).Value;
+                unionType = TestUnion.TestTable1;
+            }
+            else if (testTable2Prop != null)
+            {
+                var stringOffset2 = fbb.CreateString(testTable2Prop.StringProp);
+                unionTableOffset = SerializationTests.TestTable2.CreateTestTable2(fbb, stringOffset2).Value;
+                unionType = TestUnion.TestTable2;
+            }
+
+            var tableOffset = SerializationTests.TestTableWithUnionAndMoreFields.CreateTestTableWithUnionAndMoreFields(fbb, intProp,
+                unionType, unionTableOffset, stringOffset, floatProp, doubleProp);
+
+            fbb.Finish(tableOffset.Value);
             return GetBytes(fbb);
         }
 

@@ -43,6 +43,8 @@
     <Compile Include="Attributes\FlatBuffersMetadataAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersStructAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersTableAttribute.cs" />
+    <Compile Include="Attributes\FlatBuffersUnionAttribute.cs" />
+    <Compile Include="Attributes\FlatBuffersUnionMemberAttribute.cs" />
     <Compile Include="BaseType.cs" />
     <Compile Include="BaseTypeExtensions.cs" />
     <Compile Include="DeserializationContext.cs" />
@@ -75,6 +77,7 @@
     <Compile Include="TypeHelpers.cs" />
     <Compile Include="TypeModel.cs" />
     <Compile Include="TypeModelRegistry.cs" />
+    <Compile Include="UnionTypeDefinition.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\flatbuffers\net\FlatBuffers\FlatBuffers.csproj">

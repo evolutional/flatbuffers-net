@@ -289,5 +289,99 @@ namespace FlatBuffers.Tests
             Assert.AreEqual(testTable.ShortProp, o.TableProp.ShortProp);
             Assert.AreEqual(testTable.ByteProp, o.TableProp.ByteProp);
         }
+
+        [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithUnion_And_TestTable1()
+        {
+            var table1 = new TestTable1()
+            {
+                IntProp = 42,
+                ByteProp = 22,
+                ShortProp = 62,
+            };
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithUnion(1024, testTable1Prop: table1);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithUnion>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(1024, o.IntProp);
+
+            Assert.IsInstanceOf<TestTable1>(o.UnionProp);
+
+            var o1 = o.UnionProp as TestTable1;
+
+            Assert.AreEqual(table1.IntProp, o1.IntProp);
+            Assert.AreEqual(table1.ShortProp, o1.ShortProp);
+            Assert.AreEqual(table1.ByteProp, o1.ByteProp);
+        }
+
+        [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithUnion_And_TestTable2()
+        {
+            var table2 = new TestTable2()
+            {
+                StringProp = "Hello, FlatBuffers!"
+            };
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithUnion(1024, testTable2Prop: table2);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithUnion>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(1024, o.IntProp);
+
+            Assert.IsInstanceOf<TestTable2>(o.UnionProp);
+
+            var o2 = o.UnionProp as TestTable2;
+
+            Assert.AreEqual(table2.StringProp, o2.StringProp);
+        }
+
+        [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithUnion_And_NoTables_ReturnsNullForUnion()
+        {
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithUnion(1024);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithUnion>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(1024, o.IntProp);
+
+            Assert.IsNull(o.UnionProp);
+        }
+
+        [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithUnionAndMoreFields_And_TestTable1()
+        {
+            var table1 = new TestTable1()
+            {
+                IntProp = 42,
+                ByteProp = 22,
+                ShortProp = 62,
+            };
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithUnionAndMoreFields(1024, "Hello, FlatBuffers", 123.5f, 3.14, testTable1Prop: table1);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithUnionAndMoreFields>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(1024, o.IntProp);
+            Assert.AreEqual("Hello, FlatBuffers", o.StringProp);
+            Assert.AreEqual(123.5f, o.FloatProp);
+            Assert.AreEqual(3.14, o.DoubleProp);
+
+            Assert.IsInstanceOf<TestTable1>(o.UnionProp);
+
+            var o1 = o.UnionProp as TestTable1;
+            Assert.AreEqual(table1.IntProp, o1.IntProp);
+            Assert.AreEqual(table1.ShortProp, o1.ShortProp);
+            Assert.AreEqual(table1.ByteProp, o1.ByteProp);
+        }
+
     }
 }

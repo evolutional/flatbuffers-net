@@ -7,6 +7,11 @@ using FlatBuffers.Attributes;
 
 namespace FlatBuffers
 {
+    public struct UnionFieldType
+    {
+        public byte Value { get; set; }
+    }
+
     public class TypeModelRegistry
     {
         private static readonly TypeModelRegistry s_default = new TypeModelRegistry();
@@ -20,6 +25,7 @@ namespace FlatBuffers
         {
             _clrTypeToBaseType = new Dictionary<Type, BaseType>
             {
+                {typeof(UnionFieldType), BaseType.UType},
                 {typeof(bool), BaseType.Bool},
                 {typeof(sbyte), BaseType.Char},
                 {typeof(byte), BaseType.UChar},
@@ -34,7 +40,12 @@ namespace FlatBuffers
             };
         }
 
-        
+        public TypeModelRegistry()
+        {
+            var type = typeof (UnionFieldType);
+            var uft = new TypeModel(this, type.Name, type, BaseType.UType);
+            _typeModels.Add(type, uft);
+        }
 
         private BaseType DeduceBaseType(Type type)
         {
@@ -57,6 +68,10 @@ namespace FlatBuffers
             }
             if (type.IsEnum)
             {
+                if (type.Defined<FlatBuffersUnionAttribute>())
+                {
+                    return BaseType.Union;
+                }
                 return DeduceBaseTypeForEnum(type);
             }
             if (type.IsClass || type.IsValueType)
@@ -95,6 +110,23 @@ namespace FlatBuffers
             var enumTypeDef = new EnumTypeDefinition {UnderlyingType = Enum.GetUnderlyingType(type)};
             ReflectUserMetadata(type, enumTypeDef);
             return enumTypeDef;
+        }
+
+        private UnionTypeDefinition ReflectUnionDef(Type type)
+        {
+            var unionTypeDef = new UnionTypeDefinition() { Name = type.Name };
+
+            var members = type.GetMembers(BindingFlags.Public|BindingFlags.Static).Where(i=>i.MemberType == MemberTypes.Field).ToArray();
+            for (var i = 0; i < members.Length; ++i)
+            {
+                var member = members[i];
+                var attr = member.Attribute<FlatBuffersUnionMemberAttribute>();
+                var memberTypeModel = GetTypeModel(attr.MemberType);
+                var field = unionTypeDef.AddField(i + 1, member.Name, memberTypeModel);
+            }
+
+            ReflectUserMetadata(type, unionTypeDef);
+            return unionTypeDef;
         }
 
         private BaseType DeduceBaseTypeForEnum(Type type)
@@ -205,49 +237,23 @@ namespace FlatBuffers
                 }
             }
 
-            for (var i = 0; i < members.Length; ++i)
+            foreach (var member in members)
             {
                 try
                 {
-                    var field = ReflectStructFieldDef(members[i], i);
-                    
-                    if (structTypeDef.HasCustomOrdering)
-                    {
-                        if (!field.IsIndexSetExplicitly)
-                            throw new FlatBuffersStructFieldReflectionException("Order must be set on all fields");
-
-                        if (structTypeDef.Fields.Any(n=>n.Index == field.Index))
-                            throw new FlatBuffersStructFieldReflectionException("Order value must be unique");
-
-                    }
-
-                    structTypeDef.AddField(field);
+                    ReflectStructFieldDef(structTypeDef, member);                   
                 }
                 catch (FlatBuffersStructFieldReflectionException fieldEx)
                 {
                     fieldEx.ClrType = type;
-                    fieldEx.Member = members[i];
+                    fieldEx.Member = member;
                     throw;
                 }
             }
 
             // Pad the last field in the struct so it aligns correctly
             structTypeDef.PadLastField(structTypeDef.MinAlign);
-
-            if (structTypeDef.HasCustomOrdering)
-            {
-                // Validate the sequence
-                var i = 0;
-                foreach (var field in structTypeDef.Fields.OrderBy(n => n.Index))
-                {
-                    if (field.Index != i)
-                    {
-                        throw new FlatBuffersStructFieldReflectionException("Order range must be contiguous sequence from 0..N");
-                    }
-                    ++i;
-                }
-            }
-
+            structTypeDef.FinalizeFieldDefinition();
             return structTypeDef;
         }
 
@@ -279,20 +285,48 @@ namespace FlatBuffers
             return new AttributeDefaultValueProvider(attr);
         }
 
-        private FieldTypeDefinition ReflectStructFieldDef(MemberInfo member, int index)
+        private void ReflectStructFieldDef(StructTypeDefinition structDef, MemberInfo member)
         {
             var valueProvider = CreateValueProvider(member);
             var defaultValueProvider = CreateDefaultValueProvider(member);
-
-            var memberTypeModel = GetTypeModel(valueProvider.ValueType);
-
             var attr = member.Attribute<FlatBuffersFieldAttribute>();
+
+            var valueType = valueProvider.ValueType;
+
+            TypeModel memberTypeModel = null;
+
+            if (valueType == typeof (object))
+            {
+                if (attr == null || !attr.IsUnionField)
+                {
+                    throw new FlatBuffersStructFieldReflectionException("Field with 'object' type must have a UnionType declared");
+                }
+
+                memberTypeModel = GetTypeModel(attr.UnionType);
+            }
+            else
+            {
+                memberTypeModel = GetTypeModel(valueType);
+            }
+
+            FieldTypeDefinition unionTypeField = null;
+
+            if (memberTypeModel.IsUnion)
+            {
+                var unionTypeFieldValueProvider = new UnionTypeValueProvider(valueProvider, memberTypeModel);
+                var unionTypeFieldDefaultValueProvider = TypeDefaultValueProvider.Instance;
+                unionTypeField = new FieldTypeDefinition(unionTypeFieldValueProvider,
+                    unionTypeFieldDefaultValueProvider)
+                {
+                    Name = string.Format("{0}_type", member.Name),
+                    TypeModel = GetTypeModel<UnionFieldType>()
+                };
+            }
 
             var field = new FieldTypeDefinition(valueProvider, defaultValueProvider)
             {
                 Name = member.Name, // TODO: allow attribute override
                 TypeModel = memberTypeModel,
-                OriginalIndex = index
             };
 
             ReflectUserMetadata(member, field);
@@ -301,13 +335,23 @@ namespace FlatBuffers
             {
                 if (attr.IsOrderSetExplicitly)
                 {
-                    field.Index = attr.Order;
+                    field.UserIndex = attr.Order;
+                    if (unionTypeField != null)
+                    {
+                        field.UserIndex = attr.Order - 1;
+                    }
                 }
                 field.Required = attr.Required;
                 field.Deprecated = attr.Deprecated;
             }
 
-            return field;
+            if (unionTypeField != null)
+            {
+                structDef.AddField(unionTypeField);
+                field.UnionTypeField = unionTypeField;
+            }
+            
+            structDef.AddField(field);
         }
 
         private void ReflectUserMetadata(ICustomAttributeProvider type, TypeDefinition typeDef)
@@ -364,6 +408,10 @@ namespace FlatBuffers
             {
                 typeModel.StructDef = ReflectStructDef(type);
             }
+            else if (baseType == BaseType.Union)
+            {
+                typeModel.UnionDef = ReflectUnionDef(type);
+            }
             else if (typeModel.IsEnum)
             {
                 typeModel.EnumDef = ReflectEnumDef(type);
@@ -377,7 +425,5 @@ namespace FlatBuffers
             _typeModels.Add(type, typeModel);
             return typeModel;
         }
-
-        
     }
 }

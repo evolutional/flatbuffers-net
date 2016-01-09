@@ -474,17 +474,118 @@ namespace FlatBuffers.Tests
             serializer.Serialize(obj, buffer, 0, buffer.Length);
         }
 
+        [Test]
+        public void Serialize_TestTableWithUnion_And_TestTable1_CanBeReadByOracle()
+        {
+            const int intProp = 123456;
+            const byte byteProp = 42;
+            const short shortProp = 1024;
+
+            var table1 = new TestTable1()
+            {
+                IntProp = intProp,
+                ByteProp = byteProp,
+                ShortProp = shortProp
+            };
+
+            var obj = new TestTableWithUnion()
+            {
+                IntProp = 512,
+                UnionProp = table1
+            };
+
+            var buffer = FlatBuffersConvert.SerializeObject(obj);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTableWithUnion(buffer);
+
+            Assert.AreEqual(512, oracleResult.IntProp);
+            Assert.AreEqual(typeof(TestTable1), oracleResult.UnionProp.GetType());
+
+            var oracleResult1 = oracleResult.UnionProp as TestTable1;
+            Assert.IsNotNull(oracleResult1);
+            Assert.AreEqual(intProp, oracleResult1.IntProp);
+            Assert.AreEqual(byteProp, oracleResult1.ByteProp);
+            Assert.AreEqual(shortProp, oracleResult1.ShortProp);
+        }
+
+        [Test]
+        public void Serialize_TestTableWithUnion_And_TestTable2_CanBeReadByOracle()
+        {
+            const string stringProp = "Hello, FlatBuffers!";
+
+            var table2 = new TestTable2()
+            {
+                StringProp = stringProp
+            };
+
+            var obj = new TestTableWithUnion()
+            {
+                IntProp = 512,
+                UnionProp = table2
+            };
+
+            var buffer = FlatBuffersConvert.SerializeObject(obj);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTableWithUnion(buffer);
+
+            Assert.AreEqual(512, oracleResult.IntProp);
+            Assert.AreEqual(typeof(TestTable2), oracleResult.UnionProp.GetType());
+
+            var oracleResult2 = oracleResult.UnionProp as TestTable2;
+            Assert.IsNotNull(oracleResult2);
+            Assert.AreEqual(stringProp, oracleResult2.StringProp);
+        }
+
+        [Test]
+        public void Serialize_TestTableWithUnionAndMoreFields_And_TestTable1_CanBeReadByOracle()
+        {
+            const int intProp = 123456;
+            const byte byteProp = 42;
+            const short shortProp = 1024;
+
+            var table1 = new TestTable1()
+            {
+                IntProp = intProp,
+                ByteProp = byteProp,
+                ShortProp = shortProp
+            };
+
+            var obj = new TestTableWithUnionAndMoreFields()
+            {
+                IntProp = 512,
+                StringProp = "Hello, world!",
+                FloatProp = 3.125f,
+                DoubleProp = 3.14,
+                UnionProp = table1
+            };
+
+            var buffer = FlatBuffersConvert.SerializeObject(obj);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTableWithUnionAndMoreFields(buffer);
+
+            Assert.AreEqual(512, oracleResult.IntProp);
+            Assert.AreEqual("Hello, world!", oracleResult.StringProp);
+            Assert.AreEqual(3.125f, oracleResult.FloatProp);
+            Assert.AreEqual(3.14, oracleResult.DoubleProp);
+            Assert.IsInstanceOf<TestTable1>(oracleResult.UnionProp);
+
+            var oracleResult1 = oracleResult.UnionProp as TestTable1;
+            Assert.IsNotNull(oracleResult1);
+            Assert.AreEqual(intProp, oracleResult1.IntProp);
+            Assert.AreEqual(byteProp, oracleResult1.ByteProp);
+            Assert.AreEqual(shortProp, oracleResult1.ShortProp);
+        }
+
         // Tests to implement
         // structs cannot contain vectors, string, table (only scalars or structs)
         // serialization of all basic types (char, short, int, long, float, double, + unsigned variants, string)
 
         // lists of structs
         // lists of tables
-        // table containing table
-        // table containing struct
         // deep nesting of structs containing structs
         // shared ptr objects (string, table)
-        // enum
-        // unions
     }
 }

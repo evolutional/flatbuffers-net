@@ -13,9 +13,12 @@ namespace FlatBuffers
 
         private StructTypeDefinition _structDef;
         private EnumTypeDefinition _enumDef;
+        private UnionTypeDefinition _unionDef;
 
-        public StructTypeDefinition StructDef { get { return _structDef; } set { _structDef = value; } }
-        public EnumTypeDefinition EnumDef { get { return _enumDef; } set { _enumDef = value; } }
+        public StructTypeDefinition StructDef { get { return _structDef; } internal set { _structDef = value; } }
+        public EnumTypeDefinition EnumDef { get { return _enumDef; } internal set { _enumDef = value; } }
+
+        public UnionTypeDefinition UnionDef { get { return _unionDef; } internal set { _unionDef = value; } }
 
         public string Name { get { return _typeName; } }
 
@@ -40,6 +43,11 @@ namespace FlatBuffers
         public bool IsEnum { get { return _isEnum; } }
 
         /// <summary>
+        /// Gets if this type is a union
+        /// </summary>
+        public bool IsUnion { get { return _baseType == BaseType.Union; } }
+
+        /// <summary>
         /// Gets if this type is a vector
         /// </summary>
         public bool IsVector { get { return _baseType == BaseType.Vector; } }
@@ -54,7 +62,7 @@ namespace FlatBuffers
         /// </summary>
         public bool IsReferenceType 
         { 
-            get { return IsTable || IsVector || IsString; } 
+            get { return IsTable || IsVector || IsString || IsUnion; } 
         }
 
         public int InlineSize { get { return IsStruct ? _structDef.ByteSize : _baseType.SizeOf(); }}
@@ -80,7 +88,7 @@ namespace FlatBuffers
             _clrType = clrType;
             _baseType = baseType;
             _elementType = elementType;
-            _isEnum = typeof(Enum).IsAssignableFrom(_clrType);
+            _isEnum = typeof(Enum).IsAssignableFrom(_clrType) && _baseType != BaseType.Union;
         }
     }
 }

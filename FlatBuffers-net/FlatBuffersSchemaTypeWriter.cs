@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace FlatBuffers
@@ -64,13 +65,37 @@ namespace FlatBuffers
                 return;
             }
 
-            if (typeModel.IsStruct || typeModel.IsTable)
+            if (typeModel.IsUnion)
+            {
+                WriteUnion(typeModel);
+                return;
+            }
+
+            if (typeModel.IsObject)
             {
                 WriteStructInternal(typeModel);
                 return;
             }
 
             throw new NotSupportedException();
+        }
+
+        public void WriteTable(TypeModel typeModel)
+        {
+            if (!typeModel.IsTable)
+            {
+                throw new ArgumentException("Type is not a table");
+            }
+            WriteStructInternal(typeModel);
+        }
+
+        public void WriteStruct(TypeModel typeModel)
+        {
+            if (!typeModel.IsStruct)
+            {
+                throw new ArgumentException("Type is not a struct");
+            }
+            WriteStructInternal(typeModel);
         }
 
         private bool IsNumberEqual(object o, int v)
@@ -105,6 +130,11 @@ namespace FlatBuffers
 
         public void WriteEnum(TypeModel typeModel)
         {
+            if (!typeModel.IsEnum)
+            {
+                throw new ArgumentException("Type is not an Enum");
+            }
+
             // Note: .NET will reflect the enum based on the binary order of the VALUE.
             // We cannot reflect it in declared order
             // See: https://msdn.microsoft.com/en-us/library/system.enum.getvalues.aspx
@@ -135,22 +165,24 @@ namespace FlatBuffers
             EndEnum();
         }
 
-        public void WriteTable(TypeModel typeModel)
+        public void WriteUnion(TypeModel typeModel)
         {
-            if (!typeModel.IsTable)
+            if (!typeModel.IsUnion)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Type is not a Union");
             }
-            WriteStructInternal(typeModel);
-        }
 
-        public void WriteStruct(TypeModel typeModel)
-        {
-            if (!typeModel.IsStruct)
+            var unionDef = typeModel.UnionDef;
+
+            BeginUnion(typeModel);
+            var fields = unionDef.Fields.ToArray();
+
+            for(var i = 1; i < fields.Length; ++i)
             {
-                throw new ArgumentException();
+                _writer.WriteLine("{0}{1}", fields[i].Name, i == fields.Length - 1 ? "" : ",");
             }
-            WriteStructInternal(typeModel);
+
+            EndUnion();
         }
 
         private void WriteStructInternal(TypeModel typeModel)
@@ -163,8 +195,11 @@ namespace FlatBuffers
             }
 
             BeginStruct(typeModel);
-            foreach (var field in structDef.Fields)
+            foreach (var field in structDef.Fields.OrderBy(i=>i.OriginalIndex))
             {
+                if (field.TypeModel.BaseType == BaseType.UType)
+                    continue;
+
                 WriteField(field);
             }
             EndObject();
@@ -179,32 +214,6 @@ namespace FlatBuffers
             _writer.WriteLine("{0} {1}{2}{3}", structOrTable, typeModel.Name, meta, _bracing);
         }
 
-        private string GetFlatBufferTypeName(TypeModel typeModel)
-        {
-            if (typeModel.IsEnum || typeModel.IsStruct || typeModel.IsTable)
-            {
-                return typeModel.Name;
-            }
-
-            var baseType = typeModel.BaseType;
-            var typeName = baseType.FlatBufferTypeName();
-
-            if (typeName != null)
-            {
-                return typeName;
-            }
-
-            if (baseType == BaseType.Vector)
-            {
-                var elementTypeName = typeModel.ElementType.FlatBufferTypeName();
-                if (elementTypeName != null)
-                {
-                    return string.Format("[{0}]", elementTypeName);
-                }
-            }
-            throw new NotImplementedException();
-        }
-
         protected void WriteField(FieldTypeDefinition field)
         {
             var fieldTypeName = GetFlatBufferTypeName(field.TypeModel);
@@ -212,6 +221,12 @@ namespace FlatBuffers
             var meta = BuildMetadata(field);
 
             _writer.WriteLine("{0}{1}:{2}{3};", _indent, field.Name, fieldTypeName, meta);
+        }
+
+        protected void EndObject()
+        {
+            // todo: assert nesting
+            _writer.WriteLine("}");
         }
 
         private string BuildMetadata(FieldTypeDefinition field)
@@ -268,10 +283,30 @@ namespace FlatBuffers
             sb.Append(")");
         }
 
-        protected void EndObject()
+        private string GetFlatBufferTypeName(TypeModel typeModel)
         {
-            // todo: assert nesting
-            _writer.WriteLine("}");
+            if (typeModel.IsEnum || typeModel.IsStruct || typeModel.IsTable || typeModel.IsUnion)
+            {
+                return typeModel.Name;
+            }
+
+            var baseType = typeModel.BaseType;
+            var typeName = baseType.FlatBufferTypeName();
+
+            if (typeName != null)
+            {
+                return typeName;
+            }
+
+            if (baseType == BaseType.Vector)
+            {
+                var elementTypeName = typeModel.ElementType.FlatBufferTypeName();
+                if (elementTypeName != null)
+                {
+                    return string.Format("[{0}]", elementTypeName);
+                }
+            }
+            throw new NotImplementedException();
         }
 
         protected void BeginEnum(TypeModel typeModel)
@@ -288,6 +323,24 @@ namespace FlatBuffers
         }
 
         protected void EndEnum()
+        {
+            // todo: assert nesting
+            _writer.WriteLine("}");
+        }
+
+        protected void BeginUnion(TypeModel typeModel)
+        {
+            if (!typeModel.IsUnion)
+            {
+                throw new ArgumentException();
+            }
+            var sb = new StringBuilder();
+            BuildMetadata(sb, typeModel.UnionDef);
+            var meta = sb.ToString();
+            _writer.WriteLine("union {0}{1}{2}", typeModel.Name, meta, _bracing);
+        }
+
+        protected void EndUnion()
         {
             // todo: assert nesting
             _writer.WriteLine("}");

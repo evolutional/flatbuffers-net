@@ -584,5 +584,55 @@ namespace FlatBuffers.Tests
                 Assert.AreEqual(expected, sb.ToString());
             }
         }
+
+        [Test]
+        public void Write_Union_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestUnion>();
+                var expected = "union TestUnion {\n" +
+                               "    TestTable1,\n" +
+                               "    TestTable2\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_UnionWithMetadata_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestUnionWithMetadata>();
+                var expected = "union TestUnionWithMetadata (somemeta) {\n" +
+                               "    TestTable1,\n" +
+                               "    TestTable2\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_TestTableWithUnion_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithUnion>();
+                var expected =  "table TestTableWithUnion {\n" +
+                                "    IntProp:int;\n" +
+                                "    UnionProp:TestUnion;\n" +
+                                "}";
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
     }
 }

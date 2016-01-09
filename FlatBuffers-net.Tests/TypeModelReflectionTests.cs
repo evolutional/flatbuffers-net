@@ -127,7 +127,7 @@ namespace FlatBuffers.Tests
             GetTypeModel<BrokenUserOrderingGapInFieldOrder>();
         }
 
-        [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Order value must be unique")]
+        [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Order range must be contiguous sequence from 0..N")]
         [Test]
         public void GetTypeModel_BrokenUserOrderingMultipleSameFieldOrder_ThrowsException()
         {
@@ -393,6 +393,75 @@ namespace FlatBuffers.Tests
         public void GetTypeModel_WhenClassAnd_StructAndTableAttributesUsed_ThrowsException()
         {
             var typeModel = GetTypeModel<ClassWithTwoAttributes>();
+        }
+
+        [Test]
+        public void GetTypeModel_UnionType_ReflectsMemberTypeFieldsAndIndexes()
+        {
+            var typeModel = GetTypeModel<TestUnion>();
+            Assert.IsTrue(typeModel.IsUnion);
+            Assert.IsNotNull(typeModel.UnionDef);
+            var def = typeModel.UnionDef;
+            var fields = def.Fields.ToArray();
+
+            Assert.AreEqual(3, fields.Length);
+            Assert.AreEqual(0, fields[0].Index);
+            Assert.AreEqual(null, fields[0].MemberType);
+
+            Assert.AreEqual(1, fields[1].Index);
+            Assert.AreEqual(typeof(TestTable1), fields[1].MemberType.Type);
+
+            Assert.AreEqual(2, fields[2].Index);
+            Assert.AreEqual(typeof(TestTable2), fields[2].MemberType.Type);
+        }
+
+        [Test]
+        public void GetTypeModel_TestTableWithUnion_ReflectsUnionFieldAsUnion()
+        {
+            var typeModel = GetTypeModel<TestTableWithUnion>();
+
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            var fields = structDef.Fields.ToArray();
+
+            Assert.AreEqual(3, fields.Length);
+
+            var intProp = structDef.GetFieldByName("IntProp");
+            Assert.AreEqual(BaseType.Int,intProp.TypeModel.BaseType);
+
+            var unionPropType = structDef.GetFieldByName("UnionProp_type");
+            Assert.AreEqual(BaseType.UType, unionPropType.TypeModel.BaseType);
+
+            var unionProp = structDef.GetFieldByName("UnionProp");
+            Assert.AreEqual(BaseType.Union, unionProp.TypeModel.BaseType);
+            var unionDef = unionProp.TypeModel.UnionDef;
+            Assert.AreEqual("TestUnion", unionDef.Name);
+        }
+
+        [Ignore("The logic that handles custom ordering in tables with unions is flawed. Waiting for a fix from https://github.com/google/flatbuffers/issues/3499")]
+        [Test]
+        public void GetTypeModel_TestTableWithUnionAndCustomOrdering_HasCorrectOrderingForTypeField()
+        {
+            var typeModel = GetTypeModel<TestTableWithUnionAndCustomOrdering>();
+
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            var fields = structDef.Fields.ToArray();
+
+            Assert.AreEqual(3, fields.Length);
+
+            var intProp = structDef.GetFieldByName("IntProp");
+            Assert.AreEqual(2, intProp.Index);
+
+            var unionPropType = structDef.GetFieldByName("UnionProp_type");
+            Assert.AreEqual(0, unionPropType.Index);
+
+            var unionProp = structDef.GetFieldByName("UnionProp");
+            Assert.AreEqual(1, unionProp.Index);
         }
     }
 }

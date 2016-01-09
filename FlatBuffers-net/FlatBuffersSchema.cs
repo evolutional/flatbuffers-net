@@ -46,7 +46,7 @@ namespace FlatBuffers
         private FlatBuffersSchemaTypeDependencyNode AddNode(FlatBuffersSchemaTypeDependencyNode node)
         {
             var typeModel = node.TypeModel;
-            if (!typeModel.IsObject && !typeModel.IsEnum)
+            if (!typeModel.IsObject && !typeModel.IsEnum && !typeModel.IsUnion)
             {
                 return null;
             }
@@ -63,7 +63,8 @@ namespace FlatBuffers
             {
                 if (_nodes.All(i => i.TypeModel.Name != depType.TypeModel.Name))
                 {
-                    AddType(depType.TypeModel);
+                    if (depType.TypeModel != null)
+                        AddType(depType.TypeModel);
                 }
             }
 
@@ -99,13 +100,26 @@ namespace FlatBuffers
 
             foreach (var field in structDef.Fields)
             {
-                if (!field.TypeModel.IsObject && !field.TypeModel.IsEnum)
+                if (!field.TypeModel.IsObject && !field.TypeModel.IsEnum && !field.TypeModel.IsUnion)
                     continue;
+
+                if (field.TypeModel.IsUnion)
+                {
+                    var unionDeps = field.TypeModel.UnionDef.Fields.Where(i=>i.MemberType != null).Select(i => GetDependencyNode(i.MemberType, node));
+                    foreach (var u in unionDeps)
+                    {
+                        if (deps.All(i => i.TypeModel != null && i.TypeModel.Name != u.TypeModel.Name))
+                        {
+                            deps.Add(GetDependencyNode(u.TypeModel, node));
+                        }
+                    }
+                }
 
                 if (deps.All(i => i.TypeModel.Name != field.TypeModel.Name))
                 {
                     deps.Add(GetDependencyNode(field.TypeModel, node));
                 }
+ 
             }
             return deps;
         }
@@ -176,13 +190,18 @@ namespace FlatBuffers
             {
                 // Ordering func will order classes of type:
                 //  enum
+                // union
                 //  struct
                 //  table
                 if (type.IsEnum)
                 {
                     return 0;
                 }
-                return type.IsStruct ? 1 : 2;
+                if (type.IsUnion)
+                {
+                    return 1;
+                }
+                return type.IsStruct ? 2 : 3;
             };
 
             // Ranking is as follows:

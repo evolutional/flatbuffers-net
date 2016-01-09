@@ -1,5 +1,19 @@
-﻿namespace FlatBuffers
+﻿using System.Collections.Generic;
+
+namespace FlatBuffers
 {
+    internal class IndexBasedFieldTypeDefinitionComparaer : IComparer<FieldTypeDefinition>
+    {
+        public int Compare(FieldTypeDefinition x, FieldTypeDefinition y)
+        {
+            if (x.Index == y.Index)
+                return 0;
+            if (x.Index < y.Index)
+                return -1;
+            return 1;
+        }
+    }
+
     public sealed class FieldTypeDefinition : TypeDefinition
     {
         private int _index;
@@ -26,6 +40,16 @@
                 {
                     return OriginalIndex;
                 }
+                return UserIndex;
+            }
+        }
+
+        public bool IsIndexSetExplicitly { get; private set; }
+
+        public int UserIndex
+        {
+            get
+            {
                 return _index;
             }
             set
@@ -36,12 +60,10 @@
             }
         }
 
-        public bool IsIndexSetExplicitly { get; private set; }
-
         /// <summary>
         /// Gets the original (reflected) index of this field
         /// </summary>
-        public int OriginalIndex { get; set; }
+        public int OriginalIndex { get; internal set; }
 
         // key
         public int Padding { get; set; }
@@ -53,7 +75,7 @@
         public IValueProvider ValueProvider { get; private set; }
         public IDefaultValueProvider DefaultValueProvider { get; private set; }
 
-        
+        public FieldTypeDefinition UnionTypeField { get; set; }
 
         /// <summary>
         /// Gets and sets whether this field is required to be set during serialization

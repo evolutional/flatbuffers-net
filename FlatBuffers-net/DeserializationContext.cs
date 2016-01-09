@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace FlatBuffers
@@ -83,6 +84,29 @@ namespace FlatBuffers
             return array;
         }
 
+        
+
+        private object DeserializeUnion(int structBase, int offset, FieldTypeDefinition field)
+        {
+            var unionDef = field.TypeModel.UnionDef;
+            var unionTypeOffset = GetFieldOffset(structBase, field.UnionTypeField.Offset);
+
+            if (unionTypeOffset == 0)
+            {
+                return null;
+            }
+
+            // Get the value of the union type
+            var unionType = _buffer.Get(unionTypeOffset + structBase);
+            var typeToDeserialize = unionDef.Fields.FirstOrDefault(i => i.Index == unionType);
+
+            if (typeToDeserialize == null || typeToDeserialize.MemberType == null)
+            {
+                return null;
+            }
+            return DeserializeStruct(structBase, offset, typeToDeserialize.MemberType);
+        }
+
         private object DeserializeVector(int structBase, int offset, FieldTypeDefinition field)
         {
             var typeModel = field.TypeModel;
@@ -149,6 +173,10 @@ namespace FlatBuffers
                 {
                     return DeserializeString(structBase, offset);
                 }
+                case BaseType.Union:
+                {
+                    return DeserializeUnion(structBase, offset, field);
+                }
                 default:
                 {
                     throw new ArgumentException("Field is not a reference type");
@@ -174,6 +202,7 @@ namespace FlatBuffers
                     {
                         return _buffer.GetSbyte(offset + structBase);
                     }
+                case BaseType.UType:
                 case BaseType.UChar:
                     {
                         return _buffer.Get(offset + structBase);
@@ -213,6 +242,7 @@ namespace FlatBuffers
                 case BaseType.String:
                 case BaseType.Struct:
                 case BaseType.Vector:
+                case BaseType.Union:
                 {
                     return DeserializeReferenceType(structBase, offset, field);
                 }

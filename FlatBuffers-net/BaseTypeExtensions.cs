@@ -21,7 +21,7 @@ namespace FlatBuffers
 
             _clrTypes = new[]
             {
-                null, null,
+                null, typeof(UnionFieldType),
                 typeof(bool), typeof (sbyte), typeof (byte), typeof (short), typeof (ushort), typeof (int),
                 typeof (uint), typeof (long), typeof (ulong),
                 typeof (float), typeof (double), typeof(string), null, null, null

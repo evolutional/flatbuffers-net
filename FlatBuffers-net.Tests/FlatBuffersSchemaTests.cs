@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using FlatBuffers.Tests.TestTypes;
 using NUnit.Framework;
 
 namespace FlatBuffers.Tests
@@ -192,6 +193,38 @@ namespace FlatBuffers.Tests
                                "    Dog,\n" +
                                "    Fish\n" +
                                "}";
+
+            AssertExtensions.AreEquivalent(expected, sb.ToString());
+        }
+
+        [Test]
+        public void WriteTo_WhenUnion_WritesSchemaWithUnion()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            var schema = generator.Generate<TestTableWithUnion>();
+
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                schema.WriteTo(sw);
+            }
+
+            var expected =  "union TestUnion {\n" +
+                            "    TestTable1,\n" +
+                            "    TestTable2\n" +
+                            "}\n" +
+                            "table TestTable1 {\n" +
+                            "    IntProp:int;\n" +
+                            "    ByteProp:ubyte;\n" +
+                            "    ShortProp:short;\n" +
+                            "}\n" +
+                            "table TestTable2 {\n" +
+                            "    StringProp:string;\n" +
+                            "}\n"+
+                            "table TestTableWithUnion {\n" +
+                            "    IntProp:int;\n" +
+                            "    UnionProp:TestUnion;\n" +
+                            "}";
 
             AssertExtensions.AreEquivalent(expected, sb.ToString());
         }

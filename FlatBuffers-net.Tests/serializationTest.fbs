@@ -1,5 +1,10 @@
 namespace SerializationTests;
 
+union TestUnion {
+	TestTable1,
+	TestTable2
+}
+
 enum TestEnum : ubyte {
 	Apple,
 	Orange,
@@ -80,4 +85,17 @@ table TestTableWithDeprecatedField {
 	IntProp: int;
 	ByteProp: ubyte (deprecated);
 	ShortProp: short;
+}
+
+table TestTableWithUnion {
+	IntProp: int;
+	UnionProp: TestUnion;
+}
+
+table TestTableWithUnionAndMoreFields {
+	IntProp: int;
+	UnionProp: TestUnion;
+	StringProp: string;
+	FloatProp: float;
+	DoubleProp: double;
 }

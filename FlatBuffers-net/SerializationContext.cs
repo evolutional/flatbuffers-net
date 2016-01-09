@@ -124,6 +124,7 @@ namespace FlatBuffers
                     _builder.AddSbyte(field.Index, (sbyte)obj, 0);
                     break;
                 }
+                case BaseType.UType:
                 case BaseType.UChar:
                 {
                     _builder.AddByte(field.Index, (byte)obj, 0);
@@ -187,13 +188,10 @@ namespace FlatBuffers
                 }
                 case BaseType.String:
                 case BaseType.Vector:
+                case BaseType.Union:
                 {
                     AddReferenceFieldOffset(obj, field);
                     break;
-                }
-                case BaseType.Union:
-                {
-                    throw new NotImplementedException();
                 }
                 default:
                 {
@@ -241,6 +239,11 @@ namespace FlatBuffers
             SerializeFieldValue(val, structDef, field);
         }
 
+        private int SerializeUnion(object obj, TypeModel typeModel)
+        {
+            var unionTypeModel = GetUnionFieldTypeModel(obj, typeModel);
+            return SerializeStruct(obj, unionTypeModel);
+        }
 
         private int SerializeStruct(object obj, TypeModel typeModel)
         {
@@ -256,7 +259,7 @@ namespace FlatBuffers
             }
             else
             {
-                _builder.StartObject(structDef.Fields.Count());
+                _builder.StartObject(structDef.FieldCount);
 
                 var enumerable = structDef.UseOriginalOrdering
                     ? structDef.Fields
@@ -312,7 +315,19 @@ namespace FlatBuffers
                 return SerializeStruct(obj, typeModel);
             }
 
+            if (typeModel.IsUnion)
+            {
+                return SerializeUnion(obj, typeModel);
+            }
+
             throw new NotSupportedException();
+        }
+
+        private TypeModel GetUnionFieldTypeModel(object obj, TypeModel typeModel)
+        {
+            var unionDef = typeModel.UnionDef;
+            var unionType = unionDef.Fields.FirstOrDefault(i => i.MemberType != null && i.MemberType.Type == obj.GetType());
+            return unionType.MemberType;
         }
 
         private void SerializeReferenceTypeFields(object obj, TypeModel typeModel)
@@ -332,6 +347,10 @@ namespace FlatBuffers
                 if (field.TypeModel.IsTable)
                 {
                     SerializeReferenceTypeFields(val, field.TypeModel);
+                }
+                else if (field.TypeModel.IsUnion)
+                {
+                    SerializeReferenceTypeFields(val, GetUnionFieldTypeModel(val, field.TypeModel));
                 }
 
                 var fieldBufferOffset = 0;

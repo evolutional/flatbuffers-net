@@ -7,6 +7,7 @@ namespace FlatBuffers.Attributes
     {
         private bool _hasOrderSet;
         private int _order = -1;
+        private Type _unionType;
 
         /// <summary>
         /// Gets and sets the order of serialization and deserialization of the member
@@ -34,5 +35,28 @@ namespace FlatBuffers.Attributes
         /// be skipped by serialization
         /// </summary>
         public bool Deprecated { get; set; }
+
+        /// <summary>
+        /// Gets and sets the Union type this field will serialize as.  Provided type must have a FlatBuffersUnionAttribute set.
+        /// The field/property type must be object.
+        /// </summary>
+        public Type UnionType
+        {
+            get { return _unionType; }
+            set
+            {
+                if (!value.Defined<FlatBuffersUnionAttribute>())
+                {
+                    throw new ArgumentException();
+                }
+                _unionType = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets if this field holds a union type.
+        /// </summary>
+        public bool IsUnionField { get { return _unionType != null; } }
+
     }
 }
