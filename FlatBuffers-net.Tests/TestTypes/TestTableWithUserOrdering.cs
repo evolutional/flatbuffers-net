@@ -4,13 +4,13 @@ namespace FlatBuffers.Tests.TestTypes
 {
     public class TestTableWithUserOrdering
     {
-        [FlatBuffersField(Order = 2)]
+        [FlatBuffersField(Id = 2)]
         public int IntProp { get; set; }
 
-        [FlatBuffersField(Order = 0)]
+        [FlatBuffersField(Id = 0)]
         public byte ByteProp { get; set; }
 
-        [FlatBuffersField(Order = 1)]
+        [FlatBuffersField(Id = 1)]
         public short ShortProp { get; set; }
     }
 }

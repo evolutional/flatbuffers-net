@@ -71,81 +71,81 @@ namespace MyGame.Example.Tests
     /// </summary>
     public class Monster
     {
-        [FlatBuffersField(Order = 0)]
+        [FlatBuffersField(Id = 0)]
         public Vec3 Pos { get; set; }
 
         [FlatBuffersDefaultValue(100)]
-        [FlatBuffersField(Order = 2)]
+        [FlatBuffersField(Id = 2)]
         public short Hp { get; set; }
 
         [FlatBuffersDefaultValue(150)]
-        [FlatBuffersField(Order = 1)]
+        [FlatBuffersField(Id = 1)]
         public short Mana { get; set; }
 
-        [FlatBuffersField(Order = 3, Required = true, Key = true)]
+        [FlatBuffersField(Id = 3, Required = true, Key = true)]
         public string Name { get; set; }
 
         [FlatBuffersDefaultValue(typeof(Color), "Color.Blue")]
-        [FlatBuffersField(Order = 6)]
+        [FlatBuffersField(Id = 6)]
         public Color Color { get; set; }
 
-        [FlatBuffersField(Order = 5)]
+        [FlatBuffersField(Id = 5)]
         public sbyte[] Inventory { get; set; }
 
         [FlatBuffersDefaultValue(false)]
         [FlatBuffersMetadata("priority", 1)]
-        [FlatBuffersField(Order = 4, Deprecated = true)]
+        [FlatBuffersField(Id = 4, Deprecated = true)]
         public bool Friendly { get; set; }
 
-        [FlatBuffersField(Order = 11)]
+        [FlatBuffersField(Id = 11)]
         public Monster[] TestArrayOfTables { get; set; }
 
-        [FlatBuffersField(Order = 10)]
+        [FlatBuffersField(Id = 10)]
         public string[] TestArrayOfString { get; set; }
 
-        [FlatBuffersField(Order = 24)]
+        [FlatBuffersField(Id = 24)]
         public bool[] TestArrayOfBools { get; set; }
 
-        [FlatBuffersField(Order = 12)]
+        [FlatBuffersField(Id = 12)]
         public Monster Enemy { get; set; }
 
-        [FlatBuffersField(Order = 8)]
+        [FlatBuffersField(Id = 8)]
         public Any Test { get; set; }
 
-        [FlatBuffersField(Order = 9)]
+        [FlatBuffersField(Id = 9)]
         public Any[] Test4 { get; set; }
 
-        [FlatBuffersField(Order = 13)]  // TODO: Nested flatbuffer meta
+        [FlatBuffersField(Id = 13)]  // TODO: Nested flatbuffer meta
         public byte[] TestNestedFlatBuffer { get; set; }
 
-        [FlatBuffersField(Order = 14)]
+        [FlatBuffersField(Id = 14)]
         public Stat TestEmpty { get; set; }
 
-        [FlatBuffersField(Order = 15)]
+        [FlatBuffersField(Id = 15)]
         public bool TestBool { get; set; }
 
-        [FlatBuffersField(Order = 16, Hash = FlatBuffersHash.Fnv1_32)]
+        [FlatBuffersField(Id = 16, Hash = FlatBuffersHash.Fnv1_32)]
         public int TestHashs32Fnv1 { get; set; }
 
-        [FlatBuffersField(Order = 17, Hash = FlatBuffersHash.Fnv1_32)]
+        [FlatBuffersField(Id = 17, Hash = FlatBuffersHash.Fnv1_32)]
         public uint TestHashu32Fnv1 { get; set; }
 
-        [FlatBuffersField(Order = 18, Hash = FlatBuffersHash.Fnv1_64)]
+        [FlatBuffersField(Id = 18, Hash = FlatBuffersHash.Fnv1_64)]
         public long TestHashs64Fnv1 { get; set; }
 
-        [FlatBuffersField(Order = 19, Hash = FlatBuffersHash.Fnv1_64)]
+        [FlatBuffersField(Id = 19, Hash = FlatBuffersHash.Fnv1_64)]
         public ulong TestHashu64Fnv1 { get; set; }
 
-        [FlatBuffersField(Order = 20, Hash = FlatBuffersHash.Fnv1a_32)]
+        [FlatBuffersField(Id = 20, Hash = FlatBuffersHash.Fnv1a_32)]
         public int TestHashs32Fnv1a { get; set; }
 
-        [FlatBuffersField(Order = 21, Hash = FlatBuffersHash.Fnv1a_32)]
+        [FlatBuffersField(Id = 21, Hash = FlatBuffersHash.Fnv1a_32)]
         public uint TestHashu32Fnv1a { get; set; }
 
-        [FlatBuffersField(Order = 22, Hash = FlatBuffersHash.Fnv1a_64)]
+        [FlatBuffersField(Id = 22, Hash = FlatBuffersHash.Fnv1a_64)]
         public long TestHashs64Fnv1a { get; set; }
 
-        [FlatBuffersField(Order = 23, Hash = FlatBuffersHash.Fnv1a_64)]
+        [FlatBuffersField(Id = 23, Hash = FlatBuffersHash.Fnv1a_64)]
         public ulong TestHashu64Fnv1a { get; set; }
     }
 }

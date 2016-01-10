@@ -214,7 +214,7 @@ namespace FlatBuffers
                 if (attr == null)
                     return false;
 
-                return attr.IsOrderSetExplicitly;
+                return attr.IsIdSetExplicitly;
             }))
             {
                 structTypeDef.HasCustomOrdering = true;
@@ -333,12 +333,12 @@ namespace FlatBuffers
             
             if (attr != null)
             {
-                if (attr.IsOrderSetExplicitly)
+                if (attr.IsIdSetExplicitly)
                 {
-                    field.UserIndex = attr.Order;
+                    field.UserIndex = attr.Id;
                     if (unionTypeField != null)
                     {
-                        field.UserIndex = attr.Order - 1;
+                        field.UserIndex = attr.Id - 1;
                     }
                 }
                 field.Required = attr.Required;

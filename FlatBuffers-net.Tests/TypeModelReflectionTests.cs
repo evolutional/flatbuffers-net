@@ -16,17 +16,17 @@ namespace FlatBuffers.Tests
         }
 
         /// <summary>
-        /// This class will fail to reflect because the user has specified the same field Order multiple times
+        /// This class will fail to reflect because the user has specified the same field Id multiple times
         /// </summary>
         private abstract class BrokenUserOrderingMultipleSameFieldOrder
         {
-            [FlatBuffersField(Order = 0)]
+            [FlatBuffersField(Id = 0)]
             public int FieldA { get; set; }
 
-            [FlatBuffersField(Order = 1)]
+            [FlatBuffersField(Id = 1)]
             public int FieldB { get; set; }
 
-            [FlatBuffersField(Order = 1)]
+            [FlatBuffersField(Id = 1)]
             public int FieldC { get; set; }
         }
 
@@ -36,15 +36,15 @@ namespace FlatBuffers.Tests
         /// </summary>
         private abstract class BrokenUserOrderingGapInFieldOrder
         {
-            [FlatBuffersField(Order = 0)]
+            [FlatBuffersField(Id = 0)]
             public int FieldA { get; set; }
 
-            [FlatBuffersField(Order = 1)]
+            [FlatBuffersField(Id = 1)]
             public int FieldB { get; set; }
 
             // Missing field 2
 
-            [FlatBuffersField(Order = 3)]
+            [FlatBuffersField(Id = 3)]
             public int FieldC { get; set; }
         }
 
@@ -53,14 +53,14 @@ namespace FlatBuffers.Tests
         /// </summary>
         private abstract class BrokenUserOrderingNotAllFieldsHaveOrder
         {
-            [FlatBuffersField(Order = 0)]
+            [FlatBuffersField(Id = 0)]
             public int FieldA { get; set; }
 
-            // Order not set for this type
+            // Id not set for this type
             [FlatBuffersField]
             public int FieldB { get; set; }
 
-            [FlatBuffersField(Order = 2)]
+            [FlatBuffersField(Id = 2)]
             public int FieldC { get; set; }
         }
 
@@ -113,21 +113,21 @@ namespace FlatBuffers.Tests
             Assert.AreEqual(0, orderedFields[2].OriginalIndex);
         }
 
-        [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Order must be set on all fields")]
+        [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Id must be set on all fields")]
         [Test]
         public void GetTypeModel_BrokenUserOrderingNotAllFieldsHaveOrder_ThrowsException()
         {
             GetTypeModel<BrokenUserOrderingNotAllFieldsHaveOrder>();
         }
 
-        [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Order range must be contiguous sequence from 0..N")]
+        [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Id range must be contiguous sequence from 0..N")]
         [Test]
         public void GetTypeModel_BrokenUserOrderingGapInFieldOrder_ThrowsException()
         {
             GetTypeModel<BrokenUserOrderingGapInFieldOrder>();
         }
 
-        [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Order range must be contiguous sequence from 0..N")]
+        [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Id range must be contiguous sequence from 0..N")]
         [Test]
         public void GetTypeModel_BrokenUserOrderingMultipleSameFieldOrder_ThrowsException()
         {

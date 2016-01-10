@@ -461,9 +461,9 @@ namespace FlatBuffers.Tests
 
         private abstract class TableWithRequiredAndIndexedFields
         {
-            [FlatBuffersField(Order = 1, Required = true)]
+            [FlatBuffersField(Id = 1, Required = true)]
             public string StringProp { get; set; }
-            [FlatBuffersField(Order = 0, Required = true)]
+            [FlatBuffersField(Id = 0, Required = true)]
             public List<int> VectorProp { get; set; }
         }
 

@@ -26,10 +26,10 @@ namespace FlatBuffers.Tests.TestTypes
 
     public class TestTableWithUnionAndCustomOrdering
     {
-        [FlatBuffersField(Order = 1)]
+        [FlatBuffersField(Id = 1)]
         public int IntProp { get; set; }
 
-        [FlatBuffersField(UnionType = typeof(TestUnion), Order = 0)]
+        [FlatBuffersField(UnionType = typeof(TestUnion), Id = 0)]
         public object UnionProp { get; set; }
     }
 }

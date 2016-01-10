@@ -121,14 +121,14 @@ namespace FlatBuffers
                 {
                     if (!_fields[i].IsIndexSetExplicitly)
                     {
-                        throw new FlatBuffersStructFieldReflectionException("Order must be set on all fields");
+                        throw new FlatBuffersStructFieldReflectionException("Id must be set on all fields");
                     }
 
                     if (i != _fields[i].Index)
                     {
                         if (_fields[i].Index != i)
                         {
-                            throw new FlatBuffersStructFieldReflectionException("Order range must be contiguous sequence from 0..N");
+                            throw new FlatBuffersStructFieldReflectionException("Id range must be contiguous sequence from 0..N");
                         }
                     }
 
