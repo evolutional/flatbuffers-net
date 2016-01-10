@@ -10,6 +10,18 @@ namespace FlatBuffers.Attributes
         private Type _unionType;
 
         /// <summary>
+        /// Gets and sets if this field is a key on the table. Can only be applied to scalars and strings.
+        /// This attribute is only for fbs schema compatibility and isn't used during serialization.
+        /// </summary>
+        public bool Key { get; set; }
+
+        /// <summary>
+        /// Gets and sets the hashing algorithm for this field. Can only be applied fields of type int/uint/long/ulong.
+        /// This attribute is only for fbs schema compatibility and isn't used during serialization.
+        /// </summary>
+        public FlatBuffersHash Hash { get; set; }
+
+        /// <summary>
         /// Gets and sets the order of serialization and deserialization of the member
         /// </summary>
         public int Order

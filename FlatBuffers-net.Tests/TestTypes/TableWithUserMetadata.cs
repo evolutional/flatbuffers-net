@@ -1,6 +1,6 @@
 using FlatBuffers.Attributes;
 
-namespace FlatBuffers.Tests
+namespace FlatBuffers.Tests.TestTypes
 {
     [FlatBuffersMetadata("types")]
     public class TableWithUserMetadata

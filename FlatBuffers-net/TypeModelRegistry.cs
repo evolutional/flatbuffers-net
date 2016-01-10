@@ -343,6 +343,24 @@ namespace FlatBuffers
                 }
                 field.Required = attr.Required;
                 field.Deprecated = attr.Deprecated;
+
+                if (attr.Key)
+                {
+                    if (!ValidKeyType(valueType))
+                    {
+                        throw new FlatBuffersStructFieldReflectionException("Cannot add '{0}' as a key field. Type must be string or scalar", member.Name);
+                    }
+                    field.Key = attr.Key;
+                }
+
+                if (attr.Hash != FlatBuffersHash.None)
+                {
+                    if (!ValidHashType(valueType))
+                    {
+                        throw new FlatBuffersStructFieldReflectionException("Cannot use Hash setting on '{0}'. Type must be int/uint/long/ulong", member.Name);
+                    }
+                    field.Hash = attr.Hash;
+                }
             }
 
             if (unionTypeField != null)
@@ -352,6 +370,24 @@ namespace FlatBuffers
             }
             
             structDef.AddField(field);
+        }
+
+        private bool ValidKeyType(Type type)
+        {
+            if (type == typeof (string) || type.IsPrimitive)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool ValidHashType(Type type)
+        {
+            if (type == typeof(int) || type == typeof(uint) || type == typeof(long) || type == typeof(ulong))
+            {
+                return true;
+            }
+            return false;
         }
 
         private void ReflectUserMetadata(ICustomAttributeProvider type, TypeDefinition typeDef)

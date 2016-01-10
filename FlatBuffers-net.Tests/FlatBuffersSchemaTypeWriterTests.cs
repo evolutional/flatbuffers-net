@@ -545,6 +545,40 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Write_TableWithKeyField_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithKey>();
+                var expected = "table TestTableWithKey {\n" +
+                               "    IntProp:int (key);\n" +
+                               "    OtherProp:int;\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_TableWithHashField_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithHash>();
+                var expected = "table TestTableWithHash {\n" +
+                               "    IntProp:int (hash: \"fnv1_32\");\n" +
+                               "    OtherProp:int;\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
         public void Write_EnumWithUserMetadata_EmitsCorrectSchemaFragment()
         {
             var sb = new StringBuilder();

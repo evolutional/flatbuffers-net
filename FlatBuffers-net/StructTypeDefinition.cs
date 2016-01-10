@@ -51,6 +51,11 @@ namespace FlatBuffers
             }
         }
 
+        /// <summary>
+        /// Gets whether the struct has a key field present
+        /// </summary>
+        public bool HasKey { get; private set; }
+
         private static int CalcPadding(int bufSize, int valueSize)
         {
             return ((~bufSize) + 1) & (valueSize - 1);
@@ -91,6 +96,15 @@ namespace FlatBuffers
             else
             {
                 field.Offset = FieldIndexToOffset(field.Index);
+            }
+
+            if (field.Key && HasKey)
+            {
+                throw new FlatBuffersStructFieldReflectionException("Cannot add '{0}' as a key field, key already exists", field.Name);
+            }
+            if (field.Key)
+            {
+                HasKey = true;
             }
 
             _fields.Add(field);

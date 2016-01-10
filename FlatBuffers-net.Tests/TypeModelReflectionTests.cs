@@ -265,6 +265,59 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void GetTypeModel_WithKeyField_ReflectsKeyFlagCorrectly()
+        {
+            var typeModel = GetTypeModel<TestTableWithKey>();
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            Assert.IsTrue(structDef.HasKey);
+
+            var keyField = structDef.GetFieldByName("IntProp");
+            Assert.IsTrue(keyField.Key);
+
+            var nonKeyField = structDef.GetFieldByName("OtherProp");
+            Assert.IsFalse(nonKeyField.Key);
+        }
+
+        [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Cannot add 'OtherProp' as a key field, key already exists")]
+        [Test]
+        public void GetTypeModel_With2KeyField_ThrowsException()
+        {
+            var typeModel = GetTypeModel<TestTableWith2Keys>();
+        }
+
+        [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Cannot add 'OtherProp' as a key field. Type must be string or scalar")]
+        [Test]
+        public void GetTypeModel_WithKeyOnWrongType_ThrowsException()
+        {
+            var typeModel = GetTypeModel<TestTableWithKeyOnBadType>();
+        }
+
+        [Test]
+        public void GetTypeModel_WithHashField_ReflectsKeyFlagCorrectly()
+        {
+            var typeModel = GetTypeModel<TestTableWithHash>();
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            var hasField = structDef.GetFieldByName("IntProp");
+            Assert.AreEqual(FlatBuffersHash.Fnv1_32, hasField.Hash);
+
+            var nonHashField = structDef.GetFieldByName("OtherProp");
+            Assert.AreEqual(FlatBuffersHash.None, nonHashField.Hash);
+        }
+
+        [ExpectedException(typeof(FlatBuffersStructFieldReflectionException), ExpectedMessage = "Cannot use Hash setting on 'OtherProp'. Type must be int/uint/long/ulong")]
+        [Test]
+        public void GetTypeModel_WithBadHashAttribute_ThrowsException()
+        {
+            var typeModel = GetTypeModel<TestTableWithHashOnNonIntType>();
+        }
+
+        [Test]
         public void GetTypeModel_TableWithCustomMetadata_ReflectsAttributesCorrectly()
         {
             var typeModel = GetTypeModel<TableWithUserMetadata>();

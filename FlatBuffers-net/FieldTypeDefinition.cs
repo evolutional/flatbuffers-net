@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FlatBuffers.Attributes;
 
 namespace FlatBuffers
 {
@@ -19,6 +20,8 @@ namespace FlatBuffers
         private int _index;
         private bool _required;
         private bool _deprecated;
+        private bool _isKey;
+        private FlatBuffersHash _hash;
 
         public FieldTypeDefinition(IValueProvider valueProvider, IDefaultValueProvider defaultValueProvider)
         {
@@ -65,7 +68,46 @@ namespace FlatBuffers
         /// </summary>
         public int OriginalIndex { get; internal set; }
 
-        // key
+        public bool Key
+        {
+            get
+            {
+                return _isKey;
+            }
+            set
+            {
+                _isKey = value;
+                if (_isKey)
+                {
+                    Metadata.Add(FieldTypeMetadata.Key, false);
+                }
+                else
+                {
+                    Metadata.Remove(FieldTypeMetadata.Key);
+                }
+            }
+        }
+
+        public FlatBuffersHash Hash
+        {
+            get
+            {
+                return _hash;
+            }
+            set
+            {
+                _hash = value;
+                if (_hash != FlatBuffersHash.None)
+                {
+                    Metadata.Add(FieldTypeMetadata.Hash, _hash.HashName(), false);
+                }
+                else
+                {
+                    Metadata.Remove(FieldTypeMetadata.Hash);
+                }
+            }
+        }
+
         public int Padding { get; set; }
 
         public TypeModel TypeModel { get; set; }

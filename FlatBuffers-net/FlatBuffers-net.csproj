@@ -39,6 +39,7 @@
     <Compile Include="Attributes\FlatBuffersDefaultValueAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersEnumAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersFieldAttribute.cs" />
+    <Compile Include="Attributes\FlatBuffersHash.cs" />
     <Compile Include="Attributes\FlatBuffersIgnoreAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersMetadataAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersStructAttribute.cs" />

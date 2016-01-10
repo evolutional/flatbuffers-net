@@ -39,8 +39,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertExtensions.cs" />
-    <Compile Include="ClassReflectedAsAStruct.cs" />
-    <Compile Include="EnumWithUserMetadata.cs" />
+    <Compile Include="TestTypes\ClassReflectedAsAStruct.cs" />
+    <Compile Include="TestTypes\EnumWithUserMetadata.cs" />
     <Compile Include="FlatBuffersDeserializationTests.cs" />
     <Compile Include="FlatBuffersSchemaTests.cs" />
     <Compile Include="FlatBuffersSchemaTypeWriterTests.cs" />
@@ -62,8 +62,8 @@
     <Compile Include="SerializationTests\TestTableWithUnionAndMoreFields.cs" />
     <Compile Include="SerializationTests\TestTableWithUserOrdering.cs" />
     <Compile Include="SerializationTests\TestUnion.cs" />
-    <Compile Include="StructReflectedAsATable.cs" />
-    <Compile Include="TableWithUserMetadata.cs" />
+    <Compile Include="TestTypes\StructReflectedAsATable.cs" />
+    <Compile Include="TestTypes\TableWithUserMetadata.cs" />
     <Compile Include="TestTypes\TableWithRequiredFields.cs" />
     <Compile Include="TestTypes\TestEnum.cs" />
     <Compile Include="TestTypes\TestEnumWithExplicitNonContigValues.cs" />
@@ -76,7 +76,9 @@
     <Compile Include="TestTypes\TestStructWithForcedAlignment.cs" />
     <Compile Include="TestTypes\TestTable1.cs" />
     <Compile Include="TestTypes\TestTableWithDefaults.cs" />
+    <Compile Include="TestTypes\TestTableWithHash.cs" />
     <Compile Include="TestTypes\TestTableWithIgnoredField.cs" />
+    <Compile Include="TestTypes\TestTableWithKey.cs" />
     <Compile Include="TestTypes\TestTableWithOriginalOrdering.cs" />
     <Compile Include="TestTypes\TestTableWithUnion.cs" />
     <Compile Include="TestTypes\TestTableWithUserOrdering.cs" />
