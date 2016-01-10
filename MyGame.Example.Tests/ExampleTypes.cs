@@ -15,10 +15,31 @@ namespace MyGame.Example.Tests
     /// <summary>
     /// Type from the monster_test.fbs file
     /// </summary>
+    [FlatBuffersUnion]
+    public enum Any
+    {
+        [FlatBuffersUnionMember(typeof(Monster))]
+        Monster,
+        [FlatBuffersUnionMember(typeof(TestSimpleTableWithEnum))]
+        TestSimpleTableWithEnum,
+    }
+
+    /// <summary>
+    /// Type from the monster_test.fbs file
+    /// </summary>
     public struct Test
     {
         public short A { get; set; }
         public sbyte B { get; set; }
+    }
+
+    /// <summary>
+    /// Type from the monster_test.fbs file
+    /// </summary>
+    public class TestSimpleTableWithEnum
+    {
+        [FlatBuffersDefaultValue(typeof(Color), "Color.Green")]
+        public Color Color { get; set; }
     }
 
     /// <summary>
@@ -33,5 +54,98 @@ namespace MyGame.Example.Tests
         public double Test1 { get; set; }
         public Color Test2 { get; set; }
         public Test Test3 { get; set; }
+    }
+
+    /// <summary>
+    /// Type from the monster_test.fbs file
+    /// </summary>
+    public class Stat
+    {
+        public string Id { get; set; }
+        public long Val { get; set; }
+        public ushort Count { get; set; }
+    }
+
+    /// <summary>
+    /// Type from the monster_test.fbs file
+    /// </summary>
+    public class Monster
+    {
+        [FlatBuffersField(Order = 0)]
+        public Vec3 Pos { get; set; }
+
+        [FlatBuffersDefaultValue(100)]
+        [FlatBuffersField(Order = 2)]
+        public short Hp { get; set; }
+
+        [FlatBuffersDefaultValue(150)]
+        [FlatBuffersField(Order = 1)]
+        public short Mana { get; set; }
+
+        [FlatBuffersField(Order = 3, Required = true, Key = true)]
+        public string Name { get; set; }
+
+        [FlatBuffersDefaultValue(typeof(Color), "Color.Blue")]
+        [FlatBuffersField(Order = 6)]
+        public Color Color { get; set; }
+
+        [FlatBuffersField(Order = 5)]
+        public sbyte[] Inventory { get; set; }
+
+        [FlatBuffersDefaultValue(false)]
+        [FlatBuffersMetadata("priority", 1)]
+        [FlatBuffersField(Order = 4, Deprecated = true)]
+        public bool Friendly { get; set; }
+
+        [FlatBuffersField(Order = 11)]
+        public Monster[] TestArrayOfTables { get; set; }
+
+        [FlatBuffersField(Order = 10)]
+        public string[] TestArrayOfString { get; set; }
+
+        [FlatBuffersField(Order = 24)]
+        public bool[] TestArrayOfBools { get; set; }
+
+        [FlatBuffersField(Order = 12)]
+        public Monster Enemy { get; set; }
+
+        [FlatBuffersField(Order = 8)]
+        public Any Test { get; set; }
+
+        [FlatBuffersField(Order = 9)]
+        public Any[] Test4 { get; set; }
+
+        [FlatBuffersField(Order = 13)]  // TODO: Nested flatbuffer meta
+        public byte[] TestNestedFlatBuffer { get; set; }
+
+        [FlatBuffersField(Order = 14)]
+        public Stat TestEmpty { get; set; }
+
+        [FlatBuffersField(Order = 15)]
+        public bool TestBool { get; set; }
+
+        [FlatBuffersField(Order = 16, Hash = FlatBuffersHash.Fnv1_32)]
+        public int TestHashs32Fnv1 { get; set; }
+
+        [FlatBuffersField(Order = 17, Hash = FlatBuffersHash.Fnv1_32)]
+        public uint TestHashu32Fnv1 { get; set; }
+
+        [FlatBuffersField(Order = 18, Hash = FlatBuffersHash.Fnv1_64)]
+        public long TestHashs64Fnv1 { get; set; }
+
+        [FlatBuffersField(Order = 19, Hash = FlatBuffersHash.Fnv1_64)]
+        public ulong TestHashu64Fnv1 { get; set; }
+
+        [FlatBuffersField(Order = 20, Hash = FlatBuffersHash.Fnv1a_32)]
+        public int TestHashs32Fnv1a { get; set; }
+
+        [FlatBuffersField(Order = 21, Hash = FlatBuffersHash.Fnv1a_32)]
+        public uint TestHashu32Fnv1a { get; set; }
+
+        [FlatBuffersField(Order = 22, Hash = FlatBuffersHash.Fnv1a_64)]
+        public long TestHashs64Fnv1a { get; set; }
+
+        [FlatBuffersField(Order = 23, Hash = FlatBuffersHash.Fnv1a_64)]
+        public ulong TestHashu64Fnv1a { get; set; }
     }
 }
