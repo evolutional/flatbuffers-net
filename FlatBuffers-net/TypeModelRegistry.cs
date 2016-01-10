@@ -54,7 +54,7 @@ namespace FlatBuffers
                 BaseType baseType;
                 if (!_clrTypeToBaseType.TryGetValue(type, out baseType))
                 {
-                    throw new NotImplementedException("Haven't mapped this type");
+                    throw new FlatBuffersTypeReflectionException("BaseType of Type '{0}' cannot be deduced", type.FullName);
                 }
                 return baseType;
             }
@@ -92,7 +92,7 @@ namespace FlatBuffers
                     align > 16 ||
                     (align & (align - 1)) != 0)
                 {
-                    throw new Exception(
+                    throw new FlatBuffersTypeReflectionException(
                         "ForceAlign must be a power of two integer ranging from the struct's natural alignment to 16");
                 }
                 structTypeDef.MinAlign = align;
