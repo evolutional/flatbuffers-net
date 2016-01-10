@@ -8,6 +8,9 @@ namespace FlatBuffers.Attributes
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public class FlatBuffersUnionMemberAttribute : Attribute
     {
+        /// <summary>
+        /// Gets the .NET Type that this member should be serialized as
+        /// </summary>
         public Type MemberType { get; private set; }
 
         public FlatBuffersUnionMemberAttribute(Type memberType)

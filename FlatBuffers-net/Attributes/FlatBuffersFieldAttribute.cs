@@ -2,6 +2,9 @@
 
 namespace FlatBuffers.Attributes
 {
+    /// <summary>
+    /// An optional attribute to override FlatBuffers-specific metadata on a field or property
+    /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class FlatBuffersFieldAttribute : Attribute
     {

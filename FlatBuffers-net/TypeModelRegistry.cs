@@ -7,11 +7,6 @@ using FlatBuffers.Attributes;
 
 namespace FlatBuffers
 {
-    public struct UnionFieldType
-    {
-        public byte Value { get; set; }
-    }
-
     public class TypeModelRegistry
     {
         private static readonly TypeModelRegistry s_default = new TypeModelRegistry();

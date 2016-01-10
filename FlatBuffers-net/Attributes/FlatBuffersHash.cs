@@ -2,16 +2,35 @@
 
 namespace FlatBuffers.Attributes
 {
+    /// <summary>
+    /// Enum to determine the type of hashing algorithm used by the Hash attribute
+    /// </summary>
     public enum FlatBuffersHash
     {
+        /// <summary>
+        /// No hashing
+        /// </summary>
         None,
+
+        /// <summary>
+        /// Use the 32-bit version of FNA1
+        /// </summary>
         Fnv1_32,
+        /// <summary>
+        /// Use the 32-bit version of FNA1a
+        /// </summary>
         Fnv1a_32,
+        /// <summary>
+        /// Use the 64-bit version of FNA1
+        /// </summary>
         Fnv1_64,
+        /// <summary>
+        /// Use the 64-bit version of FNA1a
+        /// </summary>
         Fnv1a_64,
     }
 
-    public static class FlatBuffersHashUtils
+    internal static class FlatBuffersHashUtils
     {
         public static string HashName(this FlatBuffersHash hash)
         {

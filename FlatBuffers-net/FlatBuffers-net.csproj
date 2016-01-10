@@ -80,6 +80,7 @@
     <Compile Include="TypeHelpers.cs" />
     <Compile Include="TypeModel.cs" />
     <Compile Include="TypeModelRegistry.cs" />
+    <Compile Include="UnionFieldType.cs" />
     <Compile Include="UnionTypeDefinition.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -9,9 +9,19 @@ namespace FlatBuffers.Attributes
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true, Inherited = true)]
     public class FlatBuffersMetadataAttribute : Attribute
     {
+        /// <summary>
+        /// Gets the metadata atrribute name
+        /// </summary>
         public string Name { get; private set; }
 
+        /// <summary>
+        /// Gets the metadata value.
+        /// </summary>
         public object Value { get; set; }
+
+        /// <summary>
+        /// Gets a Boolean to indicate if the metadata attribute has a value
+        /// </summary>
         public bool HasValue { get; private set; }
 
         public FlatBuffersMetadataAttribute(string name)

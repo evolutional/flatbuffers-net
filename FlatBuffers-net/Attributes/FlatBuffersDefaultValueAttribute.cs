@@ -2,6 +2,10 @@
 
 namespace FlatBuffers.Attributes
 {
+    /// <summary>
+    /// Attribute to provide a default value on a struct or table field
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property|AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public sealed class FlatBuffersDefaultValueAttribute : Attribute
     {
         public FlatBuffersDefaultValueAttribute(bool value)
