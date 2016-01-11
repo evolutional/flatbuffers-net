@@ -36,7 +36,8 @@ namespace FlatBuffers
         /// <returns>Boolean to indicate if the specified value is equal to the default value</returns>
         public bool IsDefaultValue(object value)
         {
-            return value.Equals(_attr.Value);
+            var convertedValue = Convert.ChangeType(_attr.Value, value.GetType());
+            return value.Equals(convertedValue);
         }
 
         /// <summary>

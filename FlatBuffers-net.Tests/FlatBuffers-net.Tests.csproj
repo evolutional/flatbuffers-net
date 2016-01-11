@@ -76,6 +76,7 @@
     <Compile Include="TestTypes\TestStructWithEnum.cs" />
     <Compile Include="TestTypes\TestStructWithForcedAlignment.cs" />
     <Compile Include="TestTypes\TestTable1.cs" />
+    <Compile Include="TestTypes\TestTable1UsingFields.cs" />
     <Compile Include="TestTypes\TestTableWithComments.cs" />
     <Compile Include="TestTypes\TestTableWithDefaults.cs" />
     <Compile Include="TestTypes\TestTableWithHash.cs" />

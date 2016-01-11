@@ -79,6 +79,28 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Serialize_WithTestTableUsingFields_CanBeReadByOracle()
+        {
+            const int intProp = 42;
+            const byte byteProp = 22;
+            const short shortProp = 62;
+
+            var serializer = new FlatBuffersSerializer();
+
+            var obj = new TestTable1UsingFields() { IntProp = intProp, ByteProp = byteProp, ShortProp = shortProp };
+
+            var buffer = new byte[32];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTable1(buffer);
+
+            Assert.AreEqual(obj.IntProp, oracleResult.IntProp);
+            Assert.AreEqual(obj.ByteProp, oracleResult.ByteProp);
+            Assert.AreEqual(obj.ShortProp, oracleResult.ShortProp);
+        }
+
+        [Test]
         public void Serialize_WithTestTableWithDeprecatedField_CanBeReadByOracle()
         {
             const int intProp = 42;
@@ -339,6 +361,24 @@ namespace FlatBuffers.Tests
             Assert.AreEqual(intProp, oracleResult.IntProp);
             Assert.AreEqual(byteProp, oracleResult.ByteProp);
             Assert.AreEqual(shortProp, oracleResult.ShortProp);
+        }
+
+        [Test]
+        public void Serialize_TestTable1UsingFieldsAndDefaultFieldValues_CanBeReadByOracleAsTestTable1()
+        {
+            var serializer = new FlatBuffersSerializer();
+
+            var obj = new TestTable1UsingFieldsAndDefaultFieldValues();  // relying on the flatbuffers defaults
+
+            var buffer = new byte[32];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTable1(buffer);
+
+            Assert.AreEqual(0, oracleResult.IntProp);   // values are all zero as the defaults matched the values in the struct
+            Assert.AreEqual(0, oracleResult.ByteProp);
+            Assert.AreEqual(0, oracleResult.ShortProp);
         }
 
         [Test]

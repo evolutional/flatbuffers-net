@@ -69,6 +69,24 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Deserialize_FromOracleData_WithTestTable1UsingFields()
+        {
+            const int intProp = 42;
+            const byte byteProp = 22;
+            const short shortProp = 62;
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTable1(intProp, byteProp, shortProp);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTable1UsingFields>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(intProp, o.IntProp);
+            Assert.AreEqual(byteProp, o.ByteProp);
+            Assert.AreEqual(shortProp, o.ShortProp);
+        }
+
+        [Test]
         public void Deserialize_FromOracleData_WithTestTableWithDefaults()
         {
             const int intProp = 123456;
