@@ -38,22 +38,32 @@ namespace FlatBuffers
         /// <summary>
         /// Creates a new <see cref="FlatBuffersSchema"/> and automatically adds the <see cref="Type"/> to it.
         /// </summary>
+        /// <param name="isRootType">A Boolean to indiciate if this type should be the root type of the schema</param>
         /// <typeparam name="T"><see cref="Type"/> of the object to reflect</typeparam>
         /// <returns>An <see cref="FlatBuffersSchema"/> object with the reflected type</returns>
-        public FlatBuffersSchema Generate<T>()
+        public FlatBuffersSchema Generate<T>(bool isRootType = false)
         {
-            return Generate(typeof (T));
+            return Generate(typeof (T), isRootType);
         }
 
         /// <summary>
         /// Creates a new <see cref="FlatBuffersSchema"/> and automatically adds the <see cref="Type"/> to it.
         /// </summary>
         /// <param name="type"><see cref="Type"/> of the object to reflect</param>
+        /// <param name="isRootType">A Boolean to indiciate if this type should be the root type of the schema</param>
         /// <returns>An <see cref="FlatBuffersSchema"/> object with the reflected type</returns>
-        public FlatBuffersSchema Generate(Type type)
+        public FlatBuffersSchema Generate(Type type, bool isRootType = false)
         {
             var schema = Create();
-            schema.AddType(type);
+
+            if (isRootType)
+            {
+                schema.SetRootType(type);
+            }
+            else
+            {
+                schema.AddType(type);
+            }
             return schema;
         }
 

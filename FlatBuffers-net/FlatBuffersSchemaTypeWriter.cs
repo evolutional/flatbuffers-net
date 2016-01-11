@@ -463,5 +463,15 @@ namespace FlatBuffers
         {
             _writer.WriteLine();
         }
+
+        /// <summary>
+        /// Writes the name of the schema's root_type
+        /// </summary>
+        /// <param name="rootTypeName">Type name to write</param>
+        public void WriteRootType(string rootTypeName)
+        {
+            // TODO: assert if root_type written
+            _writer.WriteLine("root_type {0};", rootTypeName);
+        }
     }
 }

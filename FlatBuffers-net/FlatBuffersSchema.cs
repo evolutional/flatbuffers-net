@@ -10,10 +10,21 @@ namespace FlatBuffers
     /// </summary>
     public class FlatBuffersSchema
     {
+        private FlatBuffersSchemaTypeDependencyNode _rootTypeNode;
         private readonly TypeModelRegistry _typeModelRegistry;
         private readonly List<FlatBuffersSchemaTypeDependencyNode> _nodes = new List<FlatBuffersSchemaTypeDependencyNode>();
 
         private readonly HashSet<string> _metadataAttributes = new HashSet<string>();
+
+        /// <summary>
+        /// Gets the RootType for this schema
+        /// </summary>
+        public FlatBuffersSchemaTypeDependencyNode RootType { get { return _rootTypeNode; } }
+
+        /// <summary>
+        /// Gets a Boolean to indiciate if this schema has a <see cref="RootType"/> set
+        /// </summary>
+        public bool HasRootType { get { return _rootTypeNode != null; } }
 
         /// <summary>
         /// Gets an enumerable of the user-specified attibutes used in this schema
@@ -66,6 +77,48 @@ namespace FlatBuffers
             return AddNode(node);
         }
 
+        /// <summary>
+        /// Sets the Root <see cref="TypeModel"/> of this schema
+        /// </summary>
+        /// <typeparam name="T">The root type</typeparam>
+        /// <returns>A dependency node for the root type</returns>
+        public FlatBuffersSchemaTypeDependencyNode SetRootType<T>()
+        {
+            return SetRootType(typeof (T));
+        }
+
+        /// <summary>
+        /// Sets the Root <see cref="TypeModel"/> of this schema
+        /// </summary>
+        /// <param name="type">The root type</param>
+        /// <returns>A dependency node for the root type</returns>
+        public FlatBuffersSchemaTypeDependencyNode SetRootType(Type type)
+        {
+            var typeModel = _typeModelRegistry.GetTypeModel(type);
+            return SetRootType(typeModel);
+        }
+
+        /// <summary>
+        /// Sets the Root <see cref="TypeModel"/> of this schema
+        /// </summary>
+        /// <param name="typeModel">The root type</param>
+        /// <returns>A dependency node for the root type</returns>
+        public FlatBuffersSchemaTypeDependencyNode SetRootType(TypeModel typeModel)
+        {
+            if (HasRootType)
+            {
+                throw new FlatBuffersSchemaException("Schema already has a root type");
+            }
+
+            if (!typeModel.IsObject)
+            {
+                throw new FlatBuffersSchemaException("Type must be a Table or Struct type to be used as a root type");
+            }
+
+            var node = AddType(typeModel);
+            _rootTypeNode = node;
+            return node;
+        }
 
         private FlatBuffersSchemaTypeDependencyNode AddNode(FlatBuffersSchemaTypeDependencyNode node)
         {
@@ -174,7 +227,18 @@ namespace FlatBuffers
             {
                 schemaWriter.Write(node.TypeModel);
             }
+
+            WriteFooter(schemaWriter);
         }
+
+        private void WriteFooter(FlatBuffersSchemaTypeWriter schemaWriter)
+        {
+            if (HasRootType)
+            {
+                schemaWriter.WriteRootType(RootType.TypeModel.Name);
+            }
+        }
+
 
         /// <summary>
         /// Traverses the type graph, resolving dependencies.

@@ -89,6 +89,38 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void WriteTo_WhenRootTypeSet_RootTypeIsWritten()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            var schema = generator.Generate<Level1StructWithEnumDep>(true);
+
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                schema.WriteTo(sw);
+            }
+
+            var expected = "enum RootEnum : int {\n" +
+                            "    Apples,\n" +
+                            "    Pears\n" +
+                            "}\n" +
+                            "struct Level1StructWithEnumDep {\n" +
+                            "    EnumProp:RootEnum;\n" +
+                            "}\n" +
+                            "root_type Level1StructWithEnumDep;";
+
+            AssertExtensions.AreEquivalent(expected, sb.ToString());
+        }
+
+        [ExpectedException(typeof(FlatBuffersSchemaException), ExpectedMessage = "Type must be a Table or Struct type to be used as a root type")]
+        [Test]
+        public void WriteTo_WhenRootTypeSetAndIsNotStruct_ExceptionIsThrown()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            generator.Generate<RootEnum>(true);
+        }
+
+        [Test]
         public void WriteTo_When2LevelStructChain_ResolvesDependenciesInCorrectOrder()
         {
             var generator = new FlatBuffersSchemaGenerator();
