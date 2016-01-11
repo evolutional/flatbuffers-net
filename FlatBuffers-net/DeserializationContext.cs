@@ -10,7 +10,6 @@ namespace FlatBuffers
     internal class DeserializationContext
     {
         private readonly TypeModelRegistry _typeModelRegistry;
-        private readonly Type _rootObjectType;
         private readonly TypeModel _rootTypeModel;
         private readonly ByteBuffer _buffer;
         private readonly Dictionary<int, object> _offsetToObject = new Dictionary<int, object>(); 
@@ -18,7 +17,6 @@ namespace FlatBuffers
         public DeserializationContext(TypeModelRegistry typeModelRegistry, Type rootObjectType, ByteBuffer buffer)
         {
             _typeModelRegistry = typeModelRegistry;
-            _rootObjectType = rootObjectType;
             _rootTypeModel = _typeModelRegistry.GetTypeModel(rootObjectType);
             _buffer = buffer;
         }
