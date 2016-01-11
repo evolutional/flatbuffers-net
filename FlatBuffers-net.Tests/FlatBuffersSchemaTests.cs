@@ -112,6 +112,27 @@ namespace FlatBuffers.Tests
             AssertExtensions.AreEquivalent(expected, sb.ToString());
         }
 
+        [Test]
+        public void WriteTo_WhenRootTypeSetAndTypeHasAnIdentifier_RootTypeAndIdentifierIsWritten()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            var schema = generator.Generate<TestTableWithIdentifier>(true);
+
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                schema.WriteTo(sw);
+            }
+
+            var expected = "table TestTableWithIdentifier {\n" +
+                            "    IntProp:int;\n" +
+                            "}\n" +
+                            "root_type TestTableWithIdentifier;\n" +
+                            "file_identifier \"TEST\";";
+
+            AssertExtensions.AreEquivalent(expected, sb.ToString());
+        }
+
         [ExpectedException(typeof(FlatBuffersSchemaException), ExpectedMessage = "Type must be a Table or Struct type to be used as a root type")]
         [Test]
         public void WriteTo_WhenRootTypeSetAndIsNotStruct_ExceptionIsThrown()

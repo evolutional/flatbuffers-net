@@ -109,6 +109,10 @@ namespace FlatBuffers
         private void ApplyTableAttributeFlags(StructTypeDefinition structTypeDef, FlatBuffersTableAttribute attribute)
         {
             structTypeDef.UseOriginalOrdering = attribute.OriginalOrdering;
+            if (attribute.HasIdentitifer)
+            {
+                structTypeDef.Identifier = attribute.Identifier;
+            }
         }
 
         private EnumTypeDefinition ReflectEnumDef(Type type)

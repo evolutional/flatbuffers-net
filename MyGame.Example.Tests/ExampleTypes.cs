@@ -69,6 +69,7 @@ namespace MyGame.Example.Tests
     /// <summary>
     /// Type from the monster_test.fbs file
     /// </summary>
+    [FlatBuffersTable(Identifier = "MONS")]
     public class Monster
     {
         [FlatBuffersField(Id = 0)]

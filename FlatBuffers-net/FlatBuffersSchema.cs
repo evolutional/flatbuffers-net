@@ -236,6 +236,14 @@ namespace FlatBuffers
             if (HasRootType)
             {
                 schemaWriter.WriteRootType(RootType.TypeModel.Name);
+                if (RootType.TypeModel.IsTable)
+                {
+                    var structDef = RootType.TypeModel.StructDef;
+                    if (structDef.HasIdentifier)
+                    {
+                        schemaWriter.WriteFileIdentifier(structDef.Identifier);
+                    }
+                }
             }
         }
 

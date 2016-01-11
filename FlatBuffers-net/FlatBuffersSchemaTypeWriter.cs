@@ -473,5 +473,15 @@ namespace FlatBuffers
             // TODO: assert if root_type written
             _writer.WriteLine("root_type {0};", rootTypeName);
         }
+
+        /// <summary>
+        /// Writes the file_identifier from the schema's root type
+        /// </summary>
+        /// <param name="ident">Identifier to write</param>
+        public void WriteFileIdentifier(string ident)
+        {
+            // TODO: assert if file_identifier written
+            _writer.WriteLine("file_identifier \"{0}\";", ident);
+        }
     }
 }

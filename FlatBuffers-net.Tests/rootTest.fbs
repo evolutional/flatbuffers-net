@@ -1,0 +1,8 @@
+namespace SerializationTests;
+
+table TestTableWithIdentifier {
+    IntProp: int;
+}
+
+root_type TestTableWithIdentifier;
+file_identifier "TEST";

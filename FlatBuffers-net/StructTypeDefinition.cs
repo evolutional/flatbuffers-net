@@ -9,6 +9,7 @@ namespace FlatBuffers
     /// </summary>
     public class StructTypeDefinition : TypeDefinition
     {
+        private string _identifier;
         private int _forceAlignSize;
         private bool _originalOrdering;
 
@@ -65,7 +66,10 @@ namespace FlatBuffers
             internal set
             {
                 _originalOrdering = value;
-                Metadata.Add(StructTypeMetadata.OriginalOrder, false);
+                if (value)
+                    Metadata.Add(StructTypeMetadata.OriginalOrder, false);
+                else
+                    Metadata.Remove(StructTypeMetadata.OriginalOrder);
             }
         }
 
@@ -86,6 +90,30 @@ namespace FlatBuffers
         /// Gets whether the struct has a key field present
         /// </summary>
         public bool HasKey { get; private set; }
+
+
+        /// <summary>
+        /// Gets whether the struct has a buffer identifier present
+        /// </summary>
+        public bool HasIdentifier { get; private set; }
+
+        /// <summary>
+        /// Gets the identifier used by the table when used as a root type
+        /// </summary>
+        public string Identifier
+        {
+            get { return _identifier; }
+            internal set
+            {
+                if (IsFixed)
+                {
+                    throw new ArgumentException();
+                }
+
+                _identifier = value;
+                HasIdentifier = true;
+            }
+        }
 
         private static int CalcPadding(int bufSize, int valueSize)
         {

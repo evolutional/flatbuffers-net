@@ -423,6 +423,22 @@ namespace FlatBuffers.Tests
             Assert.IsFalse(buffer.SequenceEqual(buffer2));
         }
 
+        [Test]
+        public void Serialize_TestTableWithIdentifier_CanBeReadByOracle()
+        {
+            const int intProp = 123456;
+
+            var obj = new TestTableWithIdentifier()
+            {
+                IntProp = intProp,
+            };
+
+            var buffer = FlatBuffersConvert.SerializeObject(obj);
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTableWithIdentifier(buffer);
+            Assert.AreEqual(intProp, oracleResult.IntProp);
+        }
+
         [ExpectedException(typeof(FlatBuffersSerializationException), ExpectedMessage = "Required field 'StringProp' is not set")]
         [Test]
         public void Serialize_TableWithRequiredFields_WhenStringPropNull_ThrowsException()

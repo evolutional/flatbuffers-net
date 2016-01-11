@@ -43,15 +43,32 @@ namespace FlatBuffers
             return Encoding.UTF8.GetString(_buffer.Data, startPos, len);
         }
 
-        private object DeserializeStruct(int structBase, int offset, TypeModel typeModel)
+        private bool CheckIdentifier(int structBase, string identifier)
         {
-            var obj = Activator.CreateInstance(typeModel.Type);
-            var structDef = typeModel.StructDef;
+            for (var i = 0; i < FlatBufferConstants.FileIdentifierLength; i++)
+            {
+                if (identifier[i] != (char)_buffer.Get(structBase + sizeof(int) + i)) 
+                    return false;
+            }
+            return true;
+        }
 
+        private object DeserializeStruct(int structBase, int offset, TypeModel typeModel, bool isRoot = false)
+        {
+            var structDef = typeModel.StructDef;
             var fieldOffset = structBase;
 
             if (!structDef.IsFixed)
             {
+                // check the identifier if present
+                if (isRoot && structDef.HasIdentifier)
+                {
+                    if (!CheckIdentifier(structBase, structDef.Identifier))
+                    {
+                        throw new FlatBuffersSerializationException("Expected buffer to have identifier {0}", structDef.Identifier);
+                    }
+                }
+
                 fieldOffset += _buffer.GetInt(offset + structBase) + offset; // indirect
             }
             else
@@ -59,6 +76,7 @@ namespace FlatBuffers
                 fieldOffset += offset;
             }
 
+            var obj = Activator.CreateInstance(typeModel.Type);
             foreach (var field in structDef.Fields)
             {
                 DeserializeStructField(obj, structDef, field, fieldOffset);
@@ -354,7 +372,7 @@ namespace FlatBuffers
                 throw new ArgumentException();
             }
 
-            return DeserializeStruct(_buffer.Position, _buffer.Position, _rootTypeModel);
+            return DeserializeStruct(_buffer.Position, _buffer.Position, _rootTypeModel, true);
         }
 
     }

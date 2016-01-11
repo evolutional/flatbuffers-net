@@ -384,7 +384,15 @@ namespace FlatBuffers
 
             if (_rootTypeModel.IsTable)
             {
-                _builder.Finish(rootTable);
+                if (_rootTypeModel.StructDef.HasIdentifier)
+                {
+                    _builder.Finish(rootTable, _rootTypeModel.StructDef.Identifier);
+                }
+                else
+                {
+                    _builder.Finish(rootTable);
+                }
+                
             }
             return _builder.Offset;
         }

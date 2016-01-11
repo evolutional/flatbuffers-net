@@ -383,5 +383,17 @@ namespace FlatBuffers.Tests
             Assert.AreEqual(table1.ByteProp, o1.ByteProp);
         }
 
+        [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithIdentifier()
+        {
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithIdentifier(42);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithIdentifier>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(42, o.IntProp);
+        }
+
     }
 }

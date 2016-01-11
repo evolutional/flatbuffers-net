@@ -56,6 +56,21 @@ namespace FlatBuffers.Tests
             return result;
         }
 
+        public TestTableWithIdentifier ReadTestTableWithIdentifier(byte[] buffer)
+        {
+            var bb = new ByteBuffer(buffer);
+            if (!SerializationTests.TestTableWithIdentifier.TestTableWithIdentifierBufferHasIdentifier(bb))
+            {
+                throw new Exception("Buffer does not have required identifier");
+            }
+            var test = SerializationTests.TestTableWithIdentifier.GetRootAsTestTableWithIdentifier(bb);
+            var result = new TestTableWithIdentifier()
+            {
+                IntProp = test.IntProp,
+            };
+            return result;
+        }
+
         public TestTableWithDefaults ReadTestTableWithDefaults(byte[] buffer)
         {
             var test = SerializationTests.TestTableWithDefaults.GetRootAsTestTableWithDefaults(new ByteBuffer(buffer));
@@ -287,6 +302,14 @@ namespace FlatBuffers.Tests
             var fbb = new FlatBufferBuilder(8);
             var offset = SerializationTests.TestTable1.CreateTestTable1(fbb, intProp, byteProp, shortProp);
             fbb.Finish(offset.Value);
+            return GetBytes(fbb);
+        }
+
+        public byte[] GenerateTestTableWithIdentifier(int intProp)
+        {
+            var fbb = new FlatBufferBuilder(8);
+            var offset = SerializationTests.TestTableWithIdentifier.CreateTestTableWithIdentifier(fbb, intProp);
+            SerializationTests.TestTableWithIdentifier.FinishTestTableWithIdentifierBuffer(fbb, offset);
             return GetBytes(fbb);
         }
 
