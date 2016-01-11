@@ -24,11 +24,20 @@ namespace FlatBuffers.Attributes
         /// </summary>
         public bool HasValue { get; private set; }
 
+        /// <summary>
+        /// Initializes an instance of the <see cref="FlatBuffersMetadataAttribute"/> class
+        /// </summary>
+        /// <param name="name">The name of the FlatBuffers schema attribute</param>
         public FlatBuffersMetadataAttribute(string name)
         {
             Name = name;
         }
 
+        /// <summary>
+        /// Initializes an instance of the <see cref="FlatBuffersMetadataAttribute"/> class
+        /// </summary>
+        /// <param name="name">The name of the FlatBuffers schema attribute</param>
+        /// <param name="value">The value of the FlatBuffers schema attribute</param>
         public FlatBuffersMetadataAttribute(string name, int value)
             : this(name)
         {
@@ -36,6 +45,11 @@ namespace FlatBuffers.Attributes
             HasValue = true;
         }
 
+        /// <summary>
+        /// Initializes an instance of the <see cref="FlatBuffersMetadataAttribute"/> class
+        /// </summary>
+        /// <param name="name">The name of the FlatBuffers schema attribute</param>
+        /// <param name="value">The value of the FlatBuffers schema attribute</param>
         public FlatBuffersMetadataAttribute(string name, bool value)
             : this(name)
         {
@@ -43,6 +57,11 @@ namespace FlatBuffers.Attributes
             HasValue = true;
         }
 
+        /// <summary>
+        /// Initializes an instance of the <see cref="FlatBuffersMetadataAttribute"/> class
+        /// </summary>
+        /// <param name="name">The name of the FlatBuffers schema attribute</param>
+        /// <param name="value">The value of the FlatBuffers schema attribute</param>
         public FlatBuffersMetadataAttribute(string name, string value)
             : this(name)
         {

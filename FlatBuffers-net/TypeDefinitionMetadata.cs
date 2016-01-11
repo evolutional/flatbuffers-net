@@ -2,11 +2,21 @@ using System;
 
 namespace FlatBuffers
 {
+    /// <summary>
+    /// Represents a key/value pair of a metadata attribute for the <see cref="FlatBuffersSchema"/>
+    /// </summary>
     public class TypeDefinitionMetadata
     {
         private object _value;
-        public string Key { get; set; }
+        /// <summary>
+        /// The attribute name
+        /// </summary>
+        public string Key { get; internal set; }
 
+        /// <summary>
+        /// The value of this attribute
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
         public object Value
         {
             get
@@ -17,7 +27,7 @@ namespace FlatBuffers
                 }
                 return _value;
             }
-            set
+            internal set
             {
                 if (value == null)
                 {
@@ -30,6 +40,9 @@ namespace FlatBuffers
             }
         }
 
+        /// <summary>
+        /// Gets a Boolean to indicate if this attribute has a value
+        /// </summary>
         public bool HasValue { get; private set; }
 
         /// <summary>

@@ -7,6 +7,9 @@ namespace FlatBuffers
     /// </summary>
     public class EnumTypeDefinition : TypeDefinition
     {
+        internal EnumTypeDefinition()
+        { }
+
         /// <summary>
         /// Gets if the enum type has been auto sized to fit the smallest type it can do
         /// </summary>

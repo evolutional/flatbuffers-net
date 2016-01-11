@@ -1,20 +1,10 @@
-﻿using System.Collections.Generic;
-using FlatBuffers.Attributes;
+﻿using FlatBuffers.Attributes;
 
 namespace FlatBuffers
 {
-    internal class IndexBasedFieldTypeDefinitionComparaer : IComparer<FieldTypeDefinition>
-    {
-        public int Compare(FieldTypeDefinition x, FieldTypeDefinition y)
-        {
-            if (x.Index == y.Index)
-                return 0;
-            if (x.Index < y.Index)
-                return -1;
-            return 1;
-        }
-    }
-
+    /// <summary>
+    /// Class that represents reflected information about a FlatBuffers struct/table field
+    /// </summary>
     public sealed class FieldTypeDefinition : TypeDefinition
     {
         private int _index;
@@ -23,6 +13,11 @@ namespace FlatBuffers
         private bool _isKey;
         private FlatBuffersHash _hash;
 
+        /// <summary>
+        /// Initializes an instance of the FieldTypeDefinition class
+        /// </summary>
+        /// <param name="valueProvider">The value provider to use</param>
+        /// <param name="defaultValueProvider">The devault value provider to use</param>
         public FieldTypeDefinition(IValueProvider valueProvider, IDefaultValueProvider defaultValueProvider)
         {
             ValueProvider = valueProvider;
@@ -47,8 +42,14 @@ namespace FlatBuffers
             }
         }
 
+        /// <summary>
+        /// Gets a Boolean to indicate if the index has been explictly set by the user
+        /// </summary>
         public bool IsIndexSetExplicitly { get; private set; }
 
+        /// <summary>
+        /// Gets and sets the user-specified field ordering index
+        /// </summary>
         public int UserIndex
         {
             get
@@ -68,6 +69,9 @@ namespace FlatBuffers
         /// </summary>
         public int OriginalIndex { get; internal set; }
 
+        /// <summary>
+        /// Gets and sets a Boolean to indicate if this field is a 'key' field. Only used by the schema writer to emit the attribute.
+        /// </summary>
         public bool Key
         {
             get
@@ -88,6 +92,9 @@ namespace FlatBuffers
             }
         }
 
+        /// <summary>
+        /// Gets and sets the hasing algorithm that was used to determine the value for this field. Only used by the schema writer to emit the attribute.
+        /// </summary>
         public FlatBuffersHash Hash
         {
             get
@@ -108,16 +115,35 @@ namespace FlatBuffers
             }
         }
 
-        public int Padding { get; set; }
+        /// <summary>
+        /// Gets the amount of padding (in bytes) that will preceed this field when serialized
+        /// </summary>
+        public int Padding { get; internal set; }
 
-        public TypeModel TypeModel { get; set; }
+        /// <summary>
+        /// Gets the TypeModel for the value type of this field
+        /// </summary>
+        public TypeModel TypeModel { get; internal set; }
 
-        public int Offset { get; set; }
+        /// <summary>
+        /// Gets the offset into the flatbuffer this field is written to
+        /// </summary>
+        public int Offset { get; internal set; }
 
+        /// <summary>
+        /// Gets the interface that allows access to the value for this field during serialization
+        /// </summary>
         public IValueProvider ValueProvider { get; private set; }
+        
+        /// <summary>
+        /// Gets the interface that allows access to the default value for this field during serialization
+        /// </summary>
         public IDefaultValueProvider DefaultValueProvider { get; private set; }
 
-        public FieldTypeDefinition UnionTypeField { get; set; }
+        /// <summary>
+        /// Gets the paired field that holds the 'type' info when this field is a union value.
+        /// </summary>
+        public FieldTypeDefinition UnionTypeField { get; internal set; }
 
         /// <summary>
         /// Gets and sets whether this field is required to be set during serialization
@@ -158,7 +184,6 @@ namespace FlatBuffers
                     Metadata.Remove(FieldTypeMetadata.Deprecated);
                 }
             }
-
         }
     }
 }

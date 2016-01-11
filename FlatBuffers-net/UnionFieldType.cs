@@ -1,6 +1,6 @@
 namespace FlatBuffers
 {
-    public struct UnionFieldType
+    internal struct UnionFieldType
     {
         public byte Value { get; set; }
     }

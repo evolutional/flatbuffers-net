@@ -1,4 +1,5 @@
 ﻿using System;
+using FlatBuffers.Utilities;
 
 namespace FlatBuffers.Attributes
 {

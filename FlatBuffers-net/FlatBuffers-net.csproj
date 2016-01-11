@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\FlatBuffers-net.XML</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\FlatBuffers-net.XML</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -50,12 +52,13 @@
     <Compile Include="Attributes\FlatBuffersUnionAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersUnionMemberAttribute.cs" />
     <Compile Include="BaseType.cs" />
-    <Compile Include="BaseTypeExtensions.cs" />
+    <Compile Include="Utilities\BaseTypeExtensions.cs" />
     <Compile Include="DeserializationContext.cs" />
     <Compile Include="EnumTypeDefinition.cs" />
     <Compile Include="FieldTypeDefinition.cs" />
     <Compile Include="FieldTypeMetaData.cs" />
     <Compile Include="FlatBuffersSchemaTypeWriterOptions.cs" />
+    <Compile Include="IndexBasedFieldTypeDefinitionComparaer.cs" />
     <Compile Include="StructTypeMetaData.cs" />
     <Compile Include="TypeDefinitionMetadata.cs" />
     <Compile Include="FieldValueProvider.cs" />
@@ -78,11 +81,12 @@
     <Compile Include="StructTypeDefinition.cs" />
     <Compile Include="TypeDefinition.cs" />
     <Compile Include="TypeDefinitionMetaDataCollection.cs" />
-    <Compile Include="TypeHelpers.cs" />
+    <Compile Include="Utilities\TypeHelpers.cs" />
     <Compile Include="TypeModel.cs" />
     <Compile Include="TypeModelRegistry.cs" />
     <Compile Include="UnionFieldType.cs" />
     <Compile Include="UnionTypeDefinition.cs" />
+    <Compile Include="UnionTypeValueProvider.cs" />
     <Compile Include="Utilities\StringUtils.cs" />
   </ItemGroup>
   <ItemGroup>

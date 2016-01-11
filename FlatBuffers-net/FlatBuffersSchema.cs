@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace FlatBuffers
 {
+    /// <summary>
+    /// Class that represents a single FlatBuffers schema (fbs) file
+    /// </summary>
     public class FlatBuffersSchema
     {
         private readonly TypeModelRegistry _typeModelRegistry;
@@ -12,6 +15,9 @@ namespace FlatBuffers
 
         private readonly HashSet<string> _metadataAttributes = new HashSet<string>();
 
+        /// <summary>
+        /// Gets an enumerable of the user-specified attibutes used in this schema
+        /// </summary>
         public IEnumerable<string> UserMetadataAttributes { get { return _metadataAttributes; } } 
 
         internal FlatBuffersSchema(TypeModelRegistry typeModelRegistry)
@@ -23,19 +29,37 @@ namespace FlatBuffers
             : this(TypeModelRegistry.Default)
         { }
 
+        /// <summary>
+        /// Gets an enumerable of the types contained in this schema
+        /// </summary>
         public IEnumerable<FlatBuffersSchemaTypeDependencyNode> AllTypes { get { return _nodes; } }
 
+        /// <summary>
+        /// Adds a .NET type to the schema. Type will be reflected into a <see cref="TypeModel"/>
+        /// </summary>
+        /// <typeparam name="T">The type to add to the schema</typeparam>
+        /// <returns>A dependency node for the type</returns>
         public FlatBuffersSchemaTypeDependencyNode AddType<T>()
         {
             return AddType(typeof(T));
         }
 
+        /// <summary>
+        /// Adds a .NET type to the schema. Type will be reflected into a <see cref="TypeModel"/>
+        /// </summary>
+        /// <param name="type">The type to add to the schema</param>
+        /// <returns>A dependency node for the type</returns>
         public FlatBuffersSchemaTypeDependencyNode AddType(Type type)
         {
             var typeModel = _typeModelRegistry.GetTypeModel(type);
             return AddType(typeModel);
         }
 
+        /// <summary>
+        /// Adds a <see cref="TypeModel"/> to the schema
+        /// </summary>
+        /// <param name="typeModel">The type to add to the schema</param>
+        /// <returns>A dependency node for the type</returns>
         public FlatBuffersSchemaTypeDependencyNode AddType(TypeModel typeModel)
         {
             var node = GetDependencyNode(typeModel, null);
@@ -124,11 +148,20 @@ namespace FlatBuffers
             return deps;
         }
 
+        /// <summary>
+        /// Writes this schema to the specified <see cref="TextWriter"/> using the default options
+        /// </summary>
+        /// <param name="writer">TextWriter to emit the schema to</param>
         public void WriteTo(TextWriter writer)
         {
             WriteTo(writer, FlatBuffersSchemaTypeWriterOptions.Default);
         }
 
+        /// <summary>
+        /// Writes this schema to the specified <see cref="TextWriter"/>
+        /// </summary>
+        /// <param name="writer">TextWriter to emit the schema to</param>
+        /// <param name="options">Options to use when writing the schema</param>
         public void WriteTo(TextWriter writer, FlatBuffersSchemaTypeWriterOptions options)
         {
             var schemaWriter = new FlatBuffersSchemaTypeWriter(writer, options);

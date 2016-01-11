@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FlatBuffers
 {
-    public sealed class TypeDefaultValueProvider : IDefaultValueProvider
+    internal sealed class TypeDefaultValueProvider : IDefaultValueProvider
     {
         private readonly static TypeDefaultValueProvider _instance = new TypeDefaultValueProvider();
 

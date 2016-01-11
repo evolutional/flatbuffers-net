@@ -1,7 +1,11 @@
 ﻿using System;
+using FlatBuffers.Utilities;
 
 namespace FlatBuffers
 {
+    /// <summary>
+    /// A class which represents reflected and FlatBuffers-specific information about a given <see cref="Type"/>
+    /// </summary>
     public class TypeModel
     {
         private readonly string _typeName;
@@ -15,11 +19,23 @@ namespace FlatBuffers
         private EnumTypeDefinition _enumDef;
         private UnionTypeDefinition _unionDef;
 
+        /// <summary>
+        /// Gets the <see cref="StructTypeDefinition"/> if this type is a table/struct
+        /// </summary>
         public StructTypeDefinition StructDef { get { return _structDef; } internal set { _structDef = value; } }
+        /// <summary>
+        /// Gets the <see cref="EnumTypeDefinition"/> if this type is an enum
+        /// </summary>
         public EnumTypeDefinition EnumDef { get { return _enumDef; } internal set { _enumDef = value; } }
 
+        /// <summary>
+        /// Gets the <see cref="UnionTypeDefinition"/> if this type is a union
+        /// </summary>
         public UnionTypeDefinition UnionDef { get { return _unionDef; } internal set { _unionDef = value; } }
 
+        /// <summary>
+        /// Gets the name of this type
+        /// </summary>
         public string Name { get { return _typeName; } }
 
         /// <summary>
@@ -58,24 +74,42 @@ namespace FlatBuffers
         public bool IsString { get { return _baseType == BaseType.String; } }
 
         /// <summary>
-        /// Gets if this type is a reference type
+        /// Gets if this type is a reference type. Reference types are not serialized inline
         /// </summary>
         public bool IsReferenceType 
         { 
             get { return IsTable || IsVector || IsString || IsUnion; } 
         }
 
+        /// <summary>
+        /// Gets the size of the type when serialized
+        /// </summary>
         public int InlineSize { get { return IsStruct ? _structDef.ByteSize : _baseType.SizeOf(); }}
+        /// <summary>
+        /// Gets the natural alignment size of the type
+        /// </summary>
         public int InlineAlignment { get { return IsStruct ? _structDef.MinAlign : _baseType.SizeOf(); }}
 
+        /// <summary>
+        /// Gets the FlatBuffers <see cref="BaseType"/> the type resolves to
+        /// </summary>
         public BaseType BaseType { get { return _baseType; } }
+        /// <summary>
+        /// Gets the FlatBuffers <see cref="BaseType"/> of the elements contained by this type
+        /// </summary>
         public BaseType ElementType { get { return _elementType; } }
 
+        /// <summary>
+        /// Gets the CLR <see cref="Type"/>
+        /// </summary>
         public Type Type
         {
             get { return _clrType; }
         }
 
+        /// <summary>
+        /// Gets the <see cref="TypeModelRegistry"/> that this model is part of
+        /// </summary>
         public TypeModelRegistry Registry
         {
             get { return _registry; }
