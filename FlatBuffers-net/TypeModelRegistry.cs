@@ -304,18 +304,32 @@ namespace FlatBuffers
             var valueType = valueProvider.ValueType;
 
             TypeModel memberTypeModel = null;
+            TypeModel nestedTypeModel = null;
 
             if (valueType == typeof (object))
             {
-                if (attr == null || !attr.IsUnionField)
+                if (attr == null || (!attr.IsUnionField && !attr.HasNestedFlatBufferType))
                 {
-                    throw new FlatBuffersStructFieldReflectionException("Field with 'object' type must have a UnionType declared");
+                    throw new FlatBuffersStructFieldReflectionException("Field with 'object' type must have a UnionType or NestedFlatBufferType declared");
                 }
 
-                memberTypeModel = GetTypeModel(attr.UnionType);
+                if (attr.HasNestedFlatBufferType)
+                {
+                    memberTypeModel = nestedTypeModel = GetTypeModel(attr.NestedFlatBufferType);
+                }
+
+                if (attr.IsUnionField)
+                {
+                    memberTypeModel = GetTypeModel(attr.UnionType);
+                }
             }
             else
             {
+                if (attr != null && attr.HasNestedFlatBufferType)
+                {
+                    throw new FlatBuffersStructFieldReflectionException("HasNestedFlatBufferType can only be used on fields with 'object' type");
+                }
+
                 memberTypeModel = GetTypeModel(valueType);
             }
 
@@ -338,6 +352,11 @@ namespace FlatBuffers
                 Name = member.Name, // TODO: allow attribute override
                 TypeModel = memberTypeModel,
             };
+
+            if (nestedTypeModel != null)
+            {
+                field.NestedFlatBufferType = nestedTypeModel;
+            }
 
             ReflectUserMetadata(member, field);
             

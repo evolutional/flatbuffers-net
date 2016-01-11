@@ -1,4 +1,5 @@
-﻿using FlatBuffers.Attributes;
+﻿using System;
+using FlatBuffers.Attributes;
 
 namespace FlatBuffers
 {
@@ -12,6 +13,7 @@ namespace FlatBuffers
         private bool _deprecated;
         private bool _isKey;
         private FlatBuffersHash _hash;
+        private TypeModel _nestedFlatBufferType;
 
         /// <summary>
         /// Initializes an instance of the FieldTypeDefinition class
@@ -185,5 +187,34 @@ namespace FlatBuffers
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the <see cref="TypeModel"/> for the nested FlatBuffer
+        /// </summary>
+        public TypeModel NestedFlatBufferType
+        {
+            get { return _nestedFlatBufferType; }
+            internal set
+            {
+                if (ValueProvider.ValueType != typeof (object))
+                {
+                    throw new FlatBuffersStructFieldReflectionException("Cannot apply NestedFlatBufferType to a field that isn't 'object' type");
+                }
+                _nestedFlatBufferType = value;
+                if (_nestedFlatBufferType != null)
+                {
+                    Metadata.Add(FieldTypeMetadata.NestedFlatBuffer, _nestedFlatBufferType.Name, false);
+                }
+                else
+                {
+                    Metadata.Remove(FieldTypeMetadata.NestedFlatBuffer);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets a Boolean to indicate if this field has a nested flatbuffer
+        /// </summary>
+        public bool HasNestedFlatBufferType { get { return _nestedFlatBufferType != null; } }
     }
 }

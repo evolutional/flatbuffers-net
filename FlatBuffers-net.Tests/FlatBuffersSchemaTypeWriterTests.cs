@@ -670,6 +670,22 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Write_TestTableWithNestedTestTable1_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithNestedTestTable1>();
+                var expected = "table TestTableWithNestedTestTable1 {\n" +
+                                "    IntProp:int;\n" +
+                                "    Nested:[ubyte] (nested_flatbuffer: \"TestTable1\");\n" +
+                                "}";
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
         public void Write_TestTableWithComments_EmitsCorrectSchemaFragment()
         {
             var sb = new StringBuilder();

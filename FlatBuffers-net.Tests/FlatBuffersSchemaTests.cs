@@ -89,6 +89,31 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void WriteTo_WhenNestedFlatBuffer_ResolvesDependenciesInCorrectOrder()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            var schema = generator.Generate<TestTableWithNestedTestTable1>();
+
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                schema.WriteTo(sw);
+            }
+
+            var expected = "table TestTable1 {\n" +
+                            "    IntProp:int;\n" +
+                            "    ByteProp:ubyte;\n" +
+                            "    ShortProp:short;\n" +
+                            "}\n" +
+                            "table TestTableWithNestedTestTable1 {\n" +
+                            "    IntProp:int;\n" +
+                            "    Nested:[ubyte] (nested_flatbuffer: \"TestTable1\");\n" +
+                            "}";
+
+            AssertExtensions.AreEquivalent(expected, sb.ToString());
+        }
+
+        [Test]
         public void WriteTo_WhenRootTypeSet_RootTypeIsWritten()
         {
             var generator = new FlatBuffersSchemaGenerator();

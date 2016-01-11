@@ -99,3 +99,8 @@ table TestTableWithUnionAndMoreFields {
 	FloatProp: float;
 	DoubleProp: double;
 }
+
+table TestTableWithNestedTestTable1 {
+	IntProp: int;
+	Nested: [ubyte] (nested_flatbuffer: "TestTable1");
+}

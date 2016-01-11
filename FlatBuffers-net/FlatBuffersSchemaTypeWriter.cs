@@ -261,6 +261,11 @@ namespace FlatBuffers
         {
             var fieldTypeName = GetFlatBufferTypeName(field.TypeModel);
 
+            if (field.HasNestedFlatBufferType)
+            {
+                fieldTypeName = "[ubyte]";
+            }
+
             var meta = BuildMetadata(field);
             WriteAllComments(field, false);
 

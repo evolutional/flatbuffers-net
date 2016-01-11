@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="AssertExtensions.cs" />
     <Compile Include="SerializationTests\TestTableWithIdentifier.cs" />
+    <Compile Include="SerializationTests\TestTableWithNestedTestTable1.cs" />
     <Compile Include="TestTypes\ClassReflectedAsAStruct.cs" />
     <Compile Include="TestTypes\EnumWithUserMetadata.cs" />
     <Compile Include="FlatBuffersDeserializationTests.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="TestTypes\TestTableWithIdentifier.cs" />
     <Compile Include="TestTypes\TestTableWithIgnoredField.cs" />
     <Compile Include="TestTypes\TestTableWithKey.cs" />
+    <Compile Include="TestTypes\TestTableWithNestedTestTable1.cs" />
     <Compile Include="TestTypes\TestTableWithOriginalOrdering.cs" />
     <Compile Include="TestTypes\TestTableWithUnion.cs" />
     <Compile Include="TestTypes\TestTableWithUserOrdering.cs" />

@@ -74,5 +74,14 @@ namespace FlatBuffers.Attributes
         /// </summary>
         public bool IsUnionField { get { return _unionType != null; } }
 
+        /// <summary>
+        /// Gets and sets the Type of the nested flatbuffer. Must be applied to a member of type <see cref="object"/>
+        /// </summary>
+        public Type NestedFlatBufferType { get; set; }
+
+        /// <summary>
+        /// Gets a Boolean to indicate whether this field has a nested flatbuffer
+        /// </summary>
+        public bool HasNestedFlatBufferType { get { return NestedFlatBufferType != null; }}
     }
 }

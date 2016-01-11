@@ -25,5 +25,9 @@ namespace FlatBuffers
         /// The 'hash' attribute from the fbs schema
         /// </summary>
         public const string Hash = "hash";
+        /// <summary>
+        /// The 'nested_flatbuffer' attribute from the fbs schema
+        /// </summary>
+        public const string NestedFlatBuffer = "nested_flatbuffer";
     }
 }

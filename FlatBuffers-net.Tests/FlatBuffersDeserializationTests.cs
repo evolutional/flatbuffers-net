@@ -309,6 +309,25 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithNestedTestTable1()
+        {
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithNestedTestTable1(1024, 42, 22, 62);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithNestedTestTable1>(oracleResult, 0, oracleResult.Length);
+
+            Assert.IsInstanceOf<TestTable1>(o.Nested);
+
+            var nested = o.Nested as TestTable1;
+
+            Assert.AreEqual(1024, o.IntProp);
+            Assert.AreEqual(42, nested.IntProp);
+            Assert.AreEqual(22, nested.ByteProp);
+            Assert.AreEqual(62, nested.ShortProp);
+        }
+
+        [Test]
         public void Deserialize_FromOracleData_WithTestTableWithUnion_And_TestTable1()
         {
             var table1 = new TestTable1()

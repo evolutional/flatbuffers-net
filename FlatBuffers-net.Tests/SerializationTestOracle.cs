@@ -138,6 +138,34 @@ namespace FlatBuffers.Tests
 
             return result;
         }
+
+        public TestTableWithNestedTestTable1 ReadTestTableWithNestedTable1(byte[] buffer)
+        {
+            var test = SerializationTests.TestTableWithNestedTestTable1.GetRootAsTestTableWithNestedTestTable1(new ByteBuffer(buffer));
+            
+            var result = new TestTableWithNestedTestTable1()
+            {
+                IntProp = test.IntProp,
+            };
+
+            if (test.NestedLength != 0)
+            {
+                var nested = test.GetNestedBytes();
+
+                var testNested =
+                    SerializationTests.TestTable1.GetRootAsTestTable1(new ByteBuffer(nested.Value.Array,
+                        nested.Value.Offset));
+
+                result.Nested = new TestTable1()
+                {
+                    IntProp = testNested.IntProp,
+                    ByteProp = testNested.ByteProp,
+                    ShortProp = testNested.ShortProp,
+                };
+            }
+
+            return result;
+        }
         
 
         public TestTable2 ReadTestTable2(byte[] buffer)
@@ -342,6 +370,22 @@ namespace FlatBuffers.Tests
             var fbb = new FlatBufferBuilder(8);
             var offset = SerializationTests.TestTableWithOriginalOrdering.CreateTestTableWithOriginalOrdering(fbb, intProp, byteProp, shortProp);
             fbb.Finish(offset.Value);
+            return GetBytes(fbb);
+        }
+
+        public byte[] GenerateTestTableWithNestedTestTable1(int intProp, int inner_intProp, byte inner_byteProp, short inner_shortProp)
+        {
+            var fbb = new FlatBufferBuilder(8);
+            var nestedStart = fbb.Offset;
+            var offset = SerializationTests.TestTable1.CreateTestTable1(fbb, inner_intProp, inner_byteProp, inner_shortProp);
+            fbb.Finish(offset.Value);
+            var nestedEnd = fbb.Offset;
+            fbb.PutInt(nestedEnd - nestedStart);  // vec len
+
+            var nestedVector = new VectorOffset(fbb.Offset);
+
+            var outerOffset = SerializationTests.TestTableWithNestedTestTable1.CreateTestTableWithNestedTestTable1(fbb, intProp, nestedVector);
+            fbb.Finish(outerOffset.Value);
             return GetBytes(fbb);
         }
 

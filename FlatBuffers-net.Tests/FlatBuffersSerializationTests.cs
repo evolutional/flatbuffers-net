@@ -635,6 +635,40 @@ namespace FlatBuffers.Tests
             Assert.AreEqual(shortProp, oracleResult1.ShortProp);
         }
 
+        [Test]
+        public void Serialize_TestTableWithNestedTestTable1_CanBeReadByOracle()
+        {
+            const int intProp = 123456;
+            const byte byteProp = 42;
+            const short shortProp = 1024;
+
+            var nested = new TestTable1()
+            {
+                IntProp = intProp,
+                ByteProp = byteProp,
+                ShortProp = shortProp
+            };
+
+            var obj = new TestTableWithNestedTestTable1()
+            {
+                IntProp = 2048,
+                Nested = nested
+            };
+
+            var buffer = FlatBuffersConvert.SerializeObject(obj);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTableWithNestedTable1(buffer);
+
+            Assert.AreEqual(2048, oracleResult.IntProp);
+
+            var oracleResult1 = oracleResult.Nested as TestTable1;
+            Assert.IsNotNull(oracleResult1);
+            Assert.AreEqual(intProp, oracleResult1.IntProp);
+            Assert.AreEqual(byteProp, oracleResult1.ByteProp);
+            Assert.AreEqual(shortProp, oracleResult1.ShortProp);
+        }
+
         // Tests to implement
         // structs cannot contain vectors, string, table (only scalars or structs)
         // serialization of all basic types (char, short, int, long, float, double, + unsigned variants, string)

@@ -13,6 +13,7 @@ namespace FlatBuffers
         private readonly TypeModel _rootTypeModel;
         private readonly FlatBufferBuilder _builder;
         private readonly Dictionary<object, int> _objectOffsets = new Dictionary<object, int>();
+        private readonly Dictionary<object, int> _nestedOffsets = new Dictionary<object, int>();
 
         public SerializationContext(TypeModelRegistry typeModelRegistry, object rootObject, FlatBufferBuilder builder)
         {
@@ -205,9 +206,12 @@ namespace FlatBuffers
         private void AddReferenceFieldOffset(object obj, FieldTypeDefinition field)
         {
             var fieldBufferOffset = 0;
-            if (!_objectOffsets.TryGetValue(obj, out fieldBufferOffset))
+
+            var dict = field.HasNestedFlatBufferType ? _nestedOffsets : _objectOffsets;
+
+            if (!dict.TryGetValue(obj, out fieldBufferOffset))
             {
-                throw new ArgumentException("Not found in map", "obj");
+                throw new FlatBuffersSerializationException("Offset for object not found in map");
             }
 
             _builder.AddOffset(field.Index, fieldBufferOffset, 0);
@@ -355,10 +359,27 @@ namespace FlatBuffers
                 }
 
                 var fieldBufferOffset = 0;
-                if (!_objectOffsets.TryGetValue(val, out fieldBufferOffset))
+
+                if (!field.HasNestedFlatBufferType)
                 {
-                    fieldBufferOffset = SerializeReferenceType(val, field.TypeModel);
-                    _objectOffsets.Add(val, fieldBufferOffset);
+                    if (!_objectOffsets.TryGetValue(val, out fieldBufferOffset))
+                    {
+                        fieldBufferOffset = SerializeReferenceType(val, field.TypeModel);
+                        _objectOffsets.Add(val, fieldBufferOffset);
+                    }
+                }
+                else
+                {
+                    if (!_nestedOffsets.TryGetValue(val, out fieldBufferOffset))
+                    {
+                        var start = _builder.Offset;
+                        var objOffset = SerializeStruct(val, field.TypeModel);
+                        _builder.Finish(objOffset);
+                        var len = _builder.Offset - start;
+                        _builder.AddInt(len);
+                        fieldBufferOffset = _builder.Offset;
+                        _nestedOffsets.Add(val, fieldBufferOffset);
+                    }
                 }
             }
         }

@@ -192,6 +192,14 @@ namespace FlatBuffers
                     }
                 }
 
+                if (field.HasNestedFlatBufferType)
+                {
+                    if (deps.All(i => i.TypeModel.Name != field.NestedFlatBufferType.Name))
+                    {
+                        deps.Add(GetDependencyNode(field.NestedFlatBufferType, node));
+                    }
+                }
+
                 if (deps.All(i => i.TypeModel.Name != field.TypeModel.Name))
                 {
                     deps.Add(GetDependencyNode(field.TypeModel, node));

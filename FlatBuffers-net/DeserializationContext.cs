@@ -76,10 +76,16 @@ namespace FlatBuffers
                 fieldOffset += offset;
             }
 
+            return DeserializeStruct(fieldOffset, typeModel);
+        }
+
+        private object DeserializeStruct(int pos, TypeModel typeModel)
+        {
+            var structDef = typeModel.StructDef;
             var obj = Activator.CreateInstance(typeModel.Type);
             foreach (var field in structDef.Fields)
             {
-                DeserializeStructField(obj, structDef, field, fieldOffset);
+                DeserializeStructField(obj, structDef, field, pos);
             }
             return obj;
         }
@@ -100,8 +106,6 @@ namespace FlatBuffers
             }
             return array;
         }
-
-        
 
         private object DeserializeUnion(int structBase, int offset, FieldTypeDefinition field)
         {
@@ -175,6 +179,12 @@ namespace FlatBuffers
         private object DeserializeReferenceType(int structBase, int offset, FieldTypeDefinition field)
         {
             var typeModel = field.TypeModel;
+
+            if (field.HasNestedFlatBufferType)
+            {
+                var nestedStart = GetVectorStart(structBase, offset);
+                return DeserializeStruct(nestedStart, 0, field.NestedFlatBufferType);
+            }
 
             switch (typeModel.BaseType)
             {
