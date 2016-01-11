@@ -453,7 +453,6 @@ namespace FlatBuffers
             if (baseType == BaseType.Vector)
             {
                 var elementType = TypeHelpers.GetEnumerableElementType(type);
-                var enumerableTypeModel = GetTypeModel(elementType);
                 var elementBaseType = DeduceBaseType(elementType);
                 typeModel = new TypeModel(this, typeName, type, baseType, elementBaseType);
             }
