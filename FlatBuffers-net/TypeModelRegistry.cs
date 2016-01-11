@@ -128,7 +128,7 @@ namespace FlatBuffers
                 var member = members[i];
                 var attr = member.Attribute<FlatBuffersUnionMemberAttribute>();
                 var memberTypeModel = GetTypeModel(attr.MemberType);
-                var field = unionTypeDef.AddField(i + 1, member.Name, memberTypeModel);
+                unionTypeDef.AddField(i + 1, member.Name, memberTypeModel);
             }
 
             ReflectUserMetadata(type, unionTypeDef);
