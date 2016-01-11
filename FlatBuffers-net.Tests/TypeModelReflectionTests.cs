@@ -493,6 +493,33 @@ namespace FlatBuffers.Tests
             Assert.AreEqual("TestUnion", unionDef.Name);
         }
 
+        [Test]
+        public void GetTypeModel_TestTableWithComments_ReflectsAllComments()
+        {
+            var typeModel = GetTypeModel<TestTableWithComments>();
+
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            var fields = structDef.Fields.ToArray();
+
+            Assert.AreEqual(3, fields.Length);
+
+            Assert.AreEqual("This is a comment on a table", structDef.Comments.FirstOrDefault());
+
+            var intProp = structDef.GetFieldByName("Field");
+            Assert.AreEqual("Comment on an int field", intProp.Comments.FirstOrDefault());
+
+            var stringField = structDef.GetFieldByName("StringField");
+            var stringFieldComments = stringField.Comments.ToArray();
+            Assert.AreEqual("First comment of Multiple comments", stringFieldComments[0]);
+            Assert.AreEqual("Second comment of Multiple comments", stringFieldComments[1]);
+
+            var anotherField = structDef.GetFieldByName("AnotherField");
+            Assert.AreEqual("Multiline\nIs supported\ntoo", anotherField.Comments.FirstOrDefault());
+        }
+
         [Ignore("The logic that handles custom ordering in tables with unions is flawed. Waiting for a fix from https://github.com/google/flatbuffers/issues/3499")]
         [Test]
         public void GetTypeModel_TestTableWithUnionAndCustomOrdering_HasCorrectOrderingForTypeField()

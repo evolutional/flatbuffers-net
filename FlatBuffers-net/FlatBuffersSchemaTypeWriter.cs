@@ -16,37 +16,58 @@ namespace FlatBuffers
         private readonly FlatBuffersSchemaTypeWriterOptions _options;
         private readonly string _indent;
         private readonly string _bracing;
-        private readonly string _newline;
 
+        /// <summary>
+        /// Initializes an instance of the FlatBuffersSchemaTypeWriter class
+        /// </summary>
+        /// <param name="writer">TextWriter write the schema to</param>
         public FlatBuffersSchemaTypeWriter(TextWriter writer)
             : this(TypeModelRegistry.Default, writer, FlatBuffersSchemaTypeWriterOptions.Default)
         {
         }
 
+        /// <summary>
+        /// Initializes an instance of the FlatBuffersSchemaTypeWriter class
+        /// </summary>
+        /// <param name="writer">TextWriter write the schema to</param>
+        /// <param name="options">Options to use when writing the schema</param>
         public FlatBuffersSchemaTypeWriter(TextWriter writer, FlatBuffersSchemaTypeWriterOptions options)
             : this(TypeModelRegistry.Default, writer, options)
         {
         }
 
+        /// <summary>
+        /// Initializes an instance of the FlatBuffersSchemaTypeWriter class
+        /// </summary>
+        /// <param name="typeModelRegistry">TypeRegistry to use as the Type source</param>
+        /// <param name="writer">TextWriter write the schema to</param>
+        /// /// <param name="options">Options to use when writing the schema</param>
         public FlatBuffersSchemaTypeWriter(TypeModelRegistry typeModelRegistry, TextWriter writer, FlatBuffersSchemaTypeWriterOptions options)
         {
             _typeModelRegistry = typeModelRegistry;
             _writer = writer;
             _options = options;
 
-            _newline = options.LineTerminator == FlatBuffersSchemaWriterLineTerminatorType.Lf ? "\n" : "\r\n";
-            _writer.NewLine = _newline;
+            var newline = options.LineTerminator == FlatBuffersSchemaWriterLineTerminatorType.Lf ? "\n" : "\r\n";
+            _writer.NewLine = newline;
 
             _indent = new string(_options.IndentType == FlatBuffersSchemaWriterIndentType.Spaces ? ' ' : '\t', _options.IndentCount);
-            _bracing = _options.BracingStyle == FlatBuffersSchemaWriterBracingStyle.Egyptian ? " {" : string.Format("{0}{{", _newline);
+            _bracing = _options.BracingStyle == FlatBuffersSchemaWriterBracingStyle.Egyptian ? " {" : string.Format("{0}{{", newline);
         }
 
+        /// <summary>
+        /// Writes a schema fragment of a type
+        /// </summary>
+        /// <typeparam name="T">Type to emit</typeparam>
         public void Write<T>()
         {
             var type = typeof(T);
             Write(type);
         }
-
+        /// <summary>
+        /// Writes a schema fragment of a type
+        /// </summary>
+        /// <param name="type">Type to emit</param>
         public void Write(Type type)
         {
             var typeModel = _typeModelRegistry.GetTypeModel(type);
@@ -57,6 +78,10 @@ namespace FlatBuffers
             Write(typeModel);
         }
 
+        /// <summary>
+        /// Writes a schema fragment of a type
+        /// </summary>
+        /// <param name="typeModel">Type to emit</param>
         public void Write(TypeModel typeModel)
         {
             if (typeModel.IsEnum)
@@ -80,6 +105,10 @@ namespace FlatBuffers
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Writes the schema for a speficic TypeModel that contains a table
+        /// </summary>
+        /// <param name="typeModel">TypeModel representing a table</param>
         public void WriteTable(TypeModel typeModel)
         {
             if (!typeModel.IsTable)
@@ -89,6 +118,10 @@ namespace FlatBuffers
             WriteStructInternal(typeModel);
         }
 
+        /// <summary>
+        /// Writes the schema for a speficic TypeModel that contains a struct
+        /// </summary>
+        /// <param name="typeModel">TypeModel representing a struct</param>
         public void WriteStruct(TypeModel typeModel)
         {
             if (!typeModel.IsStruct)
@@ -128,6 +161,10 @@ namespace FlatBuffers
             throw new ArgumentException("Unsupported type", "o");
         }
 
+        /// <summary>
+        /// Writes the schema for a speficic TypeModel that contains an enum
+        /// </summary>
+        /// <param name="typeModel">TypeModel representing an enum</param>
         public void WriteEnum(TypeModel typeModel)
         {
             if (!typeModel.IsEnum)
@@ -165,6 +202,10 @@ namespace FlatBuffers
             EndEnum();
         }
 
+        /// <summary>
+        /// Writes the schema for a speficic TypeModel that contains a union
+        /// </summary>
+        /// <param name="typeModel">TypeModel representing a union</param>
         public void WriteUnion(TypeModel typeModel)
         {
             if (!typeModel.IsUnion)
@@ -205,25 +246,26 @@ namespace FlatBuffers
             EndObject();
         }
 
-        protected void BeginStruct(TypeModel typeModel)
+        private void BeginStruct(TypeModel typeModel)
         {
             var structOrTable = typeModel.StructDef.IsFixed ? "struct" : "table";
             var sb = new StringBuilder();
             BuildMetadata(sb, typeModel.StructDef);
             var meta = sb.ToString();
+            WriteAllComments(typeModel.StructDef, false);
             _writer.WriteLine("{0} {1}{2}{3}", structOrTable, typeModel.Name, meta, _bracing);
         }
 
-        protected void WriteField(FieldTypeDefinition field)
+        private void WriteField(FieldTypeDefinition field)
         {
             var fieldTypeName = GetFlatBufferTypeName(field.TypeModel);
 
             var meta = BuildMetadata(field);
-
+            WriteAllComments(field, false);
             _writer.WriteLine("{0}{1}:{2}{3};", _indent, field.Name, fieldTypeName, meta);
         }
 
-        protected void EndObject()
+        private void EndObject()
         {
             // todo: assert nesting
             _writer.WriteLine("}");
@@ -309,7 +351,7 @@ namespace FlatBuffers
             throw new NotImplementedException();
         }
 
-        protected void BeginEnum(TypeModel typeModel)
+        private void BeginEnum(TypeModel typeModel)
         {
             if (!typeModel.IsEnum)
             {
@@ -319,16 +361,17 @@ namespace FlatBuffers
             var sb = new StringBuilder();
             BuildMetadata(sb, typeModel.EnumDef);
             var meta = sb.ToString();
+            WriteAllComments(typeModel.EnumDef, false);
             _writer.WriteLine("enum {0} : {1}{2}{3}", typeModel.Name, typeModel.BaseType.FlatBufferTypeName(), meta, _bracing);
         }
 
-        protected void EndEnum()
+        private void EndEnum()
         {
             // todo: assert nesting
             _writer.WriteLine("}");
         }
 
-        protected void BeginUnion(TypeModel typeModel)
+        private void BeginUnion(TypeModel typeModel)
         {
             if (!typeModel.IsUnion)
             {
@@ -337,21 +380,61 @@ namespace FlatBuffers
             var sb = new StringBuilder();
             BuildMetadata(sb, typeModel.UnionDef);
             var meta = sb.ToString();
+            WriteAllComments(typeModel.UnionDef, false);
             _writer.WriteLine("union {0}{1}{2}", typeModel.Name, meta, _bracing);
         }
 
-        protected void EndUnion()
+        private void EndUnion()
         {
             // todo: assert nesting
             _writer.WriteLine("}");
         }
 
+        /// <summary>
+        /// Writes the schema for a speficic metadata attribute
+        /// </summary>
         public void WriteAttribute(string name)
         {
             // TODO: assert nesting
             _writer.WriteLine("attribute \"{0}\";", name);
         }
 
+        /// <summary>
+        /// Writes a comment into the schema
+        /// </summary>
+        /// <param name="comment">Comment string to write</param>
+        public void WriteComment(string comment)
+        {
+            _writer.WriteLine("/// {0}", comment);
+        }
+
+        /// <summary>
+        /// Writes a comment into the schema using indentation
+        /// </summary>
+        /// <param name="comment">Comment string to write</param>
+        public void WriteIndentedComment(string comment)
+        {
+            _writer.WriteLine("{0}/// {1}", _indent, comment);
+        }
+
+        private void WriteAllComments(TypeDefinition def, bool indent)
+        {
+            foreach (var comment in def.Comments)
+            {
+                if (indent)
+                {
+                    WriteIndentedComment(comment);
+                }
+                else
+                {
+                    WriteComment(comment);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Writes a newline in the schema
+        /// </summary>
         public void WriteLine()
         {
             _writer.WriteLine();

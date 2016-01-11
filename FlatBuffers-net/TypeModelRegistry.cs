@@ -7,9 +7,16 @@ using FlatBuffers.Attributes;
 
 namespace FlatBuffers
 {
+    /// <summary>
+    /// Class that contains a collection of reflected types for use in FlatBuffers serialization and schema generation
+    /// </summary>
     public class TypeModelRegistry
     {
         private static readonly TypeModelRegistry s_default = new TypeModelRegistry();
+        
+        /// <summary>
+        /// Gets the globally shared-Default instance of the TypeModelRegistry
+        /// </summary>
         public static TypeModelRegistry Default { get { return s_default; }}
 
         private readonly Dictionary<Type, TypeModel> _typeModels = new Dictionary<Type, TypeModel>();
@@ -35,6 +42,9 @@ namespace FlatBuffers
             };
         }
 
+        /// <summary>
+        /// Initializes an instance of the TypeModelRegistry class
+        /// </summary>
         public TypeModelRegistry()
         {
             var type = typeof (UnionFieldType);
@@ -398,13 +408,29 @@ namespace FlatBuffers
                     typeDef.Metadata.Add(attr.Name, attr.Value, true);
                 }
             }
+
+            foreach (var attr in type.Attributes<FlatBuffersCommentAttribute>().OrderBy(i=>i.Order))
+            {
+                typeDef.AddComment(attr.Comment);
+            }
         }
 
+        /// <summary>
+        /// Gets a TypeModel for a given type, creating it via relfection if one doesn't exist
+        /// </summary>
+        /// <typeparam name="T">Type to reflect</typeparam>
+        /// <returns>TypeModel</returns>
         public TypeModel GetTypeModel<T>()
         {
             return GetTypeModel(typeof (T));
         }
 
+
+        /// <summary>
+        /// Gets a TypeModel for a given type, creating it via relfection if one doesn't exist
+        /// </summary>
+        /// <param name="type">Type to reflect</param>
+        /// <returns>TypeModel</returns>
         public TypeModel GetTypeModel(Type type)
         {
             TypeModel typeModel = null;

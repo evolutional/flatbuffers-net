@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttributeDefaultValueProvider.cs" />
+    <Compile Include="Attributes\FlatBuffersCommentAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersDefaultValueAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersEnumAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersFieldAttribute.cs" />

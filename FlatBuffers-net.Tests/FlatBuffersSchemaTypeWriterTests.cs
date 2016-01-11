@@ -668,5 +668,27 @@ namespace FlatBuffers.Tests
                 AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
+
+        [Test]
+        public void Write_TestTableWithComments_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithComments>();
+                var expected =  "/// This is a comment on a table\n" +
+                                "table TestTableWithComments {\n" +
+                                "    /// Comment on an int field\n" +
+                                "    Field:int;\n" +
+                                "    /// First comment of Multiple comments\n" +
+                                "    /// Second comment of Multiple comments\n" +
+                                "    StringField:string;\n" +
+                                "    /// Multiline\nIs supported\ntoo\n" +
+                                "    AnotherField:int;\n" +
+                                "}";
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
     }
 }
