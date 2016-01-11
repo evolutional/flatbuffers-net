@@ -18,7 +18,7 @@ namespace FlatBuffers
 
         public UnionTypeDefinition()
         {
-            AddField(0, "None", null);
+            AddField(0, "Original", null);
         }
 
         public IEnumerable<UnionFieldTypeDefinition> Fields { get { return _fields; } }

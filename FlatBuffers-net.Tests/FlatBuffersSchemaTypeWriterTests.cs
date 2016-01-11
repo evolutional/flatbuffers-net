@@ -690,5 +690,41 @@ namespace FlatBuffers.Tests
                 AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
+
+        [Test]
+        public void Write_WithStructAndFieldNamingStyleCamelCase_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw, new FlatBuffersSchemaTypeWriterOptions { FieldNamingStyle = FlatBuffersSchemaWriterNamingStyle.CamelCase });
+                schemaWriter.Write<TestStruct1>();
+                var expected = "struct TestStruct1 {\n" +
+                               "    intProp:int;\n" +
+                               "    byteProp:ubyte;\n" +
+                               "    shortProp:short;\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithStructAndFieldNamingStyleLowerCase_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw, new FlatBuffersSchemaTypeWriterOptions { FieldNamingStyle = FlatBuffersSchemaWriterNamingStyle.LowerCase });
+                schemaWriter.Write<TestStruct1>();
+                var expected = "struct TestStruct1 {\n" +
+                               "    intprop:int;\n" +
+                               "    byteprop:ubyte;\n" +
+                               "    shortprop:short;\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
     }
 }

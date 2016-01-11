@@ -83,6 +83,7 @@
     <Compile Include="TypeModelRegistry.cs" />
     <Compile Include="UnionFieldType.cs" />
     <Compile Include="UnionTypeDefinition.cs" />
+    <Compile Include="Utilities\StringUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\flatbuffers\net\FlatBuffers\FlatBuffers.csproj">

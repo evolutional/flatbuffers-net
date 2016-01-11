@@ -48,18 +48,41 @@ namespace FlatBuffers
     }
 
     /// <summary>
+    /// Enum to direct how Type/Field names are emitted by the FlatBuffersSchemaTypeWriter
+    /// </summary>
+    public enum FlatBuffersSchemaWriterNamingStyle
+    {
+        /// <summary>
+        /// Use original style
+        /// </summary>
+        Original,
+        /// <summary>
+        /// Emit names in camelCase
+        /// </summary>
+        CamelCase,
+        /// <summary>
+        /// Emit names in lowercase
+        /// </summary>
+        LowerCase,
+    }
+
+    /// <summary>
     /// Options for the FlatBuffersSchemaTypeWriter
     /// </summary>
     public class FlatBuffersSchemaTypeWriterOptions
     {
         private int _indentCount;
 
+        /// <summary>
+        /// Initializes an instance of the FlatBuffersSchemaTypeWriterOptions class
+        /// </summary>
         public FlatBuffersSchemaTypeWriterOptions()
         {
             IndentType = FlatBuffersSchemaWriterIndentType.Spaces;
             IndentCount = 4;
             BracingStyle = FlatBuffersSchemaWriterBracingStyle.Egyptian;
             LineTerminator = FlatBuffersSchemaWriterLineTerminatorType.CrLf;
+            FieldNamingStyle = FlatBuffersSchemaWriterNamingStyle.Original;
         }
 
         /// <summary>
@@ -94,5 +117,10 @@ namespace FlatBuffers
         /// Gets and sets the type of line terminator to use when writing the schema
         /// </summary>
         public FlatBuffersSchemaWriterLineTerminatorType LineTerminator { get; set; }
+
+        /// <summary>
+        /// Gets and sets the naming style to use for fields
+        /// </summary>
+        public FlatBuffersSchemaWriterNamingStyle FieldNamingStyle { get; set; }
     }
 }

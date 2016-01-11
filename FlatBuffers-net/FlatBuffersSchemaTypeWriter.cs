@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using FlatBuffers.Utilities;
 
 namespace FlatBuffers
 {
@@ -262,7 +263,30 @@ namespace FlatBuffers
 
             var meta = BuildMetadata(field);
             WriteAllComments(field, false);
-            _writer.WriteLine("{0}{1}:{2}{3};", _indent, field.Name, fieldTypeName, meta);
+
+            var fieldName = ApplyNameStyle(_options.FieldNamingStyle, field.Name);
+
+            _writer.WriteLine("{0}{1}:{2}{3};", _indent, fieldName, fieldTypeName, meta);
+        }
+
+        private string ApplyNameStyle(FlatBuffersSchemaWriterNamingStyle style, string name)
+        {
+            switch (style)
+            {
+                case FlatBuffersSchemaWriterNamingStyle.CamelCase:
+                {
+                    return name.ToCamelCase();
+                }
+                case FlatBuffersSchemaWriterNamingStyle.LowerCase:
+                {
+                    return name.ToLower();
+                }
+                case FlatBuffersSchemaWriterNamingStyle.Original:
+                default:
+                {
+                    return name;
+                }
+            }
         }
 
         private void EndObject()
