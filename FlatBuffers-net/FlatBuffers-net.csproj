@@ -52,6 +52,7 @@
     <Compile Include="Attributes\FlatBuffersUnionAttribute.cs" />
     <Compile Include="Attributes\FlatBuffersUnionMemberAttribute.cs" />
     <Compile Include="BaseType.cs" />
+    <Compile Include="EnumTypeMetadata.cs" />
     <Compile Include="FlatBuffersSchemaException.cs" />
     <Compile Include="Utilities\BaseTypeExtensions.cs" />
     <Compile Include="DeserializationContext.cs" />

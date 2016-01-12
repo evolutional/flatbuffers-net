@@ -180,7 +180,7 @@ namespace FlatBuffers
             var values = Enum.GetValues(typeModel.Type);
             var names = Enum.GetNames(typeModel.Type);
 
-            var emitValue = false;
+            var emitValue = typeModel.EnumDef.BitFlags;
 
             BeginEnum(typeModel);
             for (var i = 0; i < names.Length; ++i)

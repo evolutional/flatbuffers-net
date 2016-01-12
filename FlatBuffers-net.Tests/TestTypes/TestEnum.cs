@@ -11,6 +11,16 @@ namespace FlatBuffers.Tests.TestTypes
         Banana,
     };
 
+    [Flags]
+    public enum TestFlagsEnum : byte
+    {
+        None = 0,
+        Apple = 1<<0,
+        Orange = 1<<1,
+        Pear = 1<<2,
+        Banana = 1<<3,
+    };
+
     public enum TestEnumWithNoDeclaredBaseType
     {
         Apple,

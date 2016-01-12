@@ -232,6 +232,26 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Write_WithTestFlagsEnum_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestFlagsEnum>();
+                var expected = "enum TestFlagsEnum : ubyte (bit_flags) {\n" +
+                               "   None = 0,\n" +
+                               "   Apple = 1,\n" +
+                               "   Orange = 2,\n" +
+                               "   Pear = 4,\n" +
+                               "   Banana = 8\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
         public void Write_WithTestEnumWithNoDeclaredBaseType_EmitsCorrectSchemaFragment()
         {
             var sb = new StringBuilder();

@@ -118,6 +118,10 @@ namespace FlatBuffers
         private EnumTypeDefinition ReflectEnumDef(Type type)
         {
             var enumTypeDef = new EnumTypeDefinition {UnderlyingType = Enum.GetUnderlyingType(type)};
+
+            var enumAttr = type.Attribute<FlatBuffersEnumAttribute>();
+            enumTypeDef.BitFlags = enumAttr != null && enumAttr.BitFlags || type.Defined<FlagsAttribute>();
+            
             ReflectUserMetadata(type, enumTypeDef);
             return enumTypeDef;
         }
