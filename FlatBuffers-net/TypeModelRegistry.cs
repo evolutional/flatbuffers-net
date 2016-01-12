@@ -149,20 +149,20 @@ namespace FlatBuffers
 
             if (underlyingType != typeof (int))
             {
-                // Always use the base type if it's been set explicitly
+                // Always use the base member if it's been set explicitly
                 return DeduceBaseType(underlyingType);
             }
 
             if (!type.Defined<FlatBuffersEnumAttribute>())
             {
-                // no attribute, so use the underlying type
+                // no attribute, so use the underlying member
                 return DeduceBaseType(underlyingType);
             }
 
             var attr = type.Attribute<FlatBuffersEnumAttribute>();
             if (!attr.AutoSizeEnum)
             {
-                // attribute not set, use the underlying type
+                // attribute not set, use the underlying member
                 return DeduceBaseType(underlyingType);
             }
 
@@ -282,7 +282,7 @@ namespace FlatBuffers
             {
                 return new FieldValueProvider(member as FieldInfo);
             }
-            throw new FlatBuffersStructFieldReflectionException("Member type not supported");
+            throw new FlatBuffersStructFieldReflectionException("Member member not supported");
         }
 
         private IDefaultValueProvider CreateDefaultValueProvider(MemberInfo member)
@@ -314,7 +314,7 @@ namespace FlatBuffers
             {
                 if (attr == null || (!attr.IsUnionField && !attr.HasNestedFlatBufferType))
                 {
-                    throw new FlatBuffersStructFieldReflectionException("Field with 'object' type must have a UnionType or NestedFlatBufferType declared");
+                    throw new FlatBuffersStructFieldReflectionException("Field with 'object' member must have a UnionType or NestedFlatBufferType declared");
                 }
 
                 if (attr.HasNestedFlatBufferType)
@@ -331,7 +331,7 @@ namespace FlatBuffers
             {
                 if (attr != null && attr.HasNestedFlatBufferType)
                 {
-                    throw new FlatBuffersStructFieldReflectionException("HasNestedFlatBufferType can only be used on fields with 'object' type");
+                    throw new FlatBuffersStructFieldReflectionException("HasNestedFlatBufferType can only be used on fields with 'object' member");
                 }
 
                 memberTypeModel = GetTypeModel(valueType);
@@ -371,7 +371,7 @@ namespace FlatBuffers
                     field.UserIndex = attr.Id;
                     if (unionTypeField != null)
                     {
-                        field.UserIndex = attr.Id - 1;
+                        unionTypeField.UserIndex = attr.Id - 1;
                     }
                 }
                 field.Required = attr.Required;
@@ -423,7 +423,7 @@ namespace FlatBuffers
             return false;
         }
 
-        private void ReflectUserMetadata(ICustomAttributeProvider type, TypeDefinition typeDef)
+        private void ReflectUserMetadata(Type type, TypeDefinition typeDef)
         {
             foreach (var attr in type.Attributes<FlatBuffersMetadataAttribute>())
             {
@@ -437,14 +437,34 @@ namespace FlatBuffers
                 }
             }
 
-            foreach (var attr in type.Attributes<FlatBuffersCommentAttribute>().OrderBy(i=>i.Order))
+            foreach (var attr in type.Attributes<FlatBuffersCommentAttribute>().OrderBy(i => i.Order))
+            {
+                typeDef.AddComment(attr.Comment);
+            }
+        }
+
+        private void ReflectUserMetadata(MemberInfo member, TypeDefinition typeDef)
+        {
+            foreach (var attr in member.Attributes<FlatBuffersMetadataAttribute>())
+            {
+                if (!attr.HasValue)
+                {
+                    typeDef.Metadata.Add(attr.Name, true);
+                }
+                else
+                {
+                    typeDef.Metadata.Add(attr.Name, attr.Value, true);
+                }
+            }
+
+            foreach (var attr in member.Attributes<FlatBuffersCommentAttribute>().OrderBy(i=>i.Order))
             {
                 typeDef.AddComment(attr.Comment);
             }
         }
 
         /// <summary>
-        /// Gets a TypeModel for a given type, creating it via relfection if one doesn't exist
+        /// Gets a TypeModel for a given member, creating it via relfection if one doesn't exist
         /// </summary>
         /// <typeparam name="T">Type to reflect</typeparam>
         /// <returns>TypeModel</returns>
@@ -455,7 +475,7 @@ namespace FlatBuffers
 
 
         /// <summary>
-        /// Gets a TypeModel for a given type, creating it via relfection if one doesn't exist
+        /// Gets a TypeModel for a given member, creating it via relfection if one doesn't exist
         /// </summary>
         /// <param name="type">Type to reflect</param>
         /// <returns>TypeModel</returns>
@@ -467,11 +487,13 @@ namespace FlatBuffers
             {
                 return typeModel;
             }
-
+            
             if (type.Defined<FlatBuffersIgnoreAttribute>())
             {
                 throw new FlatBuffersTypeReflectionException("Cannot reflect type with 'FlatBuffersIgnoreAttribute'") {ClrType = type};
             }
+
+            
 
             var typeName = type.Name;   // TODO: attribute
 
@@ -487,6 +509,8 @@ namespace FlatBuffers
             {
                 typeModel = new TypeModel(this, typeName, type, baseType);
             }
+
+            _typeModels.Add(type, typeModel);
 
             if (baseType == BaseType.Struct)
             {
@@ -506,7 +530,7 @@ namespace FlatBuffers
                 }
             }
 
-            _typeModels.Add(type, typeModel);
+            
             return typeModel;
         }
     }

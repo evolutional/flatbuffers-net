@@ -38,7 +38,7 @@ namespace MyGame.Example.Tests
     /// </summary>
     public class TestSimpleTableWithEnum
     {
-        [FlatBuffersDefaultValue(typeof(Color), "Color.Green")]
+        [FlatBuffersDefaultValue(Color.Green)]
         public Color Color { get; set; }
     }
 
@@ -86,7 +86,7 @@ namespace MyGame.Example.Tests
         [FlatBuffersField(Id = 3, Required = true, Key = true)]
         public string Name { get; set; }
 
-        [FlatBuffersDefaultValue(typeof(Color), "Color.Blue")]
+        [FlatBuffersDefaultValue(Color.Blue)]
         [FlatBuffersField(Id = 6)]
         public Color Color { get; set; }
 
@@ -110,14 +110,14 @@ namespace MyGame.Example.Tests
         [FlatBuffersField(Id = 12)]
         public Monster Enemy { get; set; }
 
-        [FlatBuffersField(Id = 8)]
-        public Any Test { get; set; }
+        [FlatBuffersField(Id = 8, UnionType = typeof(Any))]
+        public object Test { get; set; }
 
-        [FlatBuffersField(Id = 9)]
-        public Any[] Test4 { get; set; }
+        [FlatBuffersField(Id = 9, UnionType = typeof(Any))]
+        public object[] Test4 { get; set; }
 
-        [FlatBuffersField(Id = 13)]  // TODO: Nested flatbuffer meta
-        public byte[] TestNestedFlatBuffer { get; set; }
+        [FlatBuffersField(Id = 13, NestedFlatBufferType = typeof(Monster))]
+        public object TestNestedFlatBuffer { get; set; }
 
         [FlatBuffersField(Id = 14)]
         public Stat TestEmpty { get; set; }

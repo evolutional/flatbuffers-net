@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using FlatBuffers;
 using NUnit.Framework;
 
@@ -30,6 +31,19 @@ namespace MyGame.Example.Tests
 
             // Verify buffers are identical
             Assert.IsTrue(buffer.SequenceEqual(fbb.DataBuffer.Data));
+        }
+
+        [Ignore("Highlighted a bug deserializing arrays of unions")]
+        [Test]
+        public void Deserialize_ExampleMonster_Buffer()
+        {
+            var buffer = GetBuffer();
+            var root = FlatBuffersConvert.DeserializeObject<Monster>(buffer);
+        }
+
+        private byte[] GetBuffer()
+        {
+            return File.ReadAllBytes(@"monsterdata_test.mon");
         }
     }
 }

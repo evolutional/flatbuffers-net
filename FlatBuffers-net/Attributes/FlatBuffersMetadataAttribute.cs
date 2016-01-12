@@ -39,8 +39,8 @@ namespace FlatBuffers.Attributes
         /// <param name="name">The name of the FlatBuffers schema attribute</param>
         /// <param name="value">The value of the FlatBuffers schema attribute</param>
         public FlatBuffersMetadataAttribute(string name, int value)
-            : this(name)
         {
+            Name = name;
             Value = value;
             HasValue = true;
         }
@@ -51,8 +51,8 @@ namespace FlatBuffers.Attributes
         /// <param name="name">The name of the FlatBuffers schema attribute</param>
         /// <param name="value">The value of the FlatBuffers schema attribute</param>
         public FlatBuffersMetadataAttribute(string name, bool value)
-            : this(name)
         {
+            Name = name;
             Value = value;
             HasValue = true;
         }
@@ -63,8 +63,8 @@ namespace FlatBuffers.Attributes
         /// <param name="name">The name of the FlatBuffers schema attribute</param>
         /// <param name="value">The value of the FlatBuffers schema attribute</param>
         public FlatBuffersMetadataAttribute(string name, string value)
-            : this(name)
         {
+            Name = name;
             Value = value;
             HasValue = true;
         }

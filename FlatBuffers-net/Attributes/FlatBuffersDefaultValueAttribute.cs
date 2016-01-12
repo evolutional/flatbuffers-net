@@ -110,11 +110,27 @@ namespace FlatBuffers.Attributes
         /// <summary>
         /// Initlaizes an instance of the <see cref="FlatBuffersDefaultValueAttribute"/> class
         /// </summary>
+        /// <param name="value">The default value</param>
+        public FlatBuffersDefaultValueAttribute(object value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Initlaizes an instance of the <see cref="FlatBuffersDefaultValueAttribute"/> class
+        /// </summary>
         /// <param name="type">The <see cref="Type"/> of the default value</param>
         /// <param name="value">The default value</param>
         public FlatBuffersDefaultValueAttribute(Type type, string value)
         {
-            Value = Convert.ChangeType(value, type);
+            if (type.IsEnum)
+            {
+                Value = Enum.Parse(type, value);
+            }
+            else
+            {
+                Value = Convert.ChangeType(value, type);
+            }
         }
 
         /// <summary>
