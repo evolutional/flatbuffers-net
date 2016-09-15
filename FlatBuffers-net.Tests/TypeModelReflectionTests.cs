@@ -163,6 +163,21 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void GetTypeModel_WithNameProperties_ReflectsNameValueCorrectly()
+        {
+            var typeModel = GetTypeModel<TableWithAlternativeNameFields>();
+            Assert.IsTrue(typeModel.IsTable);
+            Assert.IsNotNull(typeModel.StructDef);
+            var structDef = typeModel.StructDef;
+
+            var orderedFields = structDef.Fields.OrderBy(i => i.Index).ToArray();
+            Assert.AreEqual(2, orderedFields.Length);
+
+            Assert.AreEqual("AltIntProp", orderedFields[0].Name);
+            Assert.AreEqual("AltStringProp", orderedFields[1].Name);
+        }
+
+        [Test]
         public void GetTypeModel_WithForceAlign_ReflectsForceAlignValueCorrectly()
         {
             var typeModel = GetTypeModel<TestStructWithForcedAlignment>();

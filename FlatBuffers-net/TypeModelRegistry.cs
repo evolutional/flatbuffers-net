@@ -366,6 +366,11 @@ namespace FlatBuffers
             
             if (attr != null)
             {
+                if (!string.IsNullOrEmpty(attr.Name))
+                {
+                    field.Name = attr.Name;
+                }
+
                 if (attr.IsIdSetExplicitly)
                 {
                     field.UserIndex = attr.Id;

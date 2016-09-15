@@ -14,6 +14,12 @@ namespace FlatBuffers.Attributes
         private Type _unionType;
 
         /// <summary>
+        /// Gets and sets an alternative field name to use in fbs schema.
+        /// This attribute is only for fbs schema compatibility and isn't used during serialization.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// Gets and sets if this field is a key on the table. Can only be applied to scalars and strings.
         /// This attribute is only for fbs schema compatibility and isn't used during serialization.
         /// </summary>
