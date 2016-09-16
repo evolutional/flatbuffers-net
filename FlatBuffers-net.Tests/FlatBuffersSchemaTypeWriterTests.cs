@@ -479,6 +479,23 @@ namespace FlatBuffers.Tests
             }
         }
 
+        [Test]
+        public void Write_TableWithAlternativeNameFields_EmitsCorrectSchemaFragment_ContainingAlternativeFieldNames()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TableWithAlternativeNameFields>();
+                var expected = "table TableWithAlternativeNameFields {\n" +
+                               "    AltIntProp:int;\n" +
+                               "    AltStringProp:string;\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
         private abstract class TableWithRequiredAndIndexedFields
         {
             [FlatBuffersField(Id = 1, Required = true)]

@@ -65,6 +65,7 @@
     <Compile Include="SerializationTests\TestTableWithUserOrdering.cs" />
     <Compile Include="SerializationTests\TestUnion.cs" />
     <Compile Include="TestTypes\StructReflectedAsATable.cs" />
+    <Compile Include="TestTypes\TableWithAlternativeNameFields.cs" />
     <Compile Include="TestTypes\TableWithUserMetadata.cs" />
     <Compile Include="TestTypes\TableWithRequiredFields.cs" />
     <Compile Include="TestTypes\TestEnum.cs" />
