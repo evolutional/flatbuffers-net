@@ -81,6 +81,7 @@
     <Compile Include="TestTypes\TestStructWithForcedAlignment.cs" />
     <Compile Include="TestTypes\TestTable1.cs" />
     <Compile Include="TestTypes\TestTable1UsingFields.cs" />
+    <Compile Include="TestTypes\TestTableWithArrayOfBytes.cs" />
     <Compile Include="TestTypes\TestTableWithArrayOfStrings.cs" />
     <Compile Include="TestTypes\TestTableWithArrayOfTables.cs" />
     <Compile Include="TestTypes\TestTableWithComments.cs" />

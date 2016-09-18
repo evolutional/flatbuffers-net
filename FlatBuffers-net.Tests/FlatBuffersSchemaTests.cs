@@ -23,6 +23,11 @@ namespace FlatBuffers.Tests
             public int PropA { get; set; }
         }
 
+        public class Table1
+        {
+            public int PropA { get; set; }
+        }
+
         public struct Level1StructWithStructDep
         {
             public RootStruct1 StructProp { get; set; }
@@ -31,6 +36,22 @@ namespace FlatBuffers.Tests
         public struct Level1StructWithEnumDep
         {
             public RootEnum EnumProp { get; set; }
+        }
+        public struct Level1StructWithStructArrayDep
+        {
+            public RootStruct1[] StructArrayProp { get; set; }
+            public List<RootStruct1> StructListProp { get; set; }
+        }
+        public struct Level1StructWithTableArrayDep
+        {
+            public Table1[] TableArrayProp { get; set; }
+            public List<Table1> TableListProp { get; set; }
+        }
+
+        public struct Level1StructWithByteArrayDep
+        {
+            public byte[] ByteArrayProp { get; set; }
+            public List<byte> ByteListProp { get; set; }
         }
 
         public struct Level2StructWithStructDep
@@ -63,6 +84,110 @@ namespace FlatBuffers.Tests
             Assert.IsTrue(allTypes.Any(i => i.TypeModel.Name == "Level1StructWithEnumDep"));
             Assert.IsTrue(allTypes.Any(i => i.TypeModel.Name == "RootEnum"));
             Assert.AreEqual(2, allTypes.Count);
+        }
+
+        [Test]
+        public void AddType_When1Level1StructWihStructArrayDep_CollectsDependencies()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            var schema = generator.Generate<Level1StructWithStructArrayDep>();
+
+            var allTypes = schema.AllTypes.ToList();
+
+            Assert.IsTrue(allTypes.Any(i => i.TypeModel.Name == "Level1StructWithStructArrayDep"));
+            Assert.IsTrue(allTypes.Any(i => i.TypeModel.Name == "RootStruct1"));
+            Assert.AreEqual(2, allTypes.Count);
+        }
+
+        [Test]
+        public void AddType_WhenLevel1StructWithTableArrayDep_CollectsDependencies()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            var schema = generator.Generate<Level1StructWithTableArrayDep>();
+
+            var allTypes = schema.AllTypes.ToList();
+
+            Assert.IsTrue(allTypes.Any(i => i.TypeModel.Name == "Level1StructWithTableArrayDep"));
+            Assert.IsTrue(allTypes.Any(i => i.TypeModel.Name == "Table1"));
+            Assert.AreEqual(2, allTypes.Count);
+        }
+
+        [Test]
+        public void AddType_WhenLevel1StructWithByteArrayDep_CollectsDependencies()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            var schema = generator.Generate<Level1StructWithByteArrayDep>();
+
+            var allTypes = schema.AllTypes.ToList();
+
+            Assert.IsTrue(allTypes.Any(i => i.TypeModel.Name == "Level1StructWithByteArrayDep"));
+            Assert.AreEqual(1, allTypes.Count);
+        }
+
+        [Test]
+        public void WriteTo_Level1StructWithStructArrayDep_ResolvesDependenciesInCorrectOrder()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            var schema = generator.Generate<Level1StructWithStructArrayDep>();
+
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                schema.WriteTo(sw);
+            }
+
+            var expected = "struct RootStruct1 {\n" +
+                           "    PropA:int;\n" +
+                           "}\n" +
+                           "struct Level1StructWithStructArrayDep {\n" +
+                           "    StructArrayProp:[RootStruct1];\n" +
+                           "    StructListProp:[RootStruct1];\n" +
+                           "}";
+
+            AssertExtensions.AreEquivalent(expected, sb.ToString());
+        }
+
+        [Test]
+        public void WriteTo_Level1StructWithTableArrayDep_ResolvesDependenciesInCorrectOrder()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            var schema = generator.Generate<Level1StructWithTableArrayDep>();
+
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                schema.WriteTo(sw);
+            }
+
+            var expected = "table Table1 {\n" +
+                           "    PropA:int;\n" +
+                           "}\n" +
+                           "struct Level1StructWithTableArrayDep {\n" +
+                           "    TableArrayProp:[Table1];\n" +
+                           "    TableListProp:[Table1];\n" +
+                           "}";
+
+            AssertExtensions.AreEquivalent(expected, sb.ToString());
+        }
+
+        [Test]
+        public void WriteTo_Level1StructWithByteArrayDep_WritesExpectedSchema()
+        {
+            var generator = new FlatBuffersSchemaGenerator();
+            var schema = generator.Generate<Level1StructWithByteArrayDep>();
+
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                schema.WriteTo(sw);
+            }
+
+            var expected = "struct Level1StructWithByteArrayDep {\n" +
+                           "    ByteArrayProp:[ubyte];\n" +
+                           "    ByteListProp:[ubyte];\n" +
+                           "}";
+
+            AssertExtensions.AreEquivalent(expected, sb.ToString());
         }
 
         [Test]

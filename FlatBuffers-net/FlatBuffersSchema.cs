@@ -177,7 +177,19 @@ namespace FlatBuffers
 
             foreach (var field in structDef.Fields)
             {
-                if (!field.TypeModel.IsObject && !field.TypeModel.IsEnum && !field.TypeModel.IsUnion)
+                if (field.TypeModel.IsVector && field.TypeModel.ElementType == BaseType.Struct)
+                {
+                    var elementType = field.TypeModel.GetElementTypeModel();
+
+                    if (elementType != null)
+                    {
+                        deps.Add(GetDependencyNode(elementType, node));
+                    }
+
+                    continue;
+                }
+
+                if (!field.TypeModel.IsObject && !field.TypeModel.IsEnum && !field.TypeModel.IsUnion && !field.TypeModel.IsUnion)
                     continue;
 
                 if (field.TypeModel.IsUnion)
@@ -192,6 +204,18 @@ namespace FlatBuffers
                     }
                 }
 
+                if (field.TypeModel.IsVector && field.TypeModel.ElementType == BaseType.Struct)
+                {
+                    var elementType = field.TypeModel.GetElementTypeModel();
+                
+                    if (elementType != null)
+                    {
+                        deps.Add(GetDependencyNode(elementType, node));
+                    }
+                
+                    continue;
+                }
+
                 if (field.HasNestedFlatBufferType)
                 {
                     if (deps.All(i => i.TypeModel.Name != field.NestedFlatBufferType.Name))
@@ -204,6 +228,7 @@ namespace FlatBuffers
                 {
                     deps.Add(GetDependencyNode(field.TypeModel, node));
                 }
+
  
             }
             return deps;

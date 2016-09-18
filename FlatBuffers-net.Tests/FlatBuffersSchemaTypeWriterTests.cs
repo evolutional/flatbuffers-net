@@ -829,5 +829,22 @@ namespace FlatBuffers.Tests
                 AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
+
+        [Test]
+        public void Write_WithTestTableWithArrayOfBytes_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithArrayOfBytes>();
+                var expected = "table TestTableWithArrayOfBytes {\n" +
+                               "    ByteArrayProp:[ubyte];\n" +
+                               "    ByteListProp:[ubyte];\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
     }
 }
