@@ -371,7 +371,8 @@ namespace FlatBuffers
 
             if (baseType == BaseType.Vector)
             {
-                var elementTypeName = typeModel.ElementType.FlatBufferTypeName();
+                var elementTypeName = typeModel.ElementType.FlatBufferTypeName() ?? GetFlatBufferTypeName(typeModel.GetElementTypeModel());
+
                 if (elementTypeName != null)
                 {
                     return string.Format("[{0}]", elementTypeName);

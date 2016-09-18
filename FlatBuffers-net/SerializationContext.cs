@@ -382,21 +382,9 @@ namespace FlatBuffers
                 }
                 else if (field.TypeModel.IsVector)
                 {
-                    var elementType = field.TypeModel.Type.GetElementType();
+                    var elementType = field.TypeModel.GetElementTypeModel();
 
-                    if (field.TypeModel.Type.IsGenericType)
-                    {
-                        var genericTypeDef = field.TypeModel.Type.GetGenericTypeDefinition();
-
-                        if (genericTypeDef == null || !genericTypeDef.IsAssignableFrom(typeof(List<>)))
-                        {
-                            throw new NotSupportedException();
-                        }
-
-                        elementType = field.TypeModel.Type.GetGenericArguments().First();
-                    }
-                    
-                    if (elementType != null && _typeModelRegistry.GetTypeModel(elementType).IsReferenceType)
+                    if (elementType != null && elementType.IsReferenceType)
                     {
                         var collection = val as ICollection;
 

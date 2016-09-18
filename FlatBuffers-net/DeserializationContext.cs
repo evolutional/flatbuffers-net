@@ -170,11 +170,11 @@ namespace FlatBuffers
 
             var vectorLength = GetVectorLength(structBase, offset);
 
-            if (typeModel.Type.BaseType == typeof(Array) || typeModel.Type.BaseType == typeof(Array))
+            if (typeModel.Type.BaseType == typeof(Array))
             {
                 result = DeserializeArray(typeModel, vectorLength, vectorStart);
             }
-            else if (typeModel.Type.IsGenericType)
+            else if (typeModel.Type.IsGenericType && typeof(IList).IsAssignableFrom(typeModel.Type))
             {
                 result = DeserializeList(typeModel, vectorLength, vectorStart);
             }
@@ -185,18 +185,11 @@ namespace FlatBuffers
 
         private object DeserializeList(TypeModel typeModel, int vectorLength, int vectorStart)
         {
-            var genericTypeDef = typeModel.Type.GetGenericTypeDefinition();
+            var elementTypeModel = typeModel.GetElementTypeModel();
 
-            if (genericTypeDef == null || !genericTypeDef.IsAssignableFrom(typeof(List<>)))
-            {
-                throw new NotSupportedException();
-            }
-
-            var elementType = typeModel.Type.GetGenericArguments().First();
-            var elementTypeModel = _typeModelRegistry.GetTypeModel(elementType);
             var elemmentSize = elementTypeModel.IsReferenceType ? BaseType.Struct.SizeOf() : typeModel.ElementType.SizeOf();
 
-            var listType = genericTypeDef.MakeGenericType(elementType);
+            var listType = typeof(List<>).MakeGenericType(elementTypeModel.Type);
             var list = (IList)Activator.CreateInstance(listType);
 
             for (var i = 0; i < vectorLength; ++i)
