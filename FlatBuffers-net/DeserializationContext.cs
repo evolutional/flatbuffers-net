@@ -34,6 +34,13 @@ namespace FlatBuffers
             return offset + _buffer.GetInt(offset) + sizeof(int);
         }
 
+        private string GetString(int offset)
+        {
+            var len = _buffer.GetInt(offset);
+            var startPos = offset + sizeof(int);
+            return Encoding.UTF8.GetString(_buffer.Data, startPos, len);
+        }
+
         private string GetString(int structBase, int offset)
         {
             offset += structBase;
@@ -95,15 +102,37 @@ namespace FlatBuffers
             return GetString(structBase, offset);
         }
 
-        private Array DeserailizeArray(TypeModel typeModel, int vectorLength, int vectorStart, int elemSize)
+        private Array DeserializeArray(TypeModel typeModel, int vectorLength, int vectorStart)
         {
-            var array = Array.CreateInstance(typeModel.ElementType.TypeOf(), vectorLength);
+            var elementType = typeModel.Type.GetElementType();
+
+            if (elementType == null)
+            {
+                throw new NotSupportedException();
+            }
+
+            var array = Array.CreateInstance(elementType, vectorLength);
+
+            var elementTypeModel = _typeModelRegistry.GetTypeModel(elementType);
+            var elemmentSize = elementTypeModel.IsReferenceType ? BaseType.Struct.SizeOf() : typeModel.ElementType.SizeOf();
+
             for (var i = 0; i < vectorLength; ++i)
             {
-                var valuePos = vectorStart + i * elemSize;
-                var value = DeserializeScalarValue(typeModel.ElementType, valuePos);
+                object value = null;
+                var valuePos = vectorStart + i * elemmentSize;
+
+                if (elementTypeModel.IsReferenceType)
+                {
+                    value = DeserializeElementReferenceType(valuePos, elementTypeModel);
+                }
+                else
+                {
+                    value = DeserializeScalarValue(typeModel.ElementType, valuePos);
+                }
+
                 array.SetValue(value, i);
             }
+
             return array;
         }
 
@@ -127,7 +156,7 @@ namespace FlatBuffers
             }
             return DeserializeStruct(structBase, offset, typeToDeserialize.MemberType);
         }
-
+        
         private object DeserializeVector(int structBase, int offset, FieldTypeDefinition field)
         {
             var typeModel = field.TypeModel;
@@ -138,43 +167,73 @@ namespace FlatBuffers
             {
                 return result;
             }
-            
+
             var vectorLength = GetVectorLength(structBase, offset);
-            var elemSize = typeModel.ElementType.SizeOf();
 
             if (typeModel.Type.BaseType == typeof(Array) || typeModel.Type.BaseType == typeof(Array))
             {
-                result = DeserailizeArray(typeModel, vectorLength, vectorStart, elemSize);
+                result = DeserializeArray(typeModel, vectorLength, vectorStart);
             }
             else if (typeModel.Type.IsGenericType)
             {
-                var genericTypeDef = typeModel.Type.GetGenericTypeDefinition();
-
-                if (genericTypeDef == null)
-                {
-                    throw new NotSupportedException();
-                }
-
-                if (genericTypeDef.IsAssignableFrom(typeof(List<>)))
-                {
-                    var listType = genericTypeDef.MakeGenericType(typeModel.ElementType.TypeOf());
-                    var list = (IList)Activator.CreateInstance(listType);
-                    
-                    for (var i = 0; i < vectorLength; ++i)
-                    {
-                        var valuePos = vectorStart + i * elemSize;
-                        var value = DeserializeScalarValue(typeModel.ElementType, valuePos);
-                        list.Add(value);
-                    }
-                    result = list;
-                }
+                result = DeserializeList(typeModel, vectorLength, vectorStart);
             }
 
             _offsetToObject.Add(vectorStart, result);
             return result;
         }
 
+        private object DeserializeList(TypeModel typeModel, int vectorLength, int vectorStart)
+        {
+            var genericTypeDef = typeModel.Type.GetGenericTypeDefinition();
 
+            if (genericTypeDef == null || !genericTypeDef.IsAssignableFrom(typeof(List<>)))
+            {
+                throw new NotSupportedException();
+            }
+
+            var elementType = typeModel.Type.GetGenericArguments().First();
+            var elementTypeModel = _typeModelRegistry.GetTypeModel(elementType);
+            var elemmentSize = elementTypeModel.IsReferenceType ? BaseType.Struct.SizeOf() : typeModel.ElementType.SizeOf();
+
+            var listType = genericTypeDef.MakeGenericType(elementType);
+            var list = (IList)Activator.CreateInstance(listType);
+
+            for (var i = 0; i < vectorLength; ++i)
+            {
+                var valuePos = vectorStart + i * elemmentSize;
+
+                object value = null;
+
+                if (elementTypeModel.IsReferenceType)
+                {
+                    value = DeserializeElementReferenceType(valuePos, elementTypeModel);
+                }
+                else
+                {
+                    value = DeserializeScalarValue(typeModel.ElementType, valuePos);
+                }
+
+                list.Add(value);
+            }
+
+            return list;
+        }
+
+        private object DeserializeElementReferenceType(int valuePos, TypeModel elementTypeModel)
+        {
+            var offset = valuePos + _buffer.GetInt(valuePos);
+
+            switch (elementTypeModel.BaseType)
+            {
+                case BaseType.String:
+                    return GetString(offset);
+                case BaseType.Struct:
+                    return DeserializeStruct(offset, elementTypeModel);
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
         private object DeserializeReferenceType(int structBase, int offset, FieldTypeDefinition field)
         {
@@ -210,7 +269,6 @@ namespace FlatBuffers
                 }
             }
         }
-        
 
         private object DeserializePropertyValue(int structBase, FieldTypeDefinition field)
         {

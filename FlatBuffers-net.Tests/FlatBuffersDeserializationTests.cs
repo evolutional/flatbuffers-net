@@ -265,6 +265,58 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithArrayOfTables()
+        {
+            var tableArray = new TestTable1[]
+            {
+                new TestTable1 {ByteProp = 1, IntProp = 2, ShortProp = 3},
+                new TestTable1 {ByteProp = 4, IntProp = 5, ShortProp = 6},
+            };
+
+            var tableList = new List<TestTable1>
+            {
+                new TestTable1 {ByteProp = 7, IntProp = 8, ShortProp = 9},
+                new TestTable1 {ByteProp = 10, IntProp = 11, ShortProp = 12},
+            };
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithArrayOfTables(tableArray, tableList);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithArrayOfTables>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(o.TableArrayProp[0].IntProp, tableArray[0].IntProp);
+            Assert.AreEqual(o.TableArrayProp[0].ByteProp, tableArray[0].ByteProp);
+            Assert.AreEqual(o.TableArrayProp[0].ShortProp, tableArray[0].ShortProp);
+            Assert.AreEqual(o.TableArrayProp[1].IntProp, tableArray[1].IntProp);
+            Assert.AreEqual(o.TableArrayProp[1].ByteProp, tableArray[1].ByteProp);
+            Assert.AreEqual(o.TableArrayProp[1].ShortProp, tableArray[1].ShortProp);
+
+            Assert.AreEqual(o.TableListProp[0].IntProp, tableList[0].IntProp);
+            Assert.AreEqual(o.TableListProp[0].ByteProp, tableList[0].ByteProp);
+            Assert.AreEqual(o.TableListProp[0].ShortProp, tableList[0].ShortProp);
+            Assert.AreEqual(o.TableListProp[1].IntProp, tableList[1].IntProp);
+            Assert.AreEqual(o.TableListProp[1].ByteProp, tableList[1].ByteProp);
+            Assert.AreEqual(o.TableListProp[1].ShortProp, tableList[1].ShortProp);
+        }
+
+        [Test]
+        public void Deserialize_FromOracleData_WithTestTableWithArrayOfStrings()
+        {
+            var stringArray = new string[] { "Hello", "World" };
+            var stringList = new List<string> { "Lorem", "ipsum" };
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTableWithArrayOfStrings(stringArray, stringList);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTableWithArrayOfStrings>(oracleResult, 0, oracleResult.Length);
+
+            Assert.IsTrue(o.StringArrayProp.SequenceEqual(stringArray));
+            Assert.IsTrue(o.StringListProp.SequenceEqual(stringList));
+        }
+
+        [Test]
         public void Deserialize_FromOracleData_WithTestTableWithStruct()
         {
             var testStruct1 = new TestStruct1()
