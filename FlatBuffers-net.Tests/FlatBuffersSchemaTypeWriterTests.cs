@@ -779,5 +779,72 @@ namespace FlatBuffers.Tests
                 AssertExtensions.AreEquivalent(expected, sb.ToString());
             }
         }
+
+        [Test]
+        public void Write_TestTableWithArrayOfStructs_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithArrayOfStructs>();
+                var expected = "table TestTableWithArrayOfStructs {\n" +
+                               "    StructArray:[TestStruct1];\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithTestTableWithArrayOfTables_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithArrayOfTables>();
+                var expected = "table TestTableWithArrayOfTables {\n" +
+                               "    TableArrayProp:[TestTable1];\n" +
+                               "    TableListProp:[TestTable1];\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithTestTableWithArrayOfStrings_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithArrayOfStrings>();
+                var expected = "table TestTableWithArrayOfStrings {\n" +
+                               "    StringArrayProp:[string];\n" +
+                               "    StringListProp:[string];\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
+
+        [Test]
+        public void Write_WithTestTableWithArrayOfBytes_EmitsCorrectSchemaFragment()
+        {
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                var schemaWriter = new FlatBuffersSchemaTypeWriter(sw);
+                schemaWriter.Write<TestTableWithArrayOfBytes>();
+                var expected = "table TestTableWithArrayOfBytes {\n" +
+                               "    ByteArrayProp:[ubyte];\n" +
+                               "    ByteListProp:[ubyte];\n" +
+                               "}";
+
+                AssertExtensions.AreEquivalent(expected, sb.ToString());
+            }
+        }
     }
 }

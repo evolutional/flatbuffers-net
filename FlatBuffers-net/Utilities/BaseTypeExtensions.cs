@@ -11,7 +11,7 @@ namespace FlatBuffers.Utilities
         private static readonly Type[] _clrTypes;
         private static readonly string[] _flatBufferTypeNames;
 
-        private const int OffsetSize = sizeof (short);
+        private const int OffsetSize = sizeof (UInt32);
 
         static BaseTypeExtensions()
         {

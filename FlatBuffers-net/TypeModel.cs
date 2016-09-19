@@ -98,7 +98,7 @@ namespace FlatBuffers
         /// Gets the FlatBuffers <see cref="BaseType"/> of the elements contained by this type
         /// </summary>
         public BaseType ElementType { get { return _elementType; } }
-
+        
         /// <summary>
         /// Gets the CLR <see cref="Type"/>
         /// </summary>
@@ -123,6 +123,31 @@ namespace FlatBuffers
             _baseType = baseType;
             _elementType = elementType;
             _isEnum = typeof(Enum).IsAssignableFrom(_clrType) && _baseType != BaseType.Union;
+        }
+
+        /// <summary>
+        /// Returns the <see cref="TypeModel"/> for this models ElementType
+        /// </summary>
+        /// <returns>Returns the ElementType TypeModel</returns>
+        public TypeModel GetElementTypeModel()
+        {
+            var elementType = _clrType.GetElementType();
+
+            if (elementType != null)
+            {
+                return _registry.GetTypeModel(elementType);
+            }
+            else if (_clrType.IsGenericType)
+            {
+                var a = _clrType.GetGenericArguments();
+
+                if (a.Length > 0)
+                {
+                    return _registry.GetTypeModel(_clrType.GetGenericArguments()[0]);
+                }
+            }
+
+            return null;
         }
     }
 }

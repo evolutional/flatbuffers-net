@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FlatBuffers.Tests.TestTypes;
 using TestUnion = SerializationTests.TestUnion;
 
@@ -139,6 +140,36 @@ namespace FlatBuffers.Tests
             return result;
         }
 
+        private static TestTable1 FromTestSchema(SerializationTests.TestTable1 testTable1)
+        {
+            return new TestTable1()
+            {
+                IntProp = testTable1.IntProp,
+                ByteProp = testTable1.ByteProp,
+                ShortProp = testTable1.ShortProp
+            };
+        }
+
+        public TestTableWithArrayOfTables ReadTestTableWithArrayOfTables(byte[] buffer)
+        {
+            var test = SerializationTests.TestTableWithArrayOfTables.GetRootAsTestTableWithArrayOfTables(new ByteBuffer(buffer));
+
+            var array = new TestTable1[test.TableArrayPropLength];
+
+            for (var i = 0; i < array.Length; ++i)
+            {
+                array[i] = FromTestSchema(test.GetTableArrayProp(array.Length - i - 1));
+            }
+            
+            var list = new List<TestTable1>(test.TableListPropLength);
+            for (var i = 0; i < list.Capacity; ++i)
+            {
+                list.Add(FromTestSchema(test.GetTableListProp(list.Capacity - i - 1)));
+            }
+            
+            return new TestTableWithArrayOfTables() { TableArrayProp = array, TableListProp = list };
+        }
+
         public TestTableWithNestedTestTable1 ReadTestTableWithNestedTable1(byte[] buffer)
         {
             var test = SerializationTests.TestTableWithNestedTestTable1.GetRootAsTestTableWithNestedTestTable1(new ByteBuffer(buffer));
@@ -253,6 +284,26 @@ namespace FlatBuffers.Tests
             return new TestTableWithArrayOfStructs() {StructArray = array};
         }
 
+        public TestTableWithArrayOfStrings ReadTestTableWithArrayOfStrings(byte[] buffer)
+        {
+            var test =
+                SerializationTests.TestTableWithArrayOfStrings.GetRootAsTestTableWithArrayOfStrings(
+                    new ByteBuffer(buffer));
+
+            var array = new string[test.StringArrayPropLength];
+            for (var i = 0; i < array.Length; ++i)
+            {
+                array[i] = test.GetStringArrayProp(array.Length - i - 1);
+            }
+
+            var list = new List<string>(test.StringListPropLength);
+            for (var i = 0; i < list.Capacity; ++i)
+            {
+                list.Add(test.GetStringListProp(list.Capacity - i - 1));
+            }
+
+            return new TestTableWithArrayOfStrings() { StringArrayProp = array, StringListProp = list };
+        }
 
         public TestTableWithUnion ReadTestTableWithUnion(byte[] buffer)
         {
@@ -509,14 +560,6 @@ namespace FlatBuffers.Tests
             return GetBytes(fbb);
         }
 
-        private static byte[] GetBytes(FlatBufferBuilder fbb)
-        {
-            var data = new byte[fbb.Offset];
-            Buffer.BlockCopy(fbb.DataBuffer.Data, fbb.DataBuffer.Length - fbb.Offset, data, 0, fbb.Offset);
-            return data;
-        }
-
-
         public byte[] GenerateTestTableWithArray(int[] intArray, List<int> intList)
         {
             var fbb = new FlatBufferBuilder(8);
@@ -530,6 +573,49 @@ namespace FlatBuffers.Tests
             var offset = SerializationTests.TestTableWithArray.EndTestTableWithArray(fbb);
             fbb.Finish(offset.Value);
             return GetBytes(fbb);
+        }
+
+        public byte[] GenerateTestTableWithArrayOfTables(TestTable1[] tableArray, List<TestTable1> tableList)
+        {
+            var fbb = new FlatBufferBuilder(8);
+
+            var tableArrayElementOffsets = tableArray.Select(element => SerializationTests.TestTable1.CreateTestTable1(fbb, element.IntProp, element.ByteProp, element.ShortProp)).ToArray();
+            var tableListElementOffsets = tableList.Select(element => SerializationTests.TestTable1.CreateTestTable1(fbb, element.IntProp, element.ByteProp, element.ShortProp)).ToArray();
+
+            var tableArrayVectorOffset = SerializationTests.TestTableWithArrayOfTables.CreateTableArrayPropVector(fbb, tableArrayElementOffsets);
+            var tableListVectorOffset = SerializationTests.TestTableWithArrayOfTables.CreateTableArrayPropVector(fbb, tableListElementOffsets);
+            
+            SerializationTests.TestTableWithArrayOfTables.StartTestTableWithArrayOfTables(fbb);
+            SerializationTests.TestTableWithArrayOfTables.AddTableArrayProp(fbb, tableArrayVectorOffset);
+            SerializationTests.TestTableWithArrayOfTables.AddTableListProp(fbb, tableListVectorOffset);
+            var offset = SerializationTests.TestTableWithArrayOfTables.EndTestTableWithArrayOfTables(fbb);
+            fbb.Finish(offset.Value);
+            return GetBytes(fbb);
+        }
+
+        public byte[] GenerateTestTableWithArrayOfStrings(string[] stringArray, List<string> stringList)
+        {
+            var fbb = new FlatBufferBuilder(8);
+
+            var stringArrayElementOffsets = stringArray.Select(s => fbb.CreateString(s)).ToArray();
+            var stringListElementOffsets = stringList.Select(s => fbb.CreateString(s)).ToArray();
+
+            var stringArrayVectorOffset = SerializationTests.TestTableWithArrayOfStrings.CreateStringArrayPropVector(fbb, stringArrayElementOffsets);
+            var stringListVectorOffset = SerializationTests.TestTableWithArrayOfStrings.CreateStringArrayPropVector(fbb, stringListElementOffsets);
+
+            SerializationTests.TestTableWithArrayOfStrings.StartTestTableWithArrayOfStrings(fbb);
+            SerializationTests.TestTableWithArrayOfStrings.AddStringArrayProp(fbb, stringArrayVectorOffset);
+            SerializationTests.TestTableWithArrayOfStrings.AddStringListProp(fbb, stringListVectorOffset);
+            var offset = SerializationTests.TestTableWithArrayOfStrings.EndTestTableWithArrayOfStrings(fbb);
+            fbb.Finish(offset.Value);
+            return GetBytes(fbb);
+        }
+
+        private static byte[] GetBytes(FlatBufferBuilder fbb)
+        {
+            var data = new byte[fbb.Offset];
+            Buffer.BlockCopy(fbb.DataBuffer.Data, fbb.DataBuffer.Length - fbb.Offset, data, 0, fbb.Offset);
+            return data;
         }
     }
 }

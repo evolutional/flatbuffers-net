@@ -59,8 +59,18 @@ table TestTableWithTable {
 	IntProp: int;
 }
 
+table TestTableWithArrayOfTables {
+	TableArrayProp: [TestTable1];
+	TableListProp: [TestTable1];
+}
+
 table TestTableWithArrayOfStructs {
 	StructArray: [TestStruct1];
+}
+
+table TestTableWithArrayOfStrings {
+	StringArrayProp: [string];
+	StringListProp: [string];
 }
 
 table TestTableWithUserOrdering {

@@ -297,6 +297,46 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Serialize_WithTestTableWithArrayOfTables_CanBeReadByOracle()
+        {
+            var serializer = new FlatBuffersSerializer();
+            
+            var obj = new TestTableWithArrayOfTables()
+            {
+                TableArrayProp = new []
+                {
+                    new TestTable1() { IntProp = 1, ShortProp = 2, ByteProp = 3 },
+                    new TestTable1() { IntProp = 4, ShortProp = 5, ByteProp = 6 }
+                },
+                TableListProp = new List<TestTable1>()
+                {
+                    new TestTable1() { IntProp = 7, ShortProp = 8, ByteProp = 9 },
+                    new TestTable1() { IntProp = 10, ShortProp = 11, ByteProp = 12 }
+                }
+            };
+
+            var buffer = new byte[256];
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTableWithArrayOfTables(buffer);
+            
+            Assert.AreEqual(obj.TableArrayProp[0].IntProp, oracleResult.TableArrayProp[0].IntProp);
+            Assert.AreEqual(obj.TableArrayProp[0].ByteProp, oracleResult.TableArrayProp[0].ByteProp);
+            Assert.AreEqual(obj.TableArrayProp[0].ShortProp, oracleResult.TableArrayProp[0].ShortProp);
+            Assert.AreEqual(obj.TableArrayProp[1].IntProp, oracleResult.TableArrayProp[1].IntProp);
+            Assert.AreEqual(obj.TableArrayProp[1].ByteProp, oracleResult.TableArrayProp[1].ByteProp);
+            Assert.AreEqual(obj.TableArrayProp[1].ShortProp, oracleResult.TableArrayProp[1].ShortProp);
+
+            Assert.AreEqual(obj.TableListProp[0].IntProp, oracleResult.TableListProp[0].IntProp);
+            Assert.AreEqual(obj.TableListProp[0].ByteProp, oracleResult.TableListProp[0].ByteProp);
+            Assert.AreEqual(obj.TableListProp[0].ShortProp, oracleResult.TableListProp[0].ShortProp);
+            Assert.AreEqual(obj.TableListProp[1].IntProp, oracleResult.TableListProp[1].IntProp);
+            Assert.AreEqual(obj.TableListProp[1].ByteProp, oracleResult.TableListProp[1].ByteProp);
+            Assert.AreEqual(obj.TableListProp[1].ShortProp, oracleResult.TableListProp[1].ShortProp);
+        }
+
+        [Test]
         public void Serialize_WithTestTableWithArrayOfStructs_CanBeReadByOracle()
         {
             var serializer = new FlatBuffersSerializer();
@@ -318,6 +358,37 @@ namespace FlatBuffers.Tests
 
             Assert.IsTrue(oracleResult.StructArray[0].Equals(obj.StructArray[0]));
             Assert.IsTrue(oracleResult.StructArray[1].Equals(obj.StructArray[1]));
+        }
+
+        [Test]
+        public void Serialize_WithTestTableWithArrayOfStrings_CanBeReadByOracle()
+        {
+            var serializer = new FlatBuffersSerializer();
+            var obj = new TestTableWithArrayOfStrings()
+            {
+                StringArrayProp = new []
+                {
+                    "Hello",
+                    "World"
+                },
+                StringListProp = new List<string>
+                {
+                    "Lorem",
+                    "ipsum"
+                }
+            };
+
+            var buffer = new byte[128];
+
+            serializer.Serialize(obj, buffer, 0, buffer.Length);
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.ReadTestTableWithArrayOfStrings(buffer);
+
+            Assert.IsTrue(oracleResult.StringArrayProp[0].Equals(obj.StringArrayProp[0]));
+            Assert.IsTrue(oracleResult.StringArrayProp[1].Equals(obj.StringArrayProp[1]));
+            Assert.IsTrue(oracleResult.StringListProp[0].Equals(obj.StringListProp[0]));
+            Assert.IsTrue(oracleResult.StringListProp[1].Equals(obj.StringListProp[1]));
         }
 
         [Test]

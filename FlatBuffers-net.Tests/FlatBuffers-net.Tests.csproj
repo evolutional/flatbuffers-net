@@ -39,6 +39,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertExtensions.cs" />
+    <Compile Include="SerializationTests\TestTableWithArrayOfStrings.cs" />
+    <Compile Include="SerializationTests\TestTableWithArrayOfTables.cs" />
     <Compile Include="SerializationTests\TestTableWithIdentifier.cs" />
     <Compile Include="SerializationTests\TestTableWithNestedTestTable1.cs" />
     <Compile Include="TestTypes\ClassReflectedAsAStruct.cs" />
@@ -79,6 +81,9 @@
     <Compile Include="TestTypes\TestStructWithForcedAlignment.cs" />
     <Compile Include="TestTypes\TestTable1.cs" />
     <Compile Include="TestTypes\TestTable1UsingFields.cs" />
+    <Compile Include="TestTypes\TestTableWithArrayOfBytes.cs" />
+    <Compile Include="TestTypes\TestTableWithArrayOfStrings.cs" />
+    <Compile Include="TestTypes\TestTableWithArrayOfTables.cs" />
     <Compile Include="TestTypes\TestTableWithComments.cs" />
     <Compile Include="TestTypes\TestTableWithDefaults.cs" />
     <Compile Include="TestTypes\TestTableWithHash.cs" />

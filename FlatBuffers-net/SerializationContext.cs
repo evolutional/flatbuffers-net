@@ -287,7 +287,14 @@ namespace FlatBuffers
 
             foreach(var element in collection)
             {
-                SerializeInlineValue(element, elementTypeModel);
+                if (elementTypeModel.IsReferenceType)
+                {
+                    _builder.AddOffset(_objectOffsets[element]);
+                }
+                else
+                {
+                    SerializeInlineValue(element, elementTypeModel);
+                }
             }
 
             return _builder.EndVector().Value;
@@ -334,6 +341,22 @@ namespace FlatBuffers
             var unionType = unionDef.Fields.FirstOrDefault(i => i.MemberType != null && i.MemberType.Type == obj.GetType());
             return unionType.MemberType;
         }
+        
+        private void SerializeReferenceTypeEnumerable(IEnumerable collection)
+        {
+            foreach (var element in collection)
+            {
+                var elementTypeModel = _typeModelRegistry.GetTypeModel(element.GetType());
+
+                var fieldBufferOffset = 0;
+
+                if (!_objectOffsets.TryGetValue(element, out fieldBufferOffset))
+                {
+                    fieldBufferOffset = SerializeReferenceType(element, elementTypeModel);
+                    _objectOffsets.Add(element, fieldBufferOffset);
+                }
+            }
+        }
 
         private void SerializeReferenceTypeFields(object obj, TypeModel typeModel)
         {
@@ -356,6 +379,20 @@ namespace FlatBuffers
                 else if (field.TypeModel.IsUnion)
                 {
                     SerializeReferenceTypeFields(val, GetUnionFieldTypeModel(val, field.TypeModel));
+                }
+                else if (field.TypeModel.IsVector)
+                {
+                    var elementType = field.TypeModel.GetElementTypeModel();
+
+                    if (elementType != null && elementType.IsReferenceType)
+                    {
+                        var collection = val as ICollection;
+
+                        if (collection != null)
+                        {
+                            SerializeReferenceTypeEnumerable(collection);
+                        }
+                    }
                 }
 
                 var fieldBufferOffset = 0;
