@@ -276,6 +276,10 @@ namespace FlatBuffers
 
             switch (typeModel.BaseType)
             {
+                case BaseType.Bool:
+                    {
+                        return _buffer.Get(offset + structBase) == 1;
+                    }
                 case BaseType.Char:
                     {
                         return _buffer.GetSbyte(offset + structBase);
