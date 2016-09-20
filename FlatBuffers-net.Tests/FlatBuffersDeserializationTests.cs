@@ -249,6 +249,34 @@ namespace FlatBuffers.Tests
         }
 
         [Test]
+        public void Deserialize_FromOracleData_WithTestTable3()
+        {
+            const bool boolProp = true;
+            const long longProp = 1020304050;
+            const sbyte sbyteProp = -127;
+            const ushort ushortProp = 2048;
+            const ulong ulongProp = 9999999999999999999;
+            const TestEnum enumProp = TestEnum.Banana;
+            const float floatProp = 3.14f;
+            const double doubleProp = 6.22910783293;
+
+            var oracle = new SerializationTestOracle();
+            var oracleResult = oracle.GenerateTestTable3(boolProp, longProp, sbyteProp, ushortProp, ulongProp, enumProp, floatProp, doubleProp);
+
+            var serializer = new FlatBuffersSerializer();
+            var o = serializer.Deserialize<TestTable3>(oracleResult, 0, oracleResult.Length);
+
+            Assert.AreEqual(boolProp, o.BoolProp);
+            Assert.AreEqual(longProp, o.LongProp);
+            Assert.AreEqual(sbyteProp, o.SByteProp);
+            Assert.AreEqual(ushortProp, o.UShortProp);
+            Assert.AreEqual(ulongProp, o.ULongProp);
+            Assert.AreEqual(enumProp, o.EnumProp);
+            Assert.AreEqual(floatProp, o.FloatProp);
+            Assert.AreEqual(doubleProp, o.DoubleProp);
+        }
+
+        [Test]
         public void Deserialize_FromOracleData_WithTestTableWithArray()
         {
             var intArray = new int[] {1, 2, 3, 4, 5};
