@@ -158,13 +158,13 @@ namespace FlatBuffers.Tests
 
             for (var i = 0; i < array.Length; ++i)
             {
-                array[i] = FromTestSchema(test.GetTableArrayProp(array.Length - i - 1));
+                array[i] = FromTestSchema(test.GetTableArrayProp(i));
             }
             
             var list = new List<TestTable1>(test.TableListPropLength);
             for (var i = 0; i < list.Capacity; ++i)
             {
-                list.Add(FromTestSchema(test.GetTableListProp(list.Capacity - i - 1)));
+                list.Add(FromTestSchema(test.GetTableListProp(i)));
             }
             
             return new TestTableWithArrayOfTables() { TableArrayProp = array, TableListProp = list };
@@ -232,13 +232,13 @@ namespace FlatBuffers.Tests
             var intArray = new int[test.IntArrayLength];
             for (var i = 0; i < intArray.Length; ++i)
             {
-                intArray[i] = test.GetIntArray(intArray.Length - i - 1);
+                intArray[i] = test.GetIntArray(i);
             }
             var intListLength = test.IntListLength;
             var intList = new List<int>(intListLength);
             for (var i = 0; i < intListLength; ++i)
             {
-                intList.Add(test.GetIntList(intListLength - i - 1));
+                intList.Add(test.GetIntList(i));
             }
             return new TestTableWithArray()
             {
@@ -279,7 +279,7 @@ namespace FlatBuffers.Tests
             var array = new TestStruct1[test.StructArrayLength];
             for (var i = 0; i < array.Length; ++i)
             {
-                array[i] = FromTestSchema(test.GetStructArray(array.Length - i - 1));
+                array[i] = FromTestSchema(test.GetStructArray(i));
             }
             return new TestTableWithArrayOfStructs() {StructArray = array};
         }
@@ -293,13 +293,13 @@ namespace FlatBuffers.Tests
             var array = new string[test.StringArrayPropLength];
             for (var i = 0; i < array.Length; ++i)
             {
-                array[i] = test.GetStringArrayProp(array.Length - i - 1);
+                array[i] = test.GetStringArrayProp(i);
             }
 
             var list = new List<string>(test.StringListPropLength);
             for (var i = 0; i < list.Capacity; ++i)
             {
-                list.Add(test.GetStringListProp(list.Capacity - i - 1));
+                list.Add(test.GetStringListProp(i));
             }
 
             return new TestTableWithArrayOfStrings() { StringArrayProp = array, StringListProp = list };
