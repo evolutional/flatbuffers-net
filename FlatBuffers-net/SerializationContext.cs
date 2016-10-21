@@ -284,8 +284,8 @@ namespace FlatBuffers
             var elementType = TypeHelpers.GetEnumerableElementType(collection.GetType());
             var elementTypeModel = _typeModelRegistry.GetTypeModel(elementType);
             _builder.StartVector(elementTypeModel.InlineSize, collection.Count, elementTypeModel.InlineAlignment);
-
-            foreach(var element in collection)
+    
+            foreach(var element in collection.Cast<object>().Reverse())
             {
                 if (elementTypeModel.IsReferenceType)
                 {
